@@ -69,7 +69,7 @@ class CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: Utils.symmetric(h: 16.0, v: 12.0),
+      padding: Utils.symmetric(h: 12.0, v: 12.0),
       decoration: BoxDecoration(
         color: isSelected ? primaryColor : whiteColor,
         borderRadius: BorderRadius.circular(50.0),
