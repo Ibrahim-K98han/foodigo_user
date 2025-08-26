@@ -5,13 +5,17 @@ import 'package:foodigo/utils/constraints.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
 
+import '../../../../data/remote_url.dart';
+import '../../../../features/HomeData/feature_product_model.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/title_and_navigator.dart';
 import '../../../core/routes/route_names.dart';
 
 class FeatureFood extends StatelessWidget {
-  const FeatureFood({super.key});
+  const FeatureFood({super.key, required this.featuredProducts});
+
+  final List<FeaturedProducts> featuredProducts;
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +34,13 @@ class FeatureFood extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Row(
             children: [
-              ...List.generate(5, (index) {
-                // final service = DummyData.influencerList[index];
-                return const Padding(
-                  padding: EdgeInsets.only(right: 14),
-                  child: FeatureFoodCart(),
+              ...List.generate(featuredProducts.length, (index) {
+                final featureProduct = featuredProducts[index];
+                return Padding(
+                  padding: const EdgeInsets.only(right: 14),
+                  child: FeatureFoodCart(
+                    featuredProducts: featureProduct,
+                  ),
                 );
               })
             ],
@@ -46,10 +52,13 @@ class FeatureFood extends StatelessWidget {
 }
 
 class FeatureFoodCart extends StatelessWidget {
-  const FeatureFoodCart({super.key});
+  const FeatureFoodCart({super.key, required this.featuredProducts});
+
+  final FeaturedProducts featuredProducts;
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
     return GestureDetector(
       onTap: () {
         // Navigator.pushNamed(context, RouteNames.productDetailsScreen);
@@ -85,7 +94,7 @@ class FeatureFoodCart extends StatelessWidget {
         );
       },
       child: Container(
-        height: 288.0,
+        height: size.height * 0.32,
         width: 240.0,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
@@ -97,12 +106,12 @@ class FeatureFoodCart extends StatelessWidget {
           children: [
             Stack(
               children: [
-                const ClipRRect(
-                  borderRadius: BorderRadius.only(
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(10.0),
                       topRight: Radius.circular(10.0)),
                   child: CustomImage(
-                    path: KImages.foodImage1,
+                    path: RemoteUrls.imageUrl(featuredProducts.image),
                     fit: BoxFit.fill,
                     height: 150,
                     width: double.infinity,
@@ -111,18 +120,21 @@ class FeatureFoodCart extends StatelessWidget {
                 Positioned(
                   top: 10,
                   right: 10,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6.0),
-                      color: whiteColor,
-                    ),
-                    child: Padding(
-                      padding: Utils.all(value: 6.0),
-                      child: const Center(
-                          child: CustomImage(
-                        path: KImages.loveIcon,
-                        color: blackColor,
-                      )),
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6.0),
+                        color: whiteColor,
+                      ),
+                      child: Padding(
+                        padding: Utils.all(value: 6.0),
+                        child: const Center(
+                            child: CustomImage(
+                          path: KImages.loveIcon,
+                          color: blackColor,
+                        )),
+                      ),
                     ),
                   ),
                 )
@@ -138,8 +150,8 @@ class FeatureFoodCart extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     // Add space between price and rating
                     children: [
-                      const CustomText(
-                        text: "\$25.00",
+                      CustomText(
+                        text: '\$${featuredProducts.price}',
                         fontSize: 16,
                         color: redColor,
                         fontWeight: FontWeight.w700,
@@ -150,13 +162,13 @@ class FeatureFoodCart extends StatelessWidget {
                           Utils.horizontalSpace(6.0),
                           Row(
                             children: [
-                              const CustomText(
-                                text: '4.9 ',
+                              CustomText(
+                                text: featuredProducts.reviewsAvgRating,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
                               ),
                               CustomText(
-                                text: '(5k+)',
+                                text: ' (${featuredProducts.reviewsCount})',
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
                                 color: blackColor.withOpacity(0.4),
@@ -168,8 +180,8 @@ class FeatureFoodCart extends StatelessWidget {
                     ],
                   ),
                   Utils.verticalSpace(4.0),
-                  const CustomText(
-                    text: 'Sandwiches Strawberry',
+                  CustomText(
+                    text: featuredProducts.name,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: settingsIconBgColor,

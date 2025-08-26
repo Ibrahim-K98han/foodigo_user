@@ -20,9 +20,10 @@ class OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
     return Container(
       padding: Utils.symmetric(h: 10.0, v: 6.0),
-      height: 158.0,
+      height: size.height * 0.18,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6.0), color: whiteColor),
       child: Column(

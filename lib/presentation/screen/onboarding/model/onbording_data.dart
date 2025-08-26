@@ -6,17 +6,17 @@ final onBoardingList = [
   const OnBordingModel(
     image: KImages.onBoarding1Image,
     title: "Simple method for Choosing your Location",
-    paragraph: "Never overspend your money again with enjoy delicious food feature.",
+    paragraph: "Never overspend your money again with enjoy delicious food features.",
   ),
   const OnBordingModel(
     image: KImages.onBoarding2Image,
     title: "Simplified Process for Ordering your Tasty Meals",
-    paragraph: "Never overspend your money again with enjoy delicious food feature.",
+    paragraph: "Never overspend your money again with enjoy delicious food features.",
   ),
   const OnBordingModel(
     image: KImages.onBoarding3Image,
     title: "Simplified to Delight in your Flavorful Meals",
-    paragraph: "Never overspend your money again with enjoy delicious food feature.",
+    paragraph: "Never overspend your money again with enjoy delicious food features.",
   ),
 
 ];

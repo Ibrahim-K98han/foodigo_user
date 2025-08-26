@@ -108,7 +108,7 @@ class RouteNames {
 
       case RouteNames.allRestaurantScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const AllRestaurantScreen());
+            settings: settings, builder: (_) =>  AllRestaurantScreen());
 
       case RouteNames.allCategoryScreen:
         return MaterialPageRoute(
