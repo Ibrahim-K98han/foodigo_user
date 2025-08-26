@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/utils/constraints.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
+import '../../../../features/HomeData/feature_product_model.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/title_and_navigator.dart';
@@ -10,7 +12,9 @@ import '../../../core/routes/route_names.dart';
 import '../../product_details/product_details_screen.dart';
 
 class ArrivalFood extends StatelessWidget {
-  const ArrivalFood({super.key});
+  const ArrivalFood({super.key, required this.newArrivalProducts});
+
+  final List<FeaturedProducts> newArrivalProducts;
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +32,15 @@ class ArrivalFood extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Column(
             children: [
-              ...List.generate(5, (index) {
-                // final service = DummyData.influencerList[index];
-                return const Padding(
-                  padding: EdgeInsets.only(
+              ...List.generate(newArrivalProducts.length, (index) {
+                final newArrival = newArrivalProducts[index];
+                return Padding(
+                  padding: const EdgeInsets.only(
                     bottom: 16.0,
                   ),
-                  child: FoodCart(),
+                  child: FoodCart(
+                    newArrivalProducts: newArrival,
+                  ),
                 );
               })
             ],
@@ -46,10 +52,13 @@ class ArrivalFood extends StatelessWidget {
 }
 
 class FoodCart extends StatelessWidget {
-  const FoodCart({super.key});
+  const FoodCart({super.key, required this.newArrivalProducts});
+
+  final FeaturedProducts newArrivalProducts;
 
   @override
   Widget build(BuildContext context) {
+    final size = Utils.mediaQuery(context);
     return GestureDetector(
       onTap: () {
         showModalBottomSheet(
@@ -84,7 +93,7 @@ class FoodCart extends StatelessWidget {
         );
       },
       child: Container(
-        height: 260.0,
+        height: size.height * 0.29,
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
@@ -96,12 +105,12 @@ class FoodCart extends StatelessWidget {
           children: [
             Stack(
               children: [
-                const ClipRRect(
-                  borderRadius: BorderRadius.only(
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(10.0),
                       topRight: Radius.circular(10.0)),
                   child: CustomImage(
-                    path: KImages.foodImage1,
+                    path: RemoteUrls.imageUrl(newArrivalProducts.image),
                     fit: BoxFit.fill,
                     height: 150,
                     width: double.infinity,
@@ -110,15 +119,18 @@ class FoodCart extends StatelessWidget {
                 Positioned(
                   top: 10,
                   right: 10,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6.0),
-                      color: whiteColor,
-                    ),
-                    child: Padding(
-                      padding: Utils.all(value: 6.0),
-                      child: const Center(
-                          child: CustomImage(path: KImages.loveIcon)),
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6.0),
+                        color: whiteColor,
+                      ),
+                      child: Padding(
+                        padding: Utils.all(value: 6.0),
+                        child: const Center(
+                            child: CustomImage(path: KImages.loveIcon)),
+                      ),
                     ),
                   ),
                 )
@@ -134,8 +146,8 @@ class FoodCart extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     // Add space between price and rating
                     children: [
-                      const CustomText(
-                        text: "\$25.00",
+                      CustomText(
+                        text: "\$${newArrivalProducts.price}",
                         fontSize: 16,
                         color: redColor,
                         fontWeight: FontWeight.w700,
@@ -148,13 +160,13 @@ class FoodCart extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const CustomText(
-                                text: '4.9 ',
+                              CustomText(
+                                text: newArrivalProducts.reviewsAvgRating,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
                               ),
                               CustomText(
-                                text: '(5k+)',
+                                text: ' (${newArrivalProducts.reviewsCount})',
                                 fontSize: 13,
                                 color: Colors.black.withOpacity(0.4),
                               ),
@@ -165,8 +177,8 @@ class FoodCart extends StatelessWidget {
                     ],
                   ),
                   Utils.verticalSpace(4.0),
-                  const CustomText(
-                    text: 'Sandwiches Strawberry',
+                  CustomText(
+                    text: newArrivalProducts.name,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     maxLine: 1,

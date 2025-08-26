@@ -1,10 +1,15 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:foodigo/widget/custom_image.dart';
-
-import '../../../utils/constraints.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/HomeData/home_data_model.dart';
+import 'package:foodigo/widget/page_refresh.dart';
+import '../../../features/HomeData/cubit/home_data_cubit.dart';
+import '../../../features/HomeData/cubit/home_data_state.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
+import '../../../widget/custom_image.dart';
+import '../../../widget/fetch_error_text.dart';
+import '../../../widget/loading_widget.dart';
 import 'components/arrival_food.dart';
 import 'components/category_list.dart';
 import 'components/feature_food.dart';
@@ -19,13 +24,69 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 1;
-  final List<String> slider = [KImages.banner];
+  late HomeDataCubit homeDataCubit;
+
+  @override
+  initState() {
+    super.initState();
+    homeDataCubit = context.read<HomeDataCubit>();
+    homeDataCubit.getHomeDataData();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
+        body: PageRefresh(
+      onRefresh: () async {
+        homeDataCubit.getHomeDataData();
+      },
+      child: BlocConsumer<HomeDataCubit, HomeDataState>(
+        listener: (context, state) {
+          final home = state;
+          if (home is HomeDataError) {
+            if (home.statusCode == 503) {
+              FetchErrorText(text: home.message);
+            }
+          }
+        },
+        builder: (context, state) {
+          final home = state;
+          if (home is HomeDataLoading) {
+            return const LoadingWidget();
+          } else if (home is HomeDataError) {
+            if (home.statusCode == 503 || homeDataCubit.homeModel != null) {
+              return LoadedHomeData(
+                homeModel: homeDataCubit.homeModel!,
+              );
+            } else {
+              return FetchErrorText(text: home.message);
+            }
+          } else if (home is HomeDataLoaded) {
+            return LoadedHomeData(
+              homeModel: homeDataCubit.homeModel!,
+            );
+          }
+          if (homeDataCubit.homeModel != null) {
+            return const LoadedHomeData(
+              homeModel: HomeModel(),
+            );
+          } else {
+            return const FetchErrorText(text: 'Something Went Wrong');
+          }
+        },
+      ),
+    ));
+  }
+}
+
+class LoadedHomeData extends StatelessWidget {
+  const LoadedHomeData({super.key, required this.homeModel});
+
+  final HomeModel homeModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
       decoration: const BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -45,93 +106,104 @@ class _HomeScreenState extends State<HomeScreen> {
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
-                  const CategoryList(),
+                  CategoryList(
+                    categories: homeModel.categories!,
+                  ),
                   Utils.verticalSpace(12.0),
-                  const FeatureFood(),
-                  Utils.verticalSpace(20.0),
-                  Stack(
-                    children: [
-                      CarouselSlider(
-                        options: CarouselOptions(
-                          height: 164.0,
-                          viewportFraction: 1.0,
-                          initialPage: _currentIndex,
-                          enableInfiniteScroll: true,
-                          reverse: false,
-                          autoPlay: true,
-                          autoPlayInterval: const Duration(seconds: 3),
-                          autoPlayAnimationDuration: const Duration(seconds: 1),
-                          autoPlayCurve: Curves.easeInOut,
-                          enlargeCenterPage: true,
-                          onPageChanged: callbackFunction,
-                          scrollDirection: Axis.horizontal,
-                        ),
-                        items: slider.map((e) {
-                          return Padding(
-                            padding: Utils.symmetric(),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10.0)),
-                              //margin: Utils.symmetric(h: 10.0),
-                              width: double.infinity,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10.0),
-                                child: CustomImage(
-                                  path: slider.first,
-                                  fit: BoxFit.fill,
-                                ),
-                                // child: Image.network(e.image),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                      Positioned(
-                          bottom: 10.0,
-                          left: 0.0,
-                          right: 0.0,
-                          child: _buildDotIndicator()),
-                    ],
+                  FeatureFood(
+                    featuredProducts: homeModel.featuredProducts!,
                   ),
                   Utils.verticalSpace(20.0),
-                  const TopRestaurant(),
+
+                  ///============= Banner Slider =============///
+                  BannerSlider(),
                   Utils.verticalSpace(20.0),
-                  const ArrivalFood(),
+                  TopRestaurant(
+                    restaurants: homeModel.restaurants!,
+                  ),
+                  Utils.verticalSpace(20.0),
+                  ArrivalFood(
+                    newArrivalProducts: homeModel.newArrivalProducts!,
+                  ),
                 ],
               ),
             ),
           )
         ],
       ),
-    ));
+    );
   }
+}
 
-  void callbackFunction(int index, CarouselPageChangedReason reason) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
+class BannerSlider extends StatelessWidget {
+  int _currentIndex = 1;
+  final List<String> slider = [KImages.banner];
 
-  Widget _buildDotIndicator() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        slider.length,
-            (index) {
-          final i = _currentIndex == index;
-          return AnimatedContainer(
-            duration: const Duration(seconds: 1),
-            height: Utils.vSize(6.0),
-            width: Utils.hSize(i ? 24.0 : 6.0),
-            margin: Utils.only(right: 4.0),
-            decoration: BoxDecoration(
-              color: i ? primaryColor : whiteColor,
-              borderRadius: BorderRadius.circular(i ? 50.0 : 5.0),
-              //shape: i ? BoxShape.rectangle : BoxShape.circle,
-            ),
-          );
-        },
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        CarouselSlider(
+          options: CarouselOptions(
+            height: 164.0,
+            viewportFraction: 1.0,
+            initialPage: _currentIndex,
+            enableInfiniteScroll: true,
+            reverse: false,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 3),
+            autoPlayAnimationDuration: const Duration(seconds: 1),
+            autoPlayCurve: Curves.easeInOut,
+            enlargeCenterPage: true,
+            onPageChanged: (index, reason) {},
+            scrollDirection: Axis.horizontal,
+          ),
+          items: slider.map((e) {
+            return Padding(
+              padding: Utils.symmetric(),
+              child: Container(
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
+                //margin: Utils.symmetric(h: 10.0),
+                width: double.infinity,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: CustomImage(
+                    path: slider.first,
+                    fit: BoxFit.fill,
+                  ),
+                  // child: Image.network(e.image),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        // Positioned(
+        //   bottom: 10.0,
+        //   left: 0.0,
+        //   right: 0.0,
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: List.generate(
+        //       slider.length,
+        //       (index) {
+        //         final i = _currentIndex == index;
+        //         return AnimatedContainer(
+        //           duration: const Duration(seconds: 1),
+        //           height: Utils.vSize(6.0),
+        //           width: Utils.hSize(i ? 24.0 : 6.0),
+        //           margin: Utils.only(right: 4.0),
+        //           decoration: BoxDecoration(
+        //             color: i ? primaryColor : whiteColor,
+        //             borderRadius: BorderRadius.circular(i ? 50.0 : 5.0),
+        //             //shape: i ? BoxShape.rectangle : BoxShape.circle,
+        //           ),
+        //         );
+        //       },
+        //     ),
+        //   ),
+        // ),
+      ],
     );
   }
 }

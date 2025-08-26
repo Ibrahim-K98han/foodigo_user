@@ -84,9 +84,10 @@ class CheckoutCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
     return Container(
       padding: Utils.symmetric(h: 8.0, v: 4.0),
-      height: 90.0,
+      height: size.height * 0.1,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6.0), color: whiteColor),
       child: Row(

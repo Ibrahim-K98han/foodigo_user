@@ -16,6 +16,7 @@ class CustomImage extends StatelessWidget {
     this.color,
     this.isFile = false,
   });
+
   final String? path;
   final BoxFit fit;
   final double? height, width;
@@ -37,17 +38,27 @@ class CustomImage extends StatelessWidget {
     }
 
     if (imagePath.endsWith('.svg')) {
-      return SizedBox(
-        height: height,
-        width: width,
-        child: SvgPicture.asset(
+      if (imagePath.startsWith('http') || imagePath.startsWith('https')) {
+        // Network SVG
+        return SvgPicture.network(
           imagePath,
           fit: fit,
           height: height,
           width: width,
           color: color,
-        ),
-      );
+          placeholderBuilder: (context) =>
+              const Center(child: CircularProgressIndicator()),
+        );
+      } else {
+        // Local asset SVG
+        return SvgPicture.asset(
+          imagePath,
+          fit: fit,
+          height: height,
+          width: width,
+          color: color,
+        );
+      }
     }
     if (imagePath.startsWith('http') ||
         imagePath.startsWith('https') ||

@@ -51,11 +51,12 @@ dependencies:
   another_stepper: ^1.2.2
   shared_preferences: ^2.3.3
   connectivity_plus: ^6.1.0
-  awesome_snackbar_content: ^0.1.5
+  awesome_snackbar_content: ^0.1.6
   badges: ^3.1.2
   carousel_slider: ^5.1.1
-  rename: ^3.1.0
-
+  mason: ^0.1.1
+  http: ^1.5.0
+  
 
 
 

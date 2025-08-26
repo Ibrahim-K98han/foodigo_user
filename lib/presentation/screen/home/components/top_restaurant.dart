@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/utils/constraints.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
 
+import '../../../../features/HomeData/restaurant_model.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_image.dart';
@@ -11,12 +13,16 @@ import '../../../../widget/title_and_navigator.dart';
 import '../../../core/routes/route_names.dart';
 
 class TopRestaurant extends StatelessWidget {
-  const TopRestaurant({super.key});
+  const TopRestaurant({super.key, required this.restaurants});
+
+  final List<Restaurants> restaurants;
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+
     return Container(
-      height: 260,
+      height: size.height * 0.34,
       decoration: const BoxDecoration(
         color: Color(0xFF000000),
       ),
@@ -39,11 +45,13 @@ class TopRestaurant extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: Row(
                 children: [
-                  ...List.generate(5, (index) {
-                    // final service = DummyData.influencerList[index];
-                    return const Padding(
-                      padding: EdgeInsets.only(right: 14),
-                      child: TopRestaurantCart(),
+                  ...List.generate(restaurants.length, (index) {
+                    final restaurant = restaurants[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 14),
+                      child: TopRestaurantCart(
+                        restaurants: restaurant,
+                      ),
                     );
                   })
                 ],
@@ -57,7 +65,9 @@ class TopRestaurant extends StatelessWidget {
 }
 
 class TopRestaurantCart extends StatelessWidget {
-  const TopRestaurantCart({super.key});
+  const TopRestaurantCart({super.key, required this.restaurants});
+
+  final Restaurants restaurants;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +77,7 @@ class TopRestaurantCart extends StatelessWidget {
         Navigator.pushNamed(context, RouteNames.restaurantProfileScreen);
       },
       child: Container(
-        height: 185.0,
+        height: size.height * 0.22,
         width: 260.0,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.0),
@@ -80,12 +90,12 @@ class TopRestaurantCart extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                const ClipRRect(
-                  borderRadius: BorderRadius.only(
+                 ClipRRect(
+                  borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(10.0),
                       topRight: Radius.circular(10.0)),
                   child: CustomImage(
-                    path: KImages.rImage1,
+                    path: RemoteUrls.imageUrl(restaurants.coverImage),
                     fit: BoxFit.fill,
                     height: 90,
                     width: double.infinity,
@@ -95,13 +105,12 @@ class TopRestaurantCart extends StatelessWidget {
                   top: 10,
                   right: 10,
                   child: Container(
-                    height: 30,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(6.0),
                       color: const Color(0xFF00CF7E),
                     ),
                     child: Padding(
-                      padding: Utils.symmetric(h: 6.0, v: 3.0),
+                      padding: Utils.symmetric(h: 6.0, v: 2.0),
                       child: const Center(
                           child: CustomText(
                         text: 'open',
@@ -122,8 +131,8 @@ class TopRestaurantCart extends StatelessWidget {
                       backgroundColor: whiteColor,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(50.0),
-                        child: const CustomImage(
-                          path: KImages.rProfile,
+                        child:  CustomImage(
+                          path: RemoteUrls.imageUrl(restaurants.logo),
                           fit: BoxFit.fill,
                           height: 55,
                         ),
@@ -142,8 +151,8 @@ class TopRestaurantCart extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const CustomText(
-                        text: 'Kombucha',
+                       CustomText(
+                        text: restaurants.name,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         maxLine: 1,
@@ -165,36 +174,36 @@ class TopRestaurantCart extends StatelessWidget {
                             height: 20,
                             color: Colors.black.withOpacity(0.4),
                           ),
-                          Utils.horizontalSpace(6.0),
+                          Utils.horizontalSpace(2.0),
                           CustomText(
-                            text: 'QS Jose,Spain',
+                            text: restaurants.address,
                             fontWeight: FontWeight.w400,
                             fontSize: 13,
                             color: blackColor.withOpacity(0.6),
                           ),
                         ],
                       ),
-                      Utils.horizontalSpace(10.0),
+                      Utils.horizontalSpace(4.0),
                       Container(
                         height: 5,
                         width: 5,
                         decoration: const BoxDecoration(
                             color: Color(0xFFF98C3B), shape: BoxShape.circle),
                       ),
-                      Utils.horizontalSpace(10.0),
+                      Utils.horizontalSpace(4.0),
                       Row(
                         children: [
                           const CustomImage(path: KImages.star),
                           Utils.horizontalSpace(6.0),
                           Row(
                             children: [
-                              const CustomText(
-                                text: '4.9 ',
+                               CustomText(
+                                text: restaurants.reviewsAvgRating,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
                               ),
                               CustomText(
-                                text: '(5k+)',
+                                text: ' (${restaurants.reviewsCount})',
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
                                 color: blackColor.withOpacity(0.4),

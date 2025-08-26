@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/presentation/screen/home/components/category_list.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 
+import '../../../features/HomeData/cubit/home_data_cubit.dart';
 import '../../../utils/utils.dart';
 
 class AllCategoryScreen extends StatefulWidget {
@@ -16,6 +18,7 @@ class _AllCategoryScreenState extends State<AllCategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final homeCubit = context.read<HomeDataCubit>();
     return Scaffold(
       appBar: const CustomAppBar(title: 'All Categories'),
       body: Container(
@@ -30,21 +33,28 @@ class _AllCategoryScreenState extends State<AllCategoryScreen> {
           ],
         ),
         child: Padding(
-          padding: Utils.symmetric(),
-          child: GridView.builder(
+            padding: Utils.symmetric(),
+            child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 16.0,
-                  crossAxisSpacing: 12.0,
-                  childAspectRatio: 2.1),
-              itemCount: 10,
+                crossAxisCount: 3,
+                mainAxisSpacing: 16.0,
+                crossAxisSpacing: 10.0,
+                childAspectRatio: 2.1,
+              ),
+              itemCount: homeCubit.homeModel!.categories!.length,
               itemBuilder: (BuildContext context, index) {
+                final category = homeCubit.homeModel!.categories![index];
                 return CategoryCard(
-                  onTap: () {},
-                  isSelected: true,
+                  categories: category,
+                  isSelected: selectedIndex == index,
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = index;
+                    });
+                  },
                 );
-              }),
-        ),
+              },
+            )),
       ),
     );
   }
