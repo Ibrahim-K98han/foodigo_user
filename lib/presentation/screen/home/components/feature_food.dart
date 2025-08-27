@@ -94,7 +94,7 @@ class FeatureFoodCart extends StatelessWidget {
         );
       },
       child: Container(
-        height: size.height * 0.32,
+        height: size.height * 0.34.h,
         width: 240.0,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
@@ -112,8 +112,8 @@ class FeatureFoodCart extends StatelessWidget {
                       topRight: Radius.circular(10.0)),
                   child: CustomImage(
                     path: RemoteUrls.imageUrl(featuredProducts.image),
-                    fit: BoxFit.fill,
-                    height: 150,
+                    fit: BoxFit.cover,
+                    height: size.height * 0.17.h,
                     width: double.infinity,
                   ),
                 ),
@@ -140,83 +140,86 @@ class FeatureFoodCart extends StatelessWidget {
                 )
               ],
             ),
-            Padding(
-              padding: Utils.symmetric(v: 8.0, h: 12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                // Align children to the start
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    // Add space between price and rating
-                    children: [
-                      CustomText(
-                        text: '\$${featuredProducts.price}',
-                        fontSize: 16,
-                        color: redColor,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      Row(
-                        children: [
-                          const CustomImage(path: KImages.star),
-                          Utils.horizontalSpace(6.0),
-                          Row(
-                            children: [
-                              CustomText(
-                                text: featuredProducts.reviewsAvgRating,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13,
-                              ),
-                              CustomText(
-                                text: ' (${featuredProducts.reviewsCount})',
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13,
-                                color: blackColor.withOpacity(0.4),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Utils.verticalSpace(4.0),
-                  CustomText(
-                    text: featuredProducts.name,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: settingsIconBgColor,
-                    maxLine: 1,
-                  ),
-                  Utils.verticalSpace(6.0),
-                  Row(
-                    children: [
-                      CustomImage(
-                        path: KImages.location,
-                        height: 20,
-                        color: blackColor.withOpacity(0.4),
-                      ),
-                      Utils.horizontalSpace(6.0),
-                      CustomText(
-                        text: 'QS Jose,Spain',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 13,
-                        color: Colors.black.withOpacity(0.4),
-                      ),
-                    ],
-                  ),
-                  Utils.verticalSpace(6.0),
-                  Row(
-                    children: [
-                      const CustomImage(path: KImages.rProfile, height: 20),
-                      Utils.horizontalSpace(6.0),
-                      const CustomText(
-                        text: 'Chef’s Place',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 13,
-                      ),
-                    ],
-                  ),
-                ],
+            Expanded(
+              child: Padding(
+                padding: Utils.symmetric(v: 8.0.w, h: 10.0.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  // Align children to the start
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      // Add space between price and rating
+                      children: [
+                        CustomText(
+                          text: '\$${featuredProducts.price}',
+                          fontSize: 16.sp,
+                          color: redColor,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        Row(
+                          children: [
+                            const CustomImage(path: KImages.star),
+                            Utils.horizontalSpace(6.0),
+                            Row(
+                              children: [
+                                CustomText(
+                                  text: featuredProducts.reviewsAvgRating,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13.sp,
+                                ),
+                                CustomText(
+                                  text: ' (${featuredProducts.reviewsCount})',
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13.sp,
+                                  color: blackColor.withOpacity(0.4),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Utils.verticalSpace(4.0),
+                    CustomText(
+                      text: featuredProducts.name,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: settingsIconBgColor,
+                      height: 1.0.h,
+                      maxLine: 2,
+                    ),
+                    Utils.verticalSpace(6.0),
+                    Row(
+                      children: [
+                        CustomImage(
+                          path: KImages.location,
+                          height: 20.h,
+                          color: blackColor.withOpacity(0.4),
+                        ),
+                        Utils.horizontalSpace(6.0),
+                        CustomText(
+                          text: 'QS Jose,Spain',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 12.sp,
+                          color: Colors.black.withOpacity(0.4),
+                        ),
+                      ],
+                    ),
+                    Utils.verticalSpace(6.0),
+                    Row(
+                      children: [
+                        const CustomImage(path: KImages.rProfile, height: 20),
+                        Utils.horizontalSpace(6.0),
+                         CustomText(
+                          text: 'Chef’s Place',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12.sp,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

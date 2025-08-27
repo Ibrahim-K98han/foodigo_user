@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/data/remote_url.dart';
+import 'package:foodigo/features/Cart/cubit/cart_cubit.dart';
+import 'package:foodigo/features/Cart/cubit/cart_state.dart';
+import 'package:foodigo/features/Cart/model/cart_model.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
+import 'package:foodigo/widget/fetch_error_text.dart';
+import 'package:foodigo/widget/loading_widget.dart';
 import 'package:foodigo/widget/primary_button.dart';
 
 import '../../../utils/constraints.dart';
@@ -9,8 +16,22 @@ import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
 import '../../core/routes/route_names.dart';
 
-class MyCartScreen extends StatelessWidget {
+class MyCartScreen extends StatefulWidget {
   const MyCartScreen({super.key});
+
+  @override
+  State<MyCartScreen> createState() => _MyCartScreenState();
+}
+
+class _MyCartScreenState extends State<MyCartScreen> {
+  late CartCubit cartCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    cartCubit = context.read<CartCubit>();
+    cartCubit.getCartData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,32 +59,54 @@ class MyCartScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          Container(
-            padding: Utils.symmetric(),
-            decoration: const BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x0A000000),
-                  blurRadius: 40,
-                  offset: Offset(0, 2),
-                  spreadRadius: 10,
-                )
-              ],
-            ),
-            child: Column(
+      body: BlocConsumer<CartCubit, CartState>(
+        listener: (context, state) {
+          if (state is CartError) {
+            FetchErrorText(
+              text: state.message,
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is CartLoading) {
+            return const LoadingWidget();
+          } else if (state is CartError) {
+            return FetchErrorText(text: state.message);
+          } else if (state is CartLoaded) {
+            final cart = state.cartModel;
+            return ListView(
               children: [
-                ...List.generate(7, (index) {
-                  return Padding(
-                    padding: Utils.only(bottom: 12.0),
-                    child: const CheckoutCart(),
-                  );
-                })
+                Container(
+                  padding: Utils.symmetric(),
+                  decoration: const BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x0A000000),
+                        blurRadius: 40,
+                        offset: Offset(0, 2),
+                        spreadRadius: 10,
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      ...List.generate(cart.cartItems!.length, (index) {
+                        final cartItems = cart.cartItems![index];
+                        return Padding(
+                          padding: Utils.only(bottom: 12.0),
+                          child: CheckoutCart(
+                            cartItem: cartItems,
+                          ),
+                        );
+                      })
+                    ],
+                  ),
+                ),
               ],
-            ),
-          ),
-        ],
+            );
+          }
+          return const Center(child: Text("Something went wrong"));
+        },
       ),
       bottomNavigationBar: Padding(
         padding: Utils.symmetric(v: 4.0),
@@ -78,9 +121,12 @@ class MyCartScreen extends StatelessWidget {
 }
 
 class CheckoutCart extends StatelessWidget {
-  const CheckoutCart({
+  CheckoutCart({
     super.key,
+    required this.cartItem,
   });
+
+  final CartItems cartItem;
 
   @override
   Widget build(BuildContext context) {
@@ -102,8 +148,8 @@ class CheckoutCart extends StatelessWidget {
             ),
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
-                child: const CustomImage(
-                  path: KImages.foodImage1,
+                child:  CustomImage(
+                  path: RemoteUrls.imageUrl(cartItem.product.image),
                   fit: BoxFit.cover,
                 )),
           ),

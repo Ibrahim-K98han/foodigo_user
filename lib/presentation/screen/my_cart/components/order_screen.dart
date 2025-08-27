@@ -38,7 +38,8 @@ class OrderScreen extends StatelessWidget {
                 ...List.generate(2, (index) {
                   return Padding(
                     padding: Utils.only(bottom: 10.0),
-                    child: const CheckoutCart(),
+                    // child:  CheckoutCart(),
+                    child: CustomText(text: 'text'),
                   );
                 }),
                 Utils.verticalSpace(10.0),

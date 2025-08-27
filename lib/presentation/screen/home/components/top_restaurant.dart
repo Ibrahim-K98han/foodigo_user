@@ -22,7 +22,7 @@ class TopRestaurant extends StatelessWidget {
     final size = MediaQuery.sizeOf(context);
 
     return Container(
-      height: size.height * 0.34,
+      height: size.height * 0.32,
       decoration: const BoxDecoration(
         color: Color(0xFF000000),
       ),
@@ -51,6 +51,13 @@ class TopRestaurant extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 14),
                       child: TopRestaurantCart(
                         restaurants: restaurant,
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            RouteNames.restaurantProfileScreen,
+                            arguments: restaurant.slug,
+                          );
+                        },
                       ),
                     );
                   })
@@ -65,19 +72,18 @@ class TopRestaurant extends StatelessWidget {
 }
 
 class TopRestaurantCart extends StatelessWidget {
-  const TopRestaurantCart({super.key, required this.restaurants});
+  const TopRestaurantCart({super.key, required this.restaurants, this.onTap});
 
   final Restaurants restaurants;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, RouteNames.restaurantProfileScreen);
-      },
+      onTap: onTap,
       child: Container(
-        height: size.height * 0.22,
+        height: size.height * 0.23,
         width: 260.0,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.0),
@@ -90,14 +96,14 @@ class TopRestaurantCart extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                 ClipRRect(
+                ClipRRect(
                   borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(10.0),
                       topRight: Radius.circular(10.0)),
                   child: CustomImage(
                     path: RemoteUrls.imageUrl(restaurants.coverImage),
-                    fit: BoxFit.fill,
-                    height: 90,
+                    fit: BoxFit.cover,
+                    height: size.height * 0.12,
                     width: double.infinity,
                   ),
                 ),
@@ -131,7 +137,7 @@ class TopRestaurantCart extends StatelessWidget {
                       backgroundColor: whiteColor,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(50.0),
-                        child:  CustomImage(
+                        child: CustomImage(
                           path: RemoteUrls.imageUrl(restaurants.logo),
                           fit: BoxFit.fill,
                           height: 55,
@@ -151,7 +157,7 @@ class TopRestaurantCart extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                       CustomText(
+                      CustomText(
                         text: restaurants.name,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -197,7 +203,7 @@ class TopRestaurantCart extends StatelessWidget {
                           Utils.horizontalSpace(6.0),
                           Row(
                             children: [
-                               CustomText(
+                              CustomText(
                                 text: restaurants.reviewsAvgRating,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,

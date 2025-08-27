@@ -1,175 +1,210 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/data/remote_url.dart';
+import 'package:foodigo/features/SingleRestaurant/cubit/single_restaurant_cubit.dart';
+import 'package:foodigo/features/SingleRestaurant/cubit/single_restaurant_state.dart';
 import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/presentation/screen/all_restaurant_screen/components/profile_tab_info.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
 import 'package:foodigo/widget/feedback_dialog.dart';
+import 'package:foodigo/widget/fetch_error_text.dart';
+import 'package:foodigo/widget/loading_widget.dart';
 import 'package:foodigo/widget/primary_button.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
 
-class RestaurantProfileScreen extends StatelessWidget {
-  const RestaurantProfileScreen({super.key});
+class RestaurantProfileScreen extends StatefulWidget {
+  const RestaurantProfileScreen({super.key, required this.slug});
+
+  final String slug;
+
+  @override
+  State<RestaurantProfileScreen> createState() =>
+      _RestaurantProfileScreenState();
+}
+
+class _RestaurantProfileScreenState extends State<RestaurantProfileScreen> {
+  late SingleRestaurantCubit singleRestaurantCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    singleRestaurantCubit = context.read<SingleRestaurantCubit>();
+    singleRestaurantCubit.getSingleRestaurantData(widget.slug);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Container(
-        // decoration: const BoxDecoration(
-        //   boxShadow: [
-        //     BoxShadow(
-        //       color: Color(0x0A000000),
-        //       blurRadius: 40,
-        //       offset: Offset(0, 2),
-        //       spreadRadius: 10,
-        //     )
-        //   ],
-        // ),
-        child: Column(
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                const CustomImage(
-                  path: KImages.banner,
-                  fit: BoxFit.cover,
-                  height: 160,
-                  width: double.infinity,
-                ),
-                Positioned(
-                  top: 45,
-                  left: 20,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Icon(
-                      Icons.arrow_back_sharp,
-                      size: 30,
-                      color: whiteColor,
+        body: BlocConsumer<SingleRestaurantCubit, SingleRestaurantState>(
+      listener: (context, state) {
+        if (state is SingleRestaurantError) {
+          FetchErrorText(text: state.message);
+        }
+      },
+      builder: (context, state) {
+        if (state is SingleRestaurantLoading) {
+          return const LoadingWidget();
+        } else if (state is SingleRestaurantError) {
+          return FetchErrorText(text: state.message);
+        } else if (state is SingleRestaurantLoaded) {
+          final restaurant = state.restaurantDetailsModel;
+          return Column(
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  CustomImage(
+                    path: RemoteUrls.imageUrl(restaurant.restaurant.coverImage),
+                    fit: BoxFit.cover,
+                    height: size.height * 0.20,
+                    width: double.infinity,
+                  ),
+                  Positioned(
+                    top: 45,
+                    left: 20,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Icon(
+                        Icons.arrow_back_sharp,
+                        size: 30,
+                        color: whiteColor,
+                      ),
                     ),
                   ),
-                ),
-                Positioned(
-                  top: 45,
-                  right: 20,
-                  child: GestureDetector(
-                      onTap: () {},
-                      child: const CustomImage(
-                        path: KImages.loveIcon,
-                        color: whiteColor,
-                        width: 24,
-                        height: 24,
-                      )),
-                ),
-                Positioned(
-                  bottom: -40,
-                  left: 0,
-                  right: 0,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: CircleAvatar(
-                      radius: 40,
-                      backgroundColor: Colors.transparent,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(50.0),
+                  Positioned(
+                    top: 45,
+                    right: 20,
+                    child: GestureDetector(
+                        onTap: () {},
                         child: const CustomImage(
-                          path: KImages.rProfile,
-                          fit: BoxFit.cover,
-                          height: 100,
+                          path: KImages.loveIcon,
+                          color: whiteColor,
+                          width: 24,
+                          height: 24,
+                        )),
+                  ),
+                  Positioned(
+                    bottom: -40,
+                    left: 0,
+                    right: 0,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: CircleAvatar(
+                        radius: 40,
+                        backgroundColor: Colors.transparent,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(50.0),
+                          child: CustomImage(
+                            path:
+                                RemoteUrls.imageUrl(restaurant.restaurant.logo),
+                            fit: BoxFit.cover,
+                            height: 100,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            Padding(
-              padding:
-                  Utils.only(top: 40.0, bottom: 6.0, right: 10.0, left: 10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const CustomText(
-                        text: 'Kombucha',
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        maxLine: 1,
-                      ),
-                      Utils.horizontalSpace(4.0),
-                      const CustomImage(path: KImages.rating),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          CustomImage(
-                            path: KImages.location,
-                            height: 20,
-                            color: blackColor.withOpacity(0.4),
-                          ),
-                          Utils.horizontalSpace(6.0),
-                          CustomText(
-                            text: 'QS Jose,Spain',
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                            color: blackColor.withOpacity(0.4),
-                          ),
-                        ],
-                      ),
-                      Utils.horizontalSpace(10.0),
-                      Container(
-                        height: 5,
-                        width: 5,
-                        decoration: const BoxDecoration(
-                            color: Color(0xFFF98C3B), shape: BoxShape.circle),
-                      ),
-                      Utils.horizontalSpace(10.0),
-                      GestureDetector(
-                        onTap: () {
-                          _showReviewDialog(context);
-                        },
-                        child: Row(
+                ],
+              ),
+              Padding(
+                padding:
+                    Utils.only(top: 40.0, bottom: 6.0, right: 10.0, left: 10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CustomText(
+                          text: restaurant.restaurant.name,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          maxLine: 1,
+                        ),
+                        Utils.horizontalSpace(4.0),
+                        const CustomImage(path: KImages.rating),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
                           children: [
-                            const CustomImage(path: KImages.star),
+                            CustomImage(
+                              path: KImages.location,
+                              height: 20,
+                              color: blackColor.withOpacity(0.4),
+                            ),
                             Utils.horizontalSpace(6.0),
-                            Row(
-                              children: [
-                                const CustomText(
-                                  text: '4.9 ',
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
-                                CustomText(
-                                  text: '(5k+)',
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  color: blackColor.withOpacity(0.4),
-                                ),
-                              ],
+                            CustomText(
+                              text: restaurant.restaurant.address,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              color: blackColor.withOpacity(0.4),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                  Utils.verticalSpace(10.0),
-                ],
+                        Utils.horizontalSpace(10.0),
+                        Container(
+                          height: 5,
+                          width: 5,
+                          decoration: const BoxDecoration(
+                              color: Color(0xFFF98C3B), shape: BoxShape.circle),
+                        ),
+                        Utils.horizontalSpace(10.0),
+                        GestureDetector(
+                          onTap: () {
+                            _showReviewDialog(context);
+                          },
+                          child: Row(
+                            children: [
+                              const CustomImage(path: KImages.star),
+                              Utils.horizontalSpace(6.0),
+                              Row(
+                                children: [
+                                  CustomText(
+                                    text:
+                                        restaurant.restaurant.reviewsAvgRating,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
+                                  CustomText(
+                                    text:
+                                        ' (${restaurant.restaurant.reviewsCount})',
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                    color: blackColor.withOpacity(0.4),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Utils.verticalSpace(10.0),
+                  ],
+                ),
               ),
-            ),
-            const Expanded(child: RestaurantTabContents()),
-          ],
-        ),
-      ),
-    );
+              Expanded(
+                child: RestaurantTabContents(
+                  restaurantDetailsModel: restaurant,
+                ),
+              ),
+            ],
+          );
+        }
+        return const Center(child: Text("Something went wrong"));
+      },
+    ));
   }
 }
 

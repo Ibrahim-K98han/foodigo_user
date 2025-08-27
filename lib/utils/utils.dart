@@ -102,7 +102,7 @@ class Utils {
 
   static EdgeInsets symmetric({double h = 20.0, v = 0.0}) {
     return EdgeInsets.symmetric(
-        horizontal: Utils.hPadding(size: h), vertical: Utils.vPadding(size: v));
+        horizontal: Utils.hPadding(size: h.h), vertical: Utils.vPadding(size: v));
   }
 
   static double radius(double radius) {

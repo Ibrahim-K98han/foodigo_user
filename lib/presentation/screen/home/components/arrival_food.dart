@@ -19,12 +19,16 @@ class ArrivalFood extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TitleAndNavigator(
-          title: 'New Arrival Food',
-          press: () {
-            Navigator.pushNamed(context, RouteNames.allFoodScreen);
-          },
+        Padding(
+          padding: Utils.symmetric(),
+          child: const CustomText(
+            text: 'New Arrival Food',
+            color: textColor,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         Utils.verticalSpace(16),
         SingleChildScrollView(
@@ -35,8 +39,8 @@ class ArrivalFood extends StatelessWidget {
               ...List.generate(newArrivalProducts.length, (index) {
                 final newArrival = newArrivalProducts[index];
                 return Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: 16.0,
+                  padding:  EdgeInsets.only(
+                    bottom: 16.0.h,
                   ),
                   child: FoodCart(
                     newArrivalProducts: newArrival,
@@ -93,7 +97,6 @@ class FoodCart extends StatelessWidget {
         );
       },
       child: Container(
-        height: size.height * 0.29,
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
@@ -106,24 +109,24 @@ class FoodCart extends StatelessWidget {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10.0),
-                      topRight: Radius.circular(10.0)),
+                  borderRadius:  BorderRadius.only(
+                      topLeft: Radius.circular(10.0.r),
+                      topRight: Radius.circular(10.0.r)),
                   child: CustomImage(
                     path: RemoteUrls.imageUrl(newArrivalProducts.image),
-                    fit: BoxFit.fill,
-                    height: 150,
+                    fit: BoxFit.cover,
+                    height: size.height * 0.17.h,
                     width: double.infinity,
                   ),
                 ),
                 Positioned(
-                  top: 10,
-                  right: 10,
+                  top: 10.h,
+                  right: 10.w,
                   child: GestureDetector(
                     onTap: () {},
                     child: Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6.0),
+                        borderRadius: BorderRadius.circular(6.0.r),
                         color: whiteColor,
                       ),
                       child: Padding(
@@ -147,8 +150,8 @@ class FoodCart extends StatelessWidget {
                     // Add space between price and rating
                     children: [
                       CustomText(
-                        text: "\$${newArrivalProducts.price}",
-                        fontSize: 16,
+                        text: Utils.formatPrice(context, newArrivalProducts.price),
+                        fontSize: 16.sp,
                         color: redColor,
                         fontWeight: FontWeight.w700,
                       ),
@@ -163,11 +166,11 @@ class FoodCart extends StatelessWidget {
                               CustomText(
                                 text: newArrivalProducts.reviewsAvgRating,
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
+                                fontSize: 12.sp,
                               ),
                               CustomText(
                                 text: ' (${newArrivalProducts.reviewsCount})',
-                                fontSize: 13,
+                                fontSize: 12.sp,
                                 color: Colors.black.withOpacity(0.4),
                               ),
                             ],
@@ -192,10 +195,10 @@ class FoodCart extends StatelessWidget {
                         children: [
                           const CustomImage(path: KImages.rProfile, height: 20),
                           Utils.horizontalSpace(6.0),
-                          const CustomText(
+                           CustomText(
                             text: 'Chef’s Place',
                             fontWeight: FontWeight.w500,
-                            fontSize: 13,
+                            fontSize: 12.sp,
                           ),
                         ],
                       ),
@@ -213,10 +216,10 @@ class FoodCart extends StatelessWidget {
                         children: [
                           const CustomImage(path: KImages.location, height: 20),
                           Utils.horizontalSpace(6.0),
-                          const CustomText(
+                           CustomText(
                             text: 'QS Jose,Spain',
                             fontWeight: FontWeight.w400,
-                            fontSize: 13,
+                            fontSize: 12.sp,
                           ),
                         ],
                       ),
