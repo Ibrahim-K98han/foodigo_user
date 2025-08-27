@@ -105,3 +105,12 @@ const dialogCircleGradient = LinearGradient(
   end: Alignment(0, 1),
   colors: [Color(0xFFFFC107), Color(0xFFFD7E14)],
 );
+
+List<BoxShadow> boxShadow =  [
+  BoxShadow(
+      color: Color(0xFF000000).withOpacity(0.1),
+      offset: Offset(0.0, 4.0),
+      blurRadius: 40.0,
+      spreadRadius: 0.0
+  ),
+];

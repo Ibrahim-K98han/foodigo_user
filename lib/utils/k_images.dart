@@ -43,6 +43,7 @@ class KImages {
   static const String faq = 'assets/icons/faq.svg';
   static const String language = 'assets/icons/language.svg';
   static const String offers = 'assets/icons/offers.svg';
+  static const String filterFood = 'assets/icons/filter_food.svg';
 
   /// Payment Icon
   static const String paypal = 'assets/icons/paypal.svg';
@@ -71,6 +72,7 @@ class KImages {
   static const String password = 'assets/images/password.png';
   static const String profile = 'assets/images/profile.png';
   static const String splashBg = 'assets/images/splash_bg.png';
+  static const String notFound = 'assets/images/not_found.png';
 
 
   ///Food Image

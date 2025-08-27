@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:foodigo/presentation/screen/all_restaurant_screen/components/best_selling_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/utils/k_images.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
+import 'package:foodigo/widget/custom_text_style.dart';
 
+import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
+import '../../../../widget/custom_image.dart';
 
 class WishlistScreen extends StatelessWidget {
   const WishlistScreen({super.key});
@@ -31,13 +35,119 @@ class WishlistScreen extends StatelessWidget {
                 ...List.generate(10, (index) {
                   return Padding(
                     padding: Utils.only(bottom: 12.0),
-                    child: const ProductCard(),
+                    child: WishCard(),
                   );
                 })
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class WishCard extends StatelessWidget {
+  const WishCard({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: Utils.symmetric(h: 0.0, v: 0.0),
+      height: 100.0,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6.0), color: whiteColor),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              Container(
+                width: 124.w,
+                height: 86.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4.0),
+                  shape: BoxShape.rectangle,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(3.0),
+                  child: const CustomImage(
+                    path: KImages.foodImage1,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 4,
+                left: 4,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6.0),
+                    color: whiteColor,
+                  ),
+                  child: Padding(
+                    padding: Utils.all(value: 4.0),
+                    child: const Center(
+                        child: CustomImage(path: KImages.loveIcon)),
+                  ),
+                ),
+              )
+            ],
+          ),
+          Flexible(
+            child: Padding(
+              padding: Utils.only(left: 8.0, top: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Flexible(
+                    child: CustomText(
+                      text: 'Chicken',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      maxLine: 2,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const CustomText(
+                        text: '10',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFFE94222),
+                      ),
+                      GestureDetector(
+                        onTap: () {},
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 6.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4.0),
+                              border: Border.all(color: borderColor),
+                            ),
+                            child: Padding(
+                              padding: Utils.symmetric(h: 10.0, v: 6.0),
+                              child: const Center(
+                                  child: CustomText(
+                                text: 'Add to Cart',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              )),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

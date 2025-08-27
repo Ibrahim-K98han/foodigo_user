@@ -20,9 +20,9 @@ class AuthenticationScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: const CustomImage(
+        title:  CustomImage(
           path: KImages.logo,
-          height: 30,
+          height: 30.h,
         ),
       ),
       backgroundColor: scaffoldBackground,

@@ -36,46 +36,47 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: PageRefresh(
-      onRefresh: () async {
-        homeDataCubit.getHomeDataData();
-      },
-      child: BlocConsumer<HomeDataCubit, HomeDataState>(
-        listener: (context, state) {
-          final home = state;
-          if (home is HomeDataError) {
-            if (home.statusCode == 503) {
-              FetchErrorText(text: home.message);
-            }
-          }
+      body: PageRefresh(
+        onRefresh: () async {
+          homeDataCubit.getHomeDataData();
         },
-        builder: (context, state) {
-          final home = state;
-          if (home is HomeDataLoading) {
-            return const LoadingWidget();
-          } else if (home is HomeDataError) {
-            if (home.statusCode == 503 || homeDataCubit.homeModel != null) {
+        child: BlocConsumer<HomeDataCubit, HomeDataState>(
+          listener: (context, state) {
+            final home = state;
+            if (home is HomeDataError) {
+              if (home.statusCode == 503) {
+                FetchErrorText(text: home.message);
+              }
+            }
+          },
+          builder: (context, state) {
+            final home = state;
+            if (home is HomeDataLoading) {
+              return const LoadingWidget();
+            } else if (home is HomeDataError) {
+              if (home.statusCode == 503 || homeDataCubit.homeModel != null) {
+                return LoadedHomeData(
+                  homeModel: homeDataCubit.homeModel!,
+                );
+              } else {
+                return FetchErrorText(text: home.message);
+              }
+            } else if (home is HomeDataLoaded) {
               return LoadedHomeData(
                 homeModel: homeDataCubit.homeModel!,
               );
-            } else {
-              return FetchErrorText(text: home.message);
             }
-          } else if (home is HomeDataLoaded) {
-            return LoadedHomeData(
-              homeModel: homeDataCubit.homeModel!,
-            );
-          }
-          if (homeDataCubit.homeModel != null) {
-            return const LoadedHomeData(
-              homeModel: HomeModel(),
-            );
-          } else {
-            return const FetchErrorText(text: 'Something Went Wrong');
-          }
-        },
+            if (homeDataCubit.homeModel != null) {
+              return const LoadedHomeData(
+                homeModel: HomeModel(),
+              );
+            } else {
+              return const FetchErrorText(text: 'Something Went Wrong');
+            }
+          },
+        ),
       ),
-    ));
+    );
   }
 }
 

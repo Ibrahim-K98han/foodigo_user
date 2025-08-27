@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
@@ -18,7 +18,7 @@ class _AddToCartButtonState extends State<AddToCartButton> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: Utils.symmetric(v: 20.0),
+      padding: Utils.symmetric(h: 0.0, v: 20.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -41,10 +41,10 @@ class _AddToCartButtonState extends State<AddToCartButton> {
             onTap: () {},
             child: Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6.0),
+                  borderRadius: BorderRadius.circular(6.0.r),
                   color: primaryColor),
               child: Padding(
-                padding: Utils.symmetric(h: 45.0, v: 13.0),
+                padding: Utils.symmetric(h: 40.0, v: 13.0),
                 child: Row(
                   children: [
                     const CustomImage(

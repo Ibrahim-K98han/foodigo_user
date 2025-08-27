@@ -108,7 +108,7 @@ class RouteNames {
 
       case RouteNames.allRestaurantScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) =>  AllRestaurantScreen());
+            settings: settings, builder: (_) => AllRestaurantScreen());
 
       case RouteNames.allCategoryScreen:
         return MaterialPageRoute(
@@ -131,9 +131,13 @@ class RouteNames {
             settings: settings, builder: (_) => const EditAddressScreen());
 
       case RouteNames.restaurantProfileScreen:
+        final slug = settings.arguments as String;
         return MaterialPageRoute(
-            settings: settings,
-            builder: (_) => const RestaurantProfileScreen());
+          settings: settings,
+          builder: (_) => RestaurantProfileScreen(
+            slug: slug,
+          ),
+        );
 
       case RouteNames.wishlistScreen:
         return MaterialPageRoute(

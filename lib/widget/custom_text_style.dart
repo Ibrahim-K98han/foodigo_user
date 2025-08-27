@@ -9,7 +9,7 @@ class CustomText extends StatelessWidget {
     super.key,
     required this.text,
     this.fontWeight = FontWeight.w400,
-    this.fontSize = 14.0,
+    this.fontSize = 12,
     this.height = 1.4,
     this.maxLine = 6,
     this.color = blackColor,
