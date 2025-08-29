@@ -47,13 +47,13 @@ class CartModel extends Equatable {
 
   factory CartModel.fromMap(Map<String, dynamic> map) {
     return CartModel(
-      cartItems: map['cartItems'] != null
+      cartItems: map['cart_items'] != null
           ? List<CartItems>.from(
-              (map['cartItems'] as List<int>).map<CartItems?>(
+              (map['cart_items'] as List<dynamic>).map<CartItems?>(
                 (x) => CartItems.fromMap(x as Map<String, dynamic>),
               ),
             )
-          : null,
+          : [],
       subtotal: map['subtotal'] ?? 0,
       cartCount: map['cart_count'] ?? 0,
       totalItems: map['total_items'] ?? 0,

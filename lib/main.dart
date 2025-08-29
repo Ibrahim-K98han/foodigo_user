@@ -15,7 +15,7 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-   // await DInjector;
+  await DInjector.initDB();
   runApp(const MyApp());
 }
 

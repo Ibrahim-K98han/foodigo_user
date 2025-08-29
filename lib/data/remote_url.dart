@@ -9,5 +9,10 @@ class RemoteUrls {
       '${baseUrl}restaurants/$slug';
   static const String getCartData = '${baseUrl}cart';
 
+  static String productDetailsData(int id) => '${baseUrl}products/$id';
+
+  static const String login = '${baseUrl}auth/login';
+  static const String getProfile = '${baseUrl}auth/profile';
+
   static imageUrl(String imageUrl) => rootUrl + imageUrl;
 }

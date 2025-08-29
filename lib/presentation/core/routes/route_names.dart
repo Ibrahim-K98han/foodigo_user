@@ -115,8 +115,13 @@ class RouteNames {
             settings: settings, builder: (_) => const AllCategoryScreen());
 
       case RouteNames.productDetailsScreen:
+        final id = settings.arguments as int;
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const ProductDetailsScreen());
+          settings: settings,
+          builder: (_) => ProductDetailsScreen(
+            id: id,
+          ),
+        );
 
       case RouteNames.orderScreen:
         return MaterialPageRoute(

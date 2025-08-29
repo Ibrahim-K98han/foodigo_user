@@ -1,4 +1,6 @@
+import 'package:dartz/dartz.dart' as featureProduct;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/data/remote_url.dart';
 
@@ -8,6 +10,7 @@ import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_image.dart';
 import '../../../../widget/custom_text_style.dart';
+import '../../product_details/product_details_screen.dart';
 
 class BestSellingProduct extends StatelessWidget {
   BestSellingProduct({super.key, required this.products});
@@ -122,9 +125,42 @@ class ProductCard extends StatelessWidget {
                         color: const Color(0xFFE94222),
                       ),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            showDragHandle: true,
+                            backgroundColor: whiteColor,
+                            constraints: BoxConstraints.loose(
+                              Size(
+                                Utils.mediaQuery(context).width,
+                                Utils.mediaQuery(context).height * 0.9,
+                              ),
+                            ),
+                            isScrollControlled: true,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(Utils.radius(10.0)),
+                                topRight: Radius.circular(Utils.radius(10.0)),
+                              ),
+                            ),
+                            builder: (context) => DraggableScrollableSheet(
+                              initialChildSize: 0.85,
+                              minChildSize: 0.5,
+                              maxChildSize: 0.95,
+                              expand: false,
+                              builder: (context, scrollController) {
+                                return SingleChildScrollView(
+                                  controller: scrollController,
+                                  child: ProductDetailsScreen(
+                                    id: product.id,
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
                         child: Padding(
-                          padding:  Utils.only(right: 6),
+                          padding: Utils.only(right: 6),
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(4.0.r),

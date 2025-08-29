@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../features/ProductDetails/cubit/product_details_cubit.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
@@ -13,13 +17,15 @@ class SelectAddonSection extends StatefulWidget {
 }
 
 class _SelectAddonSectionState extends State<SelectAddonSection> {
-  bool dSmall = false;
-  bool dMedium = false;
-  bool dLarge = false;
-  bool dExtraLarge = false;
+  String? selectedSize;
 
   @override
   Widget build(BuildContext context) {
+    final detailsCubit = context.read<ProductDetailsCubit>();
+
+    final addonData = detailsCubit.featuredProducts?.addonItems != null
+        ? json.decode(detailsCubit.featuredProducts!.addonItems) as List<dynamic>
+        : [];
     return Column(
       children: [
         Container(
@@ -63,50 +69,24 @@ class _SelectAddonSectionState extends State<SelectAddonSection> {
                 Padding(
                   padding: Utils.symmetric(h: 10.0),
                   child: Column(
-                    children: [
-                      SelectAddonWidget(
-                        size: 'Small',
-                        isChecked: dSmall,
+                    children: addonData.map<Widget>((addon) {
+                      return SelectAddonWidget(
+                        size: addon,
+                        isChecked: selectedSize == addon,
                         onTap: (value) {
                           setState(() {
-                            dSmall = value!;
+                            if (value == true) {
+                              selectedSize = addon;
+                            } else {
+                              selectedSize = null;
+                            }
                           });
                         },
-                      ),
-                      Utils.verticalSpace(10.0),
-                      SelectAddonWidget(
-                        size: 'Medium',
-                        isChecked: dMedium,
-                        onTap: (value) {
-                          setState(() {
-                            dMedium = value!;
-                          });
-                        },
-                      ),
-                      Utils.verticalSpace(10.0),
-                      SelectAddonWidget(
-                        size: 'Large',
-                        isChecked: dLarge,
-                        onTap: (value) {
-                          setState(() {
-                            dLarge = value!;
-                          });
-                        },
-                      ),
-                      Utils.verticalSpace(10.0),
-                      SelectAddonWidget(
-                        size: 'Extra Large',
-                        isChecked: dExtraLarge,
-                        onTap: (value) {
-                          setState(() {
-                            dExtraLarge = value!;
-                          });
-                        },
-                      ),
-                      Utils.verticalSpace(10.0),
-                    ],
+                      );
+                    }).toList(),
                   ),
                 ),
+
               ],
             ),
           ),

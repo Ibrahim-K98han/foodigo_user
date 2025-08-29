@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/Cart/cubit/cart_cubit.dart';
+import 'package:foodigo/features/GetProfile/cubit/get_profile_cubit.dart';
+import 'package:http/http.dart';
 
+import '../../../features/HomeData/cubit/home_data_cubit.dart';
 import '../home/home_screen.dart';
 import '../my_cart/my_cart_screen.dart';
 import '../my_order/my_order_screen.dart';
 import '../profile/profile_screen.dart';
 import 'component/bottom_navigation_bar copy.dart';
 import 'component/main_controller.dart';
-
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -28,6 +32,8 @@ class _MainScreenState extends State<MainScreen> {
       const MyOrderScreen(),
       const ProfileScreen(),
     ];
+    context.read<GetProfileCubit>().getProfileData();
+    // context.read<CartCubit>().getCartData();
   }
 
   @override

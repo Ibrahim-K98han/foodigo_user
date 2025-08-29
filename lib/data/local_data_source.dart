@@ -1,3 +1,4 @@
+import 'package:foodigo/features/Login/model/user_response_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/k_strings.dart';
@@ -10,9 +11,9 @@ abstract class LocalDataSources {
 
   Future<bool> cachedOnBoarding();
 
-  // Future<bool> cacheUserResponse(UserResponseModel userResponseModel);
-  //
-  // UserResponseModel getExistingUserInfo();
+  Future<bool> cacheUserResponse(UserResponseModel userResponseModel);
+
+  UserResponseModel getExistingUserInfo();
 
   Future<bool> clearUserResponse();
 }
@@ -37,22 +38,22 @@ class LocalDataSourcesImpl implements LocalDataSources {
     }
   }
 
-  // @override
-  // Future<bool> cacheUserResponse(UserResponseModel userResponseModel) {
-  //   return sharedPreferences.setString(
-  //       KStrings.getExistingUserResponseKey, userResponseModel.toJson());
-  // }
-  //
-  // @override
-  // UserResponseModel getExistingUserInfo() {
-  //   final jsonData =
-  //       sharedPreferences.getString(KStrings.getExistingUserResponseKey);
-  //   if (jsonData != null) {
-  //     return UserResponseModel.fromJson(jsonData);
-  //   } else {
-  //     throw const DatabaseException('Not save users');
-  //   }
-  // }
+  @override
+  Future<bool> cacheUserResponse(UserResponseModel userResponseModel) {
+    return sharedPreferences.setString(
+        KStrings.getExistingUserResponseKey, userResponseModel.toJson());
+  }
+
+  @override
+  UserResponseModel getExistingUserInfo() {
+    final jsonData =
+        sharedPreferences.getString(KStrings.getExistingUserResponseKey);
+    if (jsonData != null) {
+      return UserResponseModel.fromJson(jsonData);
+    } else {
+      throw const DatabaseException('Not save users');
+    }
+  }
 
   @override
   Future<bool> clearUserResponse() {

@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../features/ProductDetails/cubit/product_details_cubit.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
@@ -12,13 +15,17 @@ class SelectSizeSection extends StatefulWidget {
 }
 
 class _SelectSizeSectionState extends State<SelectSizeSection> {
-  bool small = false;
-  bool medium = false;
-  bool large = false;
-  bool extraLarge = false;
+  String? selectedSize;
 
   @override
   Widget build(BuildContext context) {
+    final detailsCubit = context.read<ProductDetailsCubit>();
+
+    final sizeData = detailsCubit.featuredProducts?.size != null
+        ? json.decode(detailsCubit.featuredProducts!.size)
+    as Map<String, dynamic>
+        : {};
+
     return Column(
       children: [
         Container(
@@ -62,48 +69,24 @@ class _SelectSizeSectionState extends State<SelectSizeSection> {
                 Padding(
                   padding: Utils.symmetric(h: 10.0),
                   child: Column(
-                    children: [
-                      SelectSizeWidget(
-                        size: 'Small',
-                        amount: '\$30',
-                        isChecked: small,
+                    children: sizeData.entries.map((entry) {
+                      final sizeName = entry.key;
+                      final price = entry.value.toString();
+                      return SelectSizeWidget(
+                        size: sizeName,
+                        amount: '\$$price',
+                        isChecked: selectedSize == sizeName,
                         onTap: (value) {
                           setState(() {
-                            small = value!;
+                            if (value == true) {
+                              selectedSize = sizeName;
+                            } else {
+                              selectedSize = null;
+                            }
                           });
                         },
-                      ),
-                      SelectSizeWidget(
-                        size: 'Medium',
-                        amount: '\$30',
-                        isChecked: medium,
-                        onTap: (value) {
-                          setState(() {
-                            medium = value!;
-                          });
-                        },
-                      ),
-                      SelectSizeWidget(
-                        size: 'Large',
-                        amount: '\$30',
-                        isChecked: large,
-                        onTap: (value) {
-                          setState(() {
-                            large = value!;
-                          });
-                        },
-                      ),
-                      SelectSizeWidget(
-                        size: 'Extra Large',
-                        amount: '\$30',
-                        isChecked: extraLarge,
-                        onTap: (value) {
-                          setState(() {
-                            extraLarge = value!;
-                          });
-                        },
-                      ),
-                    ],
+                      );
+                    }).toList(),
                   ),
                 ),
               ],
@@ -116,20 +99,20 @@ class _SelectSizeSectionState extends State<SelectSizeSection> {
   }
 }
 
-class SelectSizeWidget extends StatefulWidget {
-  const SelectSizeWidget(
-      {super.key, this.size, this.amount, this.isChecked, this.onTap});
+class SelectSizeWidget extends StatelessWidget {
+  const SelectSizeWidget({
+    super.key,
+    this.size,
+    this.amount,
+    this.isChecked,
+    this.onTap,
+  });
 
   final String? size;
   final String? amount;
   final bool? isChecked;
   final ValueChanged<bool?>? onTap;
 
-  @override
-  State<SelectSizeWidget> createState() => _SelectSizeWidgetState();
-}
-
-class _SelectSizeWidgetState extends State<SelectSizeWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -142,12 +125,12 @@ class _SelectSizeWidgetState extends State<SelectSizeWidget> {
         contentPadding: Utils.symmetric(h: 10.0),
         controlAffinity: ListTileControlAffinity.leading,
         secondary: CustomText(
-          text: widget.amount ?? '',
+          text: amount ?? '',
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
         title: CustomText(
-          text: widget.size ?? '',
+          text: size ?? '',
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
@@ -157,8 +140,8 @@ class _SelectSizeWidgetState extends State<SelectSizeWidget> {
           color: primaryColor,
           width: 2.0,
         ),
-        value: widget.isChecked,
-        onChanged: widget.onTap,
+        value: isChecked,
+        onChanged: onTap,
       ),
     );
   }

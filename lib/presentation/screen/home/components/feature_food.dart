@@ -40,6 +40,40 @@ class FeatureFood extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 14),
                   child: FeatureFoodCart(
                     featuredProducts: featureProduct,
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        showDragHandle: true,
+                        backgroundColor: whiteColor,
+                        constraints: BoxConstraints.loose(
+                          Size(
+                            Utils.mediaQuery(context).width,
+                            Utils.mediaQuery(context).height * 0.9,
+                          ),
+                        ),
+                        isScrollControlled: true,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(Utils.radius(10.0)),
+                            topRight: Radius.circular(Utils.radius(10.0)),
+                          ),
+                        ),
+                        builder: (context) => DraggableScrollableSheet(
+                          initialChildSize: 0.85,
+                          minChildSize: 0.5,
+                          maxChildSize: 0.95,
+                          expand: false,
+                          builder: (context, scrollController) {
+                            return SingleChildScrollView(
+                              controller: scrollController,
+                              child: ProductDetailsScreen(
+                                id: featureProduct.id,
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
                   ),
                 );
               })
@@ -52,47 +86,18 @@ class FeatureFood extends StatelessWidget {
 }
 
 class FeatureFoodCart extends StatelessWidget {
-  const FeatureFoodCart({super.key, required this.featuredProducts});
+  const FeatureFoodCart(
+      {super.key, required this.featuredProducts, this.onTap});
 
   final FeaturedProducts featuredProducts;
+
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     return GestureDetector(
-      onTap: () {
-        // Navigator.pushNamed(context, RouteNames.productDetailsScreen);
-        showModalBottomSheet(
-          context: context,
-          showDragHandle: true,
-          backgroundColor: whiteColor,
-          constraints: BoxConstraints.loose(
-            Size(
-              Utils.mediaQuery(context).width,
-              Utils.mediaQuery(context).height * 0.9,
-            ),
-          ),
-          isScrollControlled: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(Utils.radius(10.0)),
-              topRight: Radius.circular(Utils.radius(10.0)),
-            ),
-          ),
-          builder: (context) => DraggableScrollableSheet(
-            initialChildSize: 0.85,
-            minChildSize: 0.5,
-            maxChildSize: 0.95,
-            expand: false,
-            builder: (context, scrollController) {
-              return SingleChildScrollView(
-                controller: scrollController,
-                child: const ProductDetailsScreen(),
-              );
-            },
-          ),
-        );
-      },
+      onTap: onTap,
       child: Container(
         height: size.height * 0.34.h,
         width: 240.0,
@@ -211,7 +216,7 @@ class FeatureFoodCart extends StatelessWidget {
                       children: [
                         const CustomImage(path: KImages.rProfile, height: 20),
                         Utils.horizontalSpace(6.0),
-                         CustomText(
+                        CustomText(
                           text: 'Chef’s Place',
                           fontWeight: FontWeight.w500,
                           fontSize: 12.sp,
