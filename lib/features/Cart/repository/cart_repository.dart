@@ -6,7 +6,7 @@ import 'package:foodigo/features/Cart/model/cart_model.dart';
 import '../remote/cart_remote_data_source.dart';
 
 abstract class CartRepository {
-  Future<Either<Failure, CartModel>> getCartData();
+  Future<Either<Failure, CartModel>> getCartData(String token);
 }
 
 class CartRepositoryImpl implements CartRepository {
@@ -17,9 +17,9 @@ class CartRepositoryImpl implements CartRepository {
   });
 
   @override
-  Future<Either<Failure, CartModel>> getCartData() async {
+  Future<Either<Failure, CartModel>> getCartData(String token) async {
     try {
-      final result = await remoteDataSource.getCart();
+      final result = await remoteDataSource.getCart(token);
       final data = CartModel.fromMap(result['data']);
       // final res = result['data']['restaurants'] as List;
       // final data =

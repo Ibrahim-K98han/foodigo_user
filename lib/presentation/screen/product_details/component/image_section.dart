@@ -7,7 +7,9 @@ import '../../../../utils/utils.dart';
 import '../../../../widget/custom_image.dart';
 
 class ImageSection extends StatefulWidget {
-  const ImageSection({super.key});
+  final String image;
+
+  ImageSection({super.key, required this.image});
 
   @override
   State<ImageSection> createState() => _ImageSectionState();
@@ -18,8 +20,8 @@ class _ImageSectionState extends State<ImageSection> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        const CustomImage(
-          path: KImages.foodImage1,
+        CustomImage(
+          path: widget.image,
           fit: BoxFit.cover,
           height: 260,
           width: double.infinity,

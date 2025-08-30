@@ -21,6 +21,7 @@ class FeaturedProducts extends Equatable {
   final String name;
   final String shortDescription;
   final String size;
+
   const FeaturedProducts({
     required this.id,
     required this.slug,
@@ -103,22 +104,33 @@ class FeaturedProducts extends Equatable {
     };
   }
 
+  // map['price'] != null ? double.parse(map['price'].toString()) : 0.0,
   factory FeaturedProducts.fromMap(Map<String, dynamic> map) {
     return FeaturedProducts(
       id: map['id'] ?? 0,
       slug: map['slug'] ?? '',
       image: map['image'] ?? '',
-      categoryId: map['category_id'] ?? 0,
-      restaurantId: map['restaurant_id'] ?? 0,
-      price: map['price'] ?? 0,
-      offerPrice: map['offer_price'] ?? 0,
+      categoryId: map['category_id'] is int
+          ? map['category_id'] as int
+          : int.tryParse(map['category_id'].toString()) ?? 0,
+      restaurantId: map['restaurant_id'] is int
+          ? map['restaurant_id'] as int
+          : int.tryParse(map['restaurant_id'].toString()) ?? 0,
+      price: map['price'] is int
+          ? map['price'] as int
+          : int.tryParse(map['price'].toString()) ?? 0,
+      offerPrice: map['offer_price'] is int
+          ? map['offer_price'] as int
+          : int.tryParse(map['offer_price'].toString()) ?? 0,
       status: map['status'] ?? '',
       addonItems: map['addon_items'] ?? '',
       createdAt: map['created_at'] ?? '',
       updatedAt: map['updated_at'] ?? '',
       isFeatured: map['is_featured'] ?? '',
       reviewsAvgRating: map['reviews_avg_rating'] ?? '',
-      reviewsCount: map['reviews_count'] ?? 0,
+      reviewsCount: map['reviews_count'] is int
+          ? map['reviews_count'] as int
+          : int.tryParse(map['reviews_count'].toString()) ?? 0,
       name: map['name'] ?? '',
       shortDescription: map['short_description'] ?? '',
       size: map['size'] ?? '',
@@ -127,7 +139,8 @@ class FeaturedProducts extends Equatable {
 
   String toJson() => json.encode(toMap());
 
-  factory FeaturedProducts.fromJson(String source) => FeaturedProducts.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory FeaturedProducts.fromJson(String source) =>
+      FeaturedProducts.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool get stringify => true;

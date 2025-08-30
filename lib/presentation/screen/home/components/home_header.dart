@@ -1,6 +1,10 @@
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/GetProfile/cubit/get_profile_cubit.dart';
+import 'package:foodigo/features/Login/bloc/login_bloc.dart';
 
+import '../../../../data/remote_url.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
@@ -8,11 +12,40 @@ import '../../../../widget/custom_image.dart';
 import '../../../../widget/custom_text_style.dart';
 import '../../../core/routes/route_names.dart';
 
-class HomeHeader extends StatelessWidget {
-  const HomeHeader({super.key});
+class HomeHeader extends StatefulWidget {
+  const HomeHeader({
+    super.key,
+  });
+
+  @override
+  State<HomeHeader> createState() => _HomeHeaderState();
+}
+
+class _HomeHeaderState extends State<HomeHeader> {
+  late GetProfileCubit pCubit;
+  late LoginBloc loginBloc;
+  late String image;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _initState();
+  }
+
+  _initState() {
+    pCubit = context.read<GetProfileCubit>();
+    loginBloc = context.read<LoginBloc>();
+    if (pCubit.user?.image.isNotEmpty ?? false) {
+      image = RemoteUrls.imageUrl(pCubit.user!.image);
+    } else {
+      image = KImages.profile;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    print("name is ${loginBloc.userInformation!.user!.name}");
     final size = MediaQuery.sizeOf(context);
     return SizedBox(
       height: Utils.vSize(size.height * 0.20),
@@ -45,8 +78,8 @@ class HomeHeader extends StatelessWidget {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(50.0),
-                            child: const CustomImage(
-                              path: KImages.userImage,
+                            child: CustomImage(
+                              path: image,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -58,14 +91,14 @@ class HomeHeader extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const CustomText(
-                              text: 'Sam Richard',
+                            CustomText(
+                              text: loginBloc.userInformation!.user!.name,
                               color: blackColor,
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
                             CustomText(
-                              text: '271, San Jose, California ',
+                              text: loginBloc.userInformation!.user!.address,
                               color: blackColor.withOpacity(0.8),
                               fontSize: 13,
                               fontFamily: regular400,

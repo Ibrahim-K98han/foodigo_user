@@ -2,7 +2,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/HomeData/home_data_model.dart';
+import 'package:foodigo/features/Login/model/user_response_model.dart';
 import 'package:foodigo/widget/page_refresh.dart';
+import '../../../features/GetProfile/cubit/get_profile_cubit.dart';
 import '../../../features/HomeData/cubit/home_data_cubit.dart';
 import '../../../features/HomeData/cubit/home_data_state.dart';
 import '../../../utils/k_images.dart';
@@ -25,6 +27,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late HomeDataCubit homeDataCubit;
+  late UserResponseModel userResponseModel;
 
   @override
   initState() {
@@ -67,8 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }
             if (homeDataCubit.homeModel != null) {
-              return const LoadedHomeData(
-                homeModel: HomeModel(),
+              return LoadedHomeData(
+                homeModel: homeDataCubit.homeModel!,
               );
             } else {
               return const FetchErrorText(text: 'Something Went Wrong');
@@ -81,7 +84,10 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class LoadedHomeData extends StatelessWidget {
-  const LoadedHomeData({super.key, required this.homeModel});
+  const LoadedHomeData({
+    super.key,
+    required this.homeModel,
+  });
 
   final HomeModel homeModel;
 
@@ -100,7 +106,7 @@ class LoadedHomeData extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const HomeHeader(),
+          HomeHeader(),
           Utils.verticalSpace(30.0),
           Expanded(
             child: SingleChildScrollView(

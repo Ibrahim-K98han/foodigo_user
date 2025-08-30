@@ -3,7 +3,7 @@ import 'package:foodigo/data/remote_url.dart';
 import 'package:http/http.dart' as http;
 
 abstract class CartRemoteDataSource {
-  Future getCart();
+  Future getCart(String token);
 }
 
 class CartRemoteDataSourceImpl implements CartRemoteDataSource {
@@ -11,17 +11,17 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
 
   CartRemoteDataSourceImpl({required this.client});
 
-  final contentHeader = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest',
-  };
+  authHeader(String token) => {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+        // 'Accept': "x-www-form-urlencoded/application"
+      };
 
   @override
-  Future getCart() async {
+  Future getCart(String token) async {
     final uri = Uri.parse(RemoteUrls.getCartData);
     print('Cart====$uri');
-    final clientMethod = client.get(uri, headers: contentHeader);
+    final clientMethod = client.get(uri, headers: authHeader(token));
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
     return responseJsonBody;

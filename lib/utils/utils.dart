@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,6 +30,11 @@ class Utils {
     return '\$${price.toStringAsFixed(0)}';
   }
 
+  static Uri tokenWithCode(String url, String token, String langCode) {
+    return Uri.parse('$url?')
+        .replace(queryParameters: {'token': token, 'lang_code': langCode});
+  }
+
   static String formatPriceIcon(BuildContext context, var price) {
     // final currency =
     //     context.read<AppSettingCubit>().settingModel!.setting.currencyIcon;
@@ -50,8 +56,6 @@ class Utils {
     }
     return null;
   }
-
-
 
   static Future<String?> pickSingleFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -84,6 +88,23 @@ class Utils {
     return [];
   }
 
+  static void failureSnackBar(BuildContext context, String message) {
+    final snackBar = SnackBar(
+      /// need to set following properties for best effect of awesome_snackbar_content
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Oh Hey!!',
+        message: message,
+        contentType: ContentType.failure,
+      ),
+    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
+
   static Widget verticalSpace(double size) {
     return SizedBox(height: size.h);
   }
@@ -102,7 +123,8 @@ class Utils {
 
   static EdgeInsets symmetric({double h = 20.0, v = 0.0}) {
     return EdgeInsets.symmetric(
-        horizontal: Utils.hPadding(size: h.h), vertical: Utils.vPadding(size: v));
+        horizontal: Utils.hPadding(size: h.h),
+        vertical: Utils.vPadding(size: v));
   }
 
   static double radius(double radius) {
@@ -376,6 +398,7 @@ class InfoLabel extends StatelessWidget {
     this.label,
     this.text,
   });
+
   final String? label;
   final String? text;
 

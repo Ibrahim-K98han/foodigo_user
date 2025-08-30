@@ -201,12 +201,14 @@ class Restaurants extends Equatable {
       coverImage: map['cover_image'] ?? '',
       restaurantName: map['restaurant_name'] ?? '',
       slug: map['slug'] ?? '',
-      cityId: map['city_id'] ?? 0,
+      cityId: map['city_id'] is int
+          ? map['city_id'] as int
+          : int.tryParse(map['city_id'].toString()) ?? 0,
       cuisines: map['cuisines'] ?? '',
       whatsapp: map['whatsapp'] ?? '',
       address: map['address'] ?? '',
-      latitude: map['latitude'] ?? 0.0,
-      longitude: map['longitude'] ?? 0.0,
+      latitude: map['latitude'] is double ? map['latitude'] as double : double.tryParse(map['latitude'].toString()) ?? 0,
+      longitude: map['longitude'] is double ? map['longitude'] as double : double.tryParse(map['longitude'].toString()) ?? 0,
       maxDeliveryDistance: map['max_delivery_distance'] ?? '',
       ownerName: map['owner_name'] ?? '',
       ownerEmail: map['owner_email'] ?? '',
@@ -228,9 +230,13 @@ class Restaurants extends Equatable {
       forgetPasswordToken: map['forget_password_token'] ?? '',
       createdAt: map['created_at'] ?? '',
       updatedAt: map['updated_at'] ?? '',
-      isTrusted: map['is_trusted'] ?? 0,
+      isTrusted: map['is_trusted'] is int
+          ? map['is_trusted'] as int
+          : int.tryParse(map['is_trusted'].toString()) ?? 0,
       reviewsAvgRating: map['reviews_avg_rating'] ?? '',
-      reviewsCount: map['reviews_count'] ?? 0,
+      reviewsCount: map['reviews_count'] is int
+          ? map['reviews_count'] as int
+          : int.tryParse(map['reviews_count'].toString()) ?? 0,
     );
   }
 

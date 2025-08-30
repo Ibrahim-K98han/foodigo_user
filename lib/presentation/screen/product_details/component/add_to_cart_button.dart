@@ -8,7 +8,17 @@ import '../../../../widget/custom_image.dart';
 import '../../../../widget/custom_text_style.dart';
 
 class AddToCartButton extends StatefulWidget {
-  const AddToCartButton({super.key});
+  const AddToCartButton(
+      {super.key,
+      this.incrementBtn,
+      this.decrementBtn,
+      this.addToCartBtn,
+      this.text});
+
+  final VoidCallback? incrementBtn;
+  final VoidCallback? decrementBtn;
+  final VoidCallback? addToCartBtn;
+  final String? text;
 
   @override
   State<AddToCartButton> createState() => _AddToCartButtonState();
@@ -24,21 +34,25 @@ class _AddToCartButtonState extends State<AddToCartButton> {
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.remove,
+              GestureDetector(
+                onTap: widget.decrementBtn,
+                child: const Icon(
+                  Icons.remove,
+                ),
               ),
               Utils.horizontalSpace(6.0),
-              const CustomText(
-                text: '2',
+              CustomText(
+                text: widget.text ?? '',
                 fontWeight: FontWeight.w500,
                 fontSize: 16,
               ),
               Utils.horizontalSpace(6.0),
-              const Icon(Icons.add),
+              GestureDetector(
+                  onTap: widget.incrementBtn, child: const Icon(Icons.add)),
             ],
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: widget.addToCartBtn,
             child: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(6.0.r),

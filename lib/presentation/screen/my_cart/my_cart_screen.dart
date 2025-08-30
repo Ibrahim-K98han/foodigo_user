@@ -71,41 +71,25 @@ class _MyCartScreenState extends State<MyCartScreen> {
           if (state is CartLoading) {
             return const LoadingWidget();
           } else if (state is CartError) {
-            return FetchErrorText(text: state.message);
+            if (state.statusCode == 503 || cartCubit.cartModel != null) {
+              return CartDataLoaded(
+                cartModel: cartCubit.cartModel!,
+              );
+            } else {
+              return FetchErrorText(text: state.message);
+            }
           } else if (state is CartLoaded) {
-            final cart = state.cartModel;
-            return ListView(
-              children: [
-                Container(
-                  padding: Utils.symmetric(),
-                  decoration: const BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x0A000000),
-                        blurRadius: 40,
-                        offset: Offset(0, 2),
-                        spreadRadius: 10,
-                      )
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      ...List.generate(cart.cartItems!.length, (index) {
-                        final cartItems = cart.cartItems![index];
-                        return Padding(
-                          padding: Utils.only(bottom: 12.0),
-                          child: CheckoutCart(
-                            cartItem: cartItems,
-                          ),
-                        );
-                      })
-                    ],
-                  ),
-                ),
-              ],
+            return CartDataLoaded(
+              cartModel: cartCubit.cartModel!,
             );
           }
-          return const Center(child: Text("Something went wrong"));
+          if (cartCubit.cartModel != null) {
+            return CartDataLoaded(
+              cartModel: cartCubit.cartModel!,
+            );
+          } else {
+            return const FetchErrorText(text: 'Something Went Wrong');
+          }
         },
       ),
       bottomNavigationBar: Padding(
@@ -116,6 +100,47 @@ class _MyCartScreenState extends State<MyCartScreen> {
               Navigator.pushNamed(context, RouteNames.orderScreen);
             }),
       ),
+    );
+  }
+}
+
+class CartDataLoaded extends StatelessWidget {
+  const CartDataLoaded({super.key, required this.cartModel});
+
+  final CartModel cartModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+        Container(
+          padding: Utils.symmetric(),
+          decoration: const BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Color(0x0A000000),
+                blurRadius: 40,
+                offset: Offset(0, 2),
+                spreadRadius: 10,
+              )
+            ],
+          ),
+          child: (cartModel.cartItems != null &&
+                  cartModel.cartItems!.isNotEmpty)
+              ? Column(
+                  children: List.generate(cartModel.cartItems!.length, (index) {
+                    final cartItem = cartModel.cartItems![index];
+                    return Padding(
+                      padding: Utils.only(bottom: 12.0),
+                      child: CheckoutCart(cartItem: cartItem),
+                    );
+                  }),
+                )
+              : const Center(
+                  child: CustomImage(path: KImages.cartNotFound),
+                ),
+        ),
+      ],
     );
   }
 }
@@ -148,7 +173,7 @@ class CheckoutCart extends StatelessWidget {
             ),
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
-                child:  CustomImage(
+                child: CustomImage(
                   path: RemoteUrls.imageUrl(cartItem.product.image),
                   fit: BoxFit.cover,
                 )),
@@ -160,9 +185,9 @@ class CheckoutCart extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Flexible(
+                  Flexible(
                     child: CustomText(
-                      text: 'Chicken Shawarma Special Thai Fried and ',
+                      text: cartItem.product.name,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                       maxLine: 2,
@@ -171,8 +196,8 @@ class CheckoutCart extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const CustomText(
-                        text: '\$35.0',
+                      CustomText(
+                        text: Utils.formatPrice(context, cartItem.sizePrice),
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFFE94222),

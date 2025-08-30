@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/ProductDetails/cubit/product_details_cubit.dart';
 
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
@@ -17,15 +19,16 @@ class AmountNameRatingSection extends StatefulWidget {
 class _AmountNameRatingSectionState extends State<AmountNameRatingSection> {
   @override
   Widget build(BuildContext context) {
+    final detailsCubit = context.read<ProductDetailsCubit>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          // Add space between price and rating
           children: [
-            const CustomText(
-              text: "\$25.00",
+            CustomText(
+              text: Utils.formatPrice(
+                  context, detailsCubit.featuredProducts!.price),
               fontSize: 18,
               color: redColor,
               fontWeight: FontWeight.bold,
@@ -36,13 +39,14 @@ class _AmountNameRatingSectionState extends State<AmountNameRatingSection> {
                 Utils.horizontalSpace(6.0),
                 Row(
                   children: [
-                    const CustomText(
-                      text: '4.9 ',
+                    CustomText(
+                      text: detailsCubit.featuredProducts!.reviewsAvgRating,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                     ),
                     CustomText(
-                      text: '(5k+)',
+                      text:
+                          ' (${detailsCubit.featuredProducts!.reviewsCount}+)',
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                       color: blackColor.withOpacity(0.4),
@@ -54,18 +58,15 @@ class _AmountNameRatingSectionState extends State<AmountNameRatingSection> {
           ],
         ),
         Utils.verticalSpace(4.0),
-        const CustomText(
-          text: 'Sandwiches Strawberry',
+        CustomText(
+          text: detailsCubit.featuredProducts!.name,
           fontSize: 18,
           fontWeight: FontWeight.w600,
           maxLine: 1,
         ),
         Utils.verticalSpace(6.0),
-        const CustomText(
-          text:
-          'Strawberry sandwich" is a delightful treat, particularly popular in Japan, where its often referred to as a "fruit sando." Here  a breakdown of what it typically includes:',
-          fontSize: 13,
-          fontWeight: FontWeight.w400,
+        CustomText(
+          text: detailsCubit.featuredProducts!.shortDescription,
           color: Color(0xFF475569),
         ),
         Utils.verticalSpace(10.0),
