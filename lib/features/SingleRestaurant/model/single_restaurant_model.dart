@@ -35,9 +35,9 @@ class RestaurantDetailsModel extends Equatable {
       restaurant: Restaurants.fromMap(map['restaurant'] ?? {}),
       categories: map['categories'] != null
           ? List<Categories>.from(
-        (map['categories'] as List<dynamic>)
-            .map((x) => Categories.fromMap(x as Map<String, dynamic>)),
-      )
+              (map['categories'] as List<dynamic>)
+                  .map((x) => Categories.fromMap(x as Map<String, dynamic>)),
+            )
           : [],
     );
   }
@@ -96,7 +96,7 @@ class Categories extends Equatable {
       updatedAt: updatedAt ?? this.updatedAt,
       icon: icon ?? this.icon,
       filteredProductsCount:
-      filteredProductsCount ?? this.filteredProductsCount,
+          filteredProductsCount ?? this.filteredProductsCount,
       name: name ?? this.name,
       products: products ?? this.products,
     );
@@ -124,13 +124,15 @@ class Categories extends Equatable {
       createdAt: map['created_at'] ?? '',
       updatedAt: map['updated_at'] ?? '',
       icon: map['icon'] ?? '',
-      filteredProductsCount: map['filtered_products_count'] ?? 0,
+      filteredProductsCount: map['filtered_products_count'] is int
+          ? map['filtered_products_count'] as int
+          : int.tryParse(map['filtered_products_count'].toString()) ?? 0,
       name: map['name'] ?? '',
       products: map['products'] != null
           ? List<Products>.from(
-        (map['products'] as List<dynamic>)
-            .map((x) => Products.fromMap(x as Map<String, dynamic>)),
-      )
+              (map['products'] as List<dynamic>)
+                  .map((x) => Products.fromMap(x as Map<String, dynamic>)),
+            )
           : [],
     );
   }
@@ -145,16 +147,16 @@ class Categories extends Equatable {
 
   @override
   List<Object> get props => [
-    id,
-    slug,
-    status,
-    createdAt,
-    updatedAt,
-    icon,
-    filteredProductsCount,
-    name,
-    products,
-  ];
+        id,
+        slug,
+        status,
+        createdAt,
+        updatedAt,
+        icon,
+        filteredProductsCount,
+        name,
+        products,
+      ];
 }
 
 class Products extends Equatable {
@@ -263,17 +265,27 @@ class Products extends Equatable {
       id: map['id'] ?? 0,
       slug: map['slug'] ?? '',
       image: map['image'] ?? '',
-      categoryId: map['category_id'] ?? 0,
-      restaurantId: map['restaurant_id'] ?? 0,
-      price: map['price'] ?? 0,
-      offerPrice: map['offer_price'] ?? 0,
+      categoryId: map['category_id'] is int
+          ? map['category_id'] as int
+          : int.tryParse(map['category_id'].toString()) ?? 0,
+      restaurantId: map['restaurant_id'] is int
+          ? map['restaurant_id'] as int
+          : int.tryParse(map['restaurant_id'].toString()) ?? 0,
+      price: map['price'] is int
+          ? map['price'] as int
+          : int.tryParse(map['price'].toString()) ?? 0,
+      offerPrice: map['offer_price'] is int
+          ? map['offer_price'] as int
+          : int.tryParse(map['offer_price'].toString()) ?? 0,
       status: map['status'] ?? '',
       addonItems: map['addon_items'] ?? '',
       createdAt: map['created_at'] ?? '',
       updatedAt: map['updated_at'] ?? '',
       isFeatured: map['is_featured'] ?? '',
       reviewsAvgRating: map['reviews_avg_rating'] ?? '',
-      reviewsCount: map['reviews_count'] ?? 0,
+      reviewsCount: map['reviews_count'] is int
+          ? map['reviews_count'] as int
+          : int.tryParse(map['reviews_count'].toString()) ?? 0,
       name: map['name'] ?? '',
       shortDescription: map['short_description'] ?? '',
       size: map['size'] ?? '',
@@ -290,22 +302,22 @@ class Products extends Equatable {
 
   @override
   List<Object> get props => [
-    id,
-    slug,
-    image,
-    categoryId,
-    restaurantId,
-    price,
-    offerPrice,
-    status,
-    addonItems,
-    createdAt,
-    updatedAt,
-    isFeatured,
-    reviewsAvgRating,
-    reviewsCount,
-    name,
-    shortDescription,
-    size,
-  ];
+        id,
+        slug,
+        image,
+        categoryId,
+        restaurantId,
+        price,
+        offerPrice,
+        status,
+        addonItems,
+        createdAt,
+        updatedAt,
+        isFeatured,
+        reviewsAvgRating,
+        reviewsCount,
+        name,
+        shortDescription,
+        size,
+      ];
 }

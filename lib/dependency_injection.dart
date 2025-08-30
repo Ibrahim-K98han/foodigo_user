@@ -14,6 +14,12 @@ import 'package:foodigo/features/ProductDetails/repository/product_details_repos
 import 'package:foodigo/features/SingleRestaurant/cubit/single_restaurant_cubit.dart';
 import 'package:foodigo/features/SingleRestaurant/remote/single_restaurant_remote_data_source.dart';
 import 'package:foodigo/features/SingleRestaurant/repository/single_restaurant_repository.dart';
+import 'package:foodigo/features/add_to_cart/cubit/add_car_cubit.dart';
+import 'package:foodigo/features/add_to_cart/remote/add_cart_remote_data_source.dart';
+import 'package:foodigo/features/add_to_cart/repository/add_cart_repository.dart';
+import 'package:foodigo/features/address/cubit/get_address_cubit.dart';
+import 'package:foodigo/features/address/remote/get_address_remote_data_source.dart';
+import 'package:foodigo/features/address/repository/get_address_repository.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/local_data_source.dart';
@@ -114,6 +120,26 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<AddCartRemoteDataSource>(
+      create: (context) => AddCartRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<AddCartRepository>(
+      create: (context) => AddCartRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<GetAddressRemoteDataSource>(
+      create: (context) => GetAddressRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<GetAddressRepository>(
+      create: (context) => GetAddressRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -148,6 +174,18 @@ class DInjector {
     ),
     BlocProvider<CartCubit>(
       create: (context) => CartCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<AddCartCubit>(
+      create: (context) => AddCartCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<GetAddressCubit>(
+      create: (context) => GetAddressCubit(
         repository: context.read(),
         loginBloc: context.read(),
       ),

@@ -84,7 +84,6 @@ class _MyCartScreenState extends State<MyCartScreen> {
             );
           }
           if (cartCubit.cartModel != null) {
-
             return CartDataLoaded(
               cartModel: cartCubit.cartModel!,
             );

@@ -4,9 +4,11 @@ import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/HomeData/feature_product_model.dart';
 import 'package:foodigo/features/ProductDetails/cubit/product_details_cubit.dart';
 import 'package:foodigo/features/ProductDetails/cubit/product_details_state.dart';
+import 'package:foodigo/features/add_to_cart/cubit/add_car_cubit.dart';
 import 'package:foodigo/widget/fetch_error_text.dart';
 import 'package:foodigo/widget/loading_widget.dart';
 
+import '../../../features/add_to_cart/model/add_cart_state_model.dart';
 import '../../../utils/utils.dart';
 import 'component/add_to_cart_button.dart';
 import 'component/amount_name_rating_section.dart';
@@ -60,32 +62,46 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 }
 
 class ProductDetailData extends StatelessWidget {
-  ProductDetailData({super.key, required this.featuredProducts});
+  const ProductDetailData({super.key, required this.featuredProducts});
 
   final FeaturedProducts featuredProducts;
 
   @override
   Widget build(BuildContext context) {
+    final addCart = context.read<AddCartCubit>();
     return Column(
       children: [
         ///=================== Product Details ====================///
         ImageSection(image: RemoteUrls.imageUrl(featuredProducts.image)),
         Padding(
           padding: Utils.symmetric(v: 10.0),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ///================ Product Amount Name And Rating ===========///
-              AmountNameRatingSection(),
+              const AmountNameRatingSection(),
 
               ///================ Select Product Size Dropdown ==============///
-              SelectSizeSection(),
+              const SelectSizeSection(),
 
               ///=============== Select Addon Dropdown ======================///
-              SelectAddonSection(),
+              Utils.verticalSpace(10),
+              const SelectAddonSection(),
 
               ///=============== Add To Cart Button ========================///
-              AddToCartButton(),
+              BlocBuilder<AddCartCubit, AddCartStateModel>(
+                builder: (context, state) {
+                  return AddToCartButton(
+                    text: state.qty.toString(),
+                    decrementBtn: () => addCart.decrementQty(),
+                    incrementBtn: () => addCart.incrementQty(),
+                    addToCartBtn: () {
+                      addCart.addCart(featuredProducts.id);
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              ),
             ],
           ),
         ),

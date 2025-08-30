@@ -53,7 +53,7 @@ class CartModel extends Equatable {
                 (x) => CartItems.fromMap(x as Map<String, dynamic>),
               ),
             )
-          : [],
+          : null,
       subtotal: map['subtotal'] ?? 0,
       cartCount: map['cart_count'] ?? 0,
       totalItems: map['total_items'] ?? 0,
@@ -160,10 +160,10 @@ class CartItems extends Equatable {
   factory CartItems.fromMap(Map<String, dynamic> map) {
     return CartItems(
       cartId: map['cart_id'] ?? 0,
-      productId: map['product_id'] ?? 0,
+      productId: map['product_id'] is int ? map['product_id'] as int : int.tryParse(map['product_id'].toString()) ?? 0,
       size: map['size'] ?? '',
       sizePrice: map['size_price'] ?? '',
-      qty: map['qty'] ?? 0,
+      qty: map['qty'] is int ? map['qty'] as int : int.tryParse(map['qty'].toString()) ?? 0,
       addons: Addons.fromMap(map['addons'] as Map<String, dynamic>),
       addonPrice: map['addon_price'] ?? '',
       totalPrice: map['total_price'] ?? '',
@@ -255,7 +255,7 @@ class Product extends Equatable {
   final String shortDescription;
   final Restaurants? restaurant;
   final Categories? category;
-  final String averageRating;
+  // final String averageRating;
   final int totalReviews;
 
   const Product({
@@ -266,7 +266,7 @@ class Product extends Equatable {
     required this.shortDescription,
     this.restaurant,
     this.category,
-    required this.averageRating,
+    // required this.averageRating,
     required this.totalReviews,
   });
 
@@ -289,7 +289,7 @@ class Product extends Equatable {
       shortDescription: shortDescription ?? this.shortDescription,
       restaurant: restaurant ?? this.restaurant,
       category: category ?? this.category,
-      averageRating: averageRating ?? this.averageRating,
+      // averageRating: averageRating ?? this.averageRating,
       totalReviews: totalReviews ?? this.totalReviews,
     );
   }
@@ -303,7 +303,7 @@ class Product extends Equatable {
       'short_description': shortDescription,
       'restaurant': restaurant?.toMap(),
       'category': category?.toMap(),
-      'average_rating': averageRating,
+      // 'average_rating': averageRating,
       'total_reviews': totalReviews,
     };
   }
@@ -321,8 +321,8 @@ class Product extends Equatable {
       category: map['category'] != null
           ? Categories.fromMap(map['category'] as Map<String, dynamic>)
           : null,
-      averageRating: map['average_rating'] ?? '',
-      totalReviews: map['total_reviews'] ?? 0,
+      // averageRating: map['average_rating'] ?? '',
+      totalReviews: map['total_reviews'] is int ? map['total_reviews'] as int : int.tryParse(map['total_reviews'].toString()) ?? 0,
     );
   }
 
@@ -344,7 +344,7 @@ class Product extends Equatable {
       shortDescription,
       restaurant!,
       category!,
-      averageRating,
+      // averageRating,
       totalReviews,
     ];
   }

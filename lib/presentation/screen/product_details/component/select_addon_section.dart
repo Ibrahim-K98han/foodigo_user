@@ -1,10 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import '../../../../features/ProductDetails/cubit/product_details_cubit.dart';
+import '../../../../features/add_to_cart/cubit/add_car_cubit.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
@@ -17,15 +16,19 @@ class SelectAddonSection extends StatefulWidget {
 }
 
 class _SelectAddonSectionState extends State<SelectAddonSection> {
-  String? selectedSize;
+  List<int> selectedAddons = [];
 
   @override
   Widget build(BuildContext context) {
     final detailsCubit = context.read<ProductDetailsCubit>();
+    final addCartCubit = context.read<AddCartCubit>();
 
     final addonData = detailsCubit.featuredProducts?.addonItems != null
-        ? json.decode(detailsCubit.featuredProducts!.addonItems) as List<dynamic>
-        : [];
+        ? (json.decode(detailsCubit.featuredProducts!.addonItems)
+                as List<dynamic>)
+            .map((e) => int.parse(e.toString()))
+            .toList()
+        : <int>[];
     return Column(
       children: [
         Container(
@@ -36,17 +39,16 @@ class _SelectAddonSectionState extends State<SelectAddonSection> {
             borderRadius: Utils.borderRadius(),
           ),
           child: Theme(
-            data: Theme.of(context).copyWith(dividerColor: transparent),
+            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
             child: ExpansionTile(
               initiallyExpanded: false,
               iconColor: blackColor,
               title: Row(
                 children: [
                   const CustomText(
-                    text: "Select Addon",
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
+                      text: "Select Addon",
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16),
                   Padding(
                     padding: const EdgeInsets.only(left: 10),
                     child: Container(
@@ -57,129 +59,81 @@ class _SelectAddonSectionState extends State<SelectAddonSection> {
                         borderRadius: BorderRadius.circular(50.r),
                       ),
                       child: const CustomText(
-                        text: 'Optional',
-                        color: redColor,
-                        fontSize: 12,
-                      ),
+                          text: 'Optional', color: redColor, fontSize: 12),
                     ),
-                  )
+                  ),
                 ],
               ),
               children: [
                 Padding(
                   padding: Utils.symmetric(h: 10.0),
                   child: Column(
-                    children: addonData.map<Widget>((addon) {
-                      return SelectAddonWidget(
-                        size: addon,
-                        isChecked: selectedSize == addon,
-                        onTap: (value) {
-                          setState(() {
-                            if (value == true) {
-                              selectedSize = addon;
-                            } else {
-                              selectedSize = null;
-                            }
-                          });
-                        },
+                    children: addonData.map((addonId) {
+                      final isChecked = selectedAddons.contains(addonId);
+                      final currentQty =
+                          addCartCubit.state.addonsQty['$addonId'] ?? 1;
+
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: CheckboxListTile(
+                              title: Text('Addon $addonId'),
+                              value: isChecked,
+                              activeColor: primaryColor,
+                              onChanged: (val) {
+                                setState(() {
+                                  if (val == true) {
+                                    selectedAddons.add(addonId);
+                                  } else {
+                                    selectedAddons.remove(addonId);
+                                  }
+                                  // Update selected addons in Cubit
+                                  addCartCubit.selectAddons(selectedAddons);
+                                });
+                              },
+                              controlAffinity: ListTileControlAffinity.leading,
+                            ),
+                          ),
+
+                          ///================ Increment/Decrement Buttons =================///
+                          if (isChecked)
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.remove_circle_outline,color: primaryColor,),
+                                  onPressed: () {
+                                    if (currentQty > 1) {
+                                      final updatedQty = Map<String, int>.from(
+                                          addCartCubit.state.addonsQty);
+                                      updatedQty['$addonId'] = currentQty - 1;
+                                      addCartCubit.updateAddonQty(updatedQty);
+                                    }
+                                  },
+                                ),
+                                Text('$currentQty'),
+                                IconButton(
+                                  icon: const Icon(Icons.add_circle_outline,color: primaryColor,),
+                                  onPressed: () {
+                                    final updatedQty = Map<String, int>.from(
+                                        addCartCubit.state.addonsQty);
+                                    updatedQty['$addonId'] = currentQty + 1;
+                                    addCartCubit.updateAddonQty(updatedQty);
+                                  },
+                                ),
+                              ],
+                            ),
+                        ],
                       );
                     }).toList(),
                   ),
                 ),
-
               ],
             ),
           ),
         ),
         Utils.verticalSpace(20.0),
       ],
-    );
-  }
-}
-
-class SelectAddonWidget extends StatefulWidget {
-  const SelectAddonWidget({super.key, this.isChecked, this.onTap, this.size});
-
-  final String? size;
-  final bool? isChecked;
-  final ValueChanged<bool?>? onTap;
-
-  @override
-  State<SelectAddonWidget> createState() => _SelectAddonWidgetState();
-}
-
-class _SelectAddonWidgetState extends State<SelectAddonWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 6.0),
-      padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.0),
-        border: Border.all(color: borderColor),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Checkbox(
-                checkColor: blackColor,
-                activeColor: primaryColor,
-                side: const BorderSide(
-                  color: primaryColor,
-                  width: 2.0,
-                ),
-                value: widget.isChecked,
-                onChanged: widget.onTap,
-              ),
-              CustomText(
-                text: widget.size ?? '',
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ],
-          ),
-          Padding(
-            padding: Utils.symmetric(h: 10.0),
-            child: Row(
-              children: [
-                Container(
-                  height: 25,
-                  width: 25,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4.0),
-                    shape: BoxShape.rectangle,
-                    color: primaryColor.withOpacity(0.3),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.remove),
-                  ),
-                ),
-                Utils.horizontalSpace(8.0),
-                const CustomText(
-                  text: '1',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-                Utils.horizontalSpace(8.0),
-                Container(
-                  height: 25,
-                  width: 25,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4.0),
-                    shape: BoxShape.rectangle,
-                    color: primaryColor,
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.add),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
