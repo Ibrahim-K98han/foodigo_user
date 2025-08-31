@@ -22,12 +22,12 @@ class TopRestaurant extends StatelessWidget {
     final size = MediaQuery.sizeOf(context);
 
     return Container(
-      height: size.height * 0.32,
+      height: size.height * 0.35,
       decoration: const BoxDecoration(
         color: Color(0xFF000000),
       ),
       child: Padding(
-        padding: Utils.symmetric(h: 0.0, v: 10.0),
+        padding: Utils.symmetric(h: 0.0.h, v: 10.0.w),
         child: Column(
           children: [
             TitleAndNavigator(

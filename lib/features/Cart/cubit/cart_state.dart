@@ -18,3 +18,17 @@ class CartError extends CartState {
 
   CartError(this.message, this.statusCode);
 }
+
+/// Delete product State
+class CartDeleteLoading extends CartState {}
+
+class CartDeleteSuccess extends CartState {
+  final CartModel updatedCart;
+  CartDeleteSuccess(this.updatedCart);
+}
+
+class CartDeleteError extends CartState {
+  final String message;
+  final int statusCode;
+  CartDeleteError(this.message, this.statusCode);
+}

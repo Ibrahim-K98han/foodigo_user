@@ -28,12 +28,30 @@ class CartCubit extends Cubit<CartState> {
       _loginBloc.state.languageCode,
     );
     print('Cart======$uri');
-    final result = await _repository.getCartData(_loginBloc.userInformation!.token);
+    final result =
+        await _repository.getCartData(_loginBloc.userInformation!.token);
     result.fold(
       (l) => emit(CartError(l.message, l.statusCode)),
       (success) {
         cartModel = success;
         emit(CartLoaded(success));
+      },
+    );
+  }
+
+  ///Delete Product
+  Future<void> deleteProduct(String productId) async {
+    emit(CartDeleteLoading());
+    final result = await _repository.deleteProduct(
+      _loginBloc.userInformation!.token,
+      productId,
+    );
+
+    result.fold(
+      (l) => emit(CartDeleteError(l.message, l.statusCode)),
+      (success) {
+        cartModel = success;
+        emit(CartDeleteSuccess(success));
       },
     );
   }

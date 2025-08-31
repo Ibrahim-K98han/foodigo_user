@@ -127,7 +127,7 @@ class Address extends Equatable {
   factory Address.fromMap(Map<String, dynamic> map) {
     return Address(
       id: map['id'] ?? 0,
-      userId: map['user_id'] ?? '',
+      userId: (map['user_id'] ?? 0).toString(),
       name: map['name'] ?? '',
       lat: map['lat'] ?? '',
       lon: map['lon'] ?? '',

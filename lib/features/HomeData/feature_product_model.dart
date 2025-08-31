@@ -110,9 +110,7 @@ class FeaturedProducts extends Equatable {
       id: map['id'] ?? 0,
       slug: map['slug'] ?? '',
       image: map['image'] ?? '',
-      categoryId: map['category_id'] is int
-          ? map['category_id'] as int
-          : int.tryParse(map['category_id'].toString()) ?? 0,
+      categoryId: map['category_id'] is int ? map['category_id'] as int : int.tryParse(map['category_id'].toString()) ?? 0,
       restaurantId: map['restaurant_id'] is int
           ? map['restaurant_id'] as int
           : int.tryParse(map['restaurant_id'].toString()) ?? 0,
