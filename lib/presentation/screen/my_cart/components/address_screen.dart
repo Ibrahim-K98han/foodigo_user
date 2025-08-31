@@ -1,16 +1,18 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/address/cubit/get_address_cubit.dart';
 import 'package:foodigo/features/address/cubit/get_address_state.dart';
-import 'package:foodigo/features/address/model/address_model.dart';
-import 'package:foodigo/utils/constraints.dart';
+import 'package:foodigo/features/address/model/address_state_model.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
-import 'package:foodigo/widget/custom_image.dart';
-import 'package:foodigo/widget/custom_text_style.dart';
 import 'package:foodigo/widget/page_refresh.dart';
-
+import 'package:foodigo/widget/primary_button.dart';
+import '../../../../features/address/model/address_model.dart';
+import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
+import '../../../../widget/custom_image.dart';
+import '../../../../widget/custom_text_style.dart';
 import '../../../../widget/fetch_error_text.dart';
 import '../../../../widget/loading_widget.dart';
 import '../../../core/routes/route_names.dart';
@@ -37,26 +39,46 @@ class _ChangeAddressScreenState extends State<ChangeAddressScreen> {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Select Address'),
       body: PageRefresh(
-        onRefresh: () async {
-          addressCubit.getAllAddressData();
-        },
-        child: BlocConsumer<GetAddressCubit, AllAddressState>(
-          listener: (context, state) {
-            if (state is AAllAddressError) {
-              FetchErrorText(
-                text: state.message,
-              );
-            }
-          },
+        onRefresh: () async => addressCubit.getAllAddressData(),
+        child: BlocBuilder<GetAddressCubit, AddressStateModel>(
           builder: (context, state) {
-            if (state is AllAddressLoading) {
+            final addressState = state.addressState;
+
+            if (addressState is AllAddressLoading) {
               return const LoadingWidget();
-            } else if (state is AAllAddressError) {
-              return FetchErrorText(text: state.message);
-            } else if (state is AllAddressLoaded) {
-              return AddressData(address: addressCubit.getAddress);
+            } else if (addressState is AAllAddressError) {
+              return FetchErrorText(text: addressState.message);
             }
-            return const Center(child: Text("Something went wrong"));
+
+            List<Address> addresses = [];
+            if (addressState is AllAddressLoaded) {
+              addresses = addressState.getAddress;
+            }
+
+            return SingleChildScrollView(
+              child: Padding(
+                padding: Utils.symmetric(),
+                child: Column(
+                  children: [
+                    ...addresses.map((address) => AddressItem(
+                          address: address,
+                          onTap: () {
+                            Navigator.pushNamed(context, RouteNames.orderScreen,
+                                arguments: address);
+                          },
+                        )),
+                    PrimaryButton(
+                      text: 'Add Address',
+                      onPressed: () {
+                        Navigator.pushNamed(
+                            context, RouteNames.editAddressScreen);
+                      },
+                    ),
+                    Utils.verticalSpace(20.0),
+                  ],
+                ),
+              ),
+            );
           },
         ),
       ),
@@ -64,169 +86,73 @@ class _ChangeAddressScreenState extends State<ChangeAddressScreen> {
   }
 }
 
-class AddressData extends StatefulWidget {
-  AddressData({super.key, this.address});
+class AddressItem extends StatelessWidget {
+  const AddressItem({super.key, required this.address, required this.onTap});
 
-  List<Address>? address;
-
-  @override
-  State<AddressData> createState() => _AddressDataState();
-}
-
-class _AddressDataState extends State<AddressData> {
-  int? selectedAddress;
+  final Address address;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final delete = context.read<GetAddressCubit>();
-    return Container(
-      decoration: const BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x0A000000),
-            blurRadius: 40,
-            offset: Offset(0, 2),
-            spreadRadius: 10,
-          )
-        ],
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
+    final cubit = context.read<GetAddressCubit>();
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          border: Border.all(color: borderColor),
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: Padding(
-          padding: Utils.symmetric(),
+          padding: Utils.symmetric(v: 10.0, h: 10.0),
           child: Column(
             children: [
-              ...List.generate(widget.address!.length, (index) {
-                final address = widget.address![index];
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedAddress = index;
-                    });
-                  },
-                  child: Padding(
-                    padding: Utils.only(bottom: 16.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          border: Border.all(
-                            color: selectedAddress == index
-                                ? const Color(
-                                    0xFFE94222) // Selected border color (red)
-                                : borderColor,
-                          ),
-                          color: whiteColor),
-                      child: Padding(
-                        padding: Utils.symmetric(v: 10.0, h: 10.0),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const CustomText(
-                                  text: 'Billing Address#1',
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 18,
-                                ),
-                                Row(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.pushNamed(context,
-                                            RouteNames.editAddressScreen);
-                                      },
-                                      child: Container(
-                                        padding: Utils.all(value: 6.0),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          border:
-                                              Border.all(color: borderColor),
-                                        ),
-                                        child: const Center(
-                                          child: CustomImage(
-                                            path: KImages.editIcon,
-                                            height: 25,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Utils.horizontalSpace(8.0),
-                                    GestureDetector(
-                                      onTap: () {
-                                          delete.deleteAddress(address.id.toString());
-                                      },
-                                      child: Container(
-                                        padding: Utils.all(value: 6.0),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          border: Border.all(
-                                            color: const Color(0xFFE94222)
-                                                .withOpacity(0.4),
-                                          ),
-                                        ),
-                                        child: const Center(
-                                          child: CustomImage(
-                                            path: KImages.deleteIcon,
-                                            height: 25,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Utils.verticalSpace(10.0),
-                            Container(
-                              height: 0.5,
-                              width: double.infinity,
-                              color: const Color(0xFFE94222).withOpacity(0.5),
-                            ),
-                            Utils.verticalSpace(10.0),
-                            AddressWidget(
-                                title: 'Full Name:', text: address.name),
-                            Utils.verticalSpace(4.0),
-                            AddressWidget(title: 'Email:', text: address.email),
-                            Utils.verticalSpace(4.0),
-                            AddressWidget(title: 'Phone:', text: address.phone),
-                            Utils.verticalSpace(4.0),
-                            AddressWidget(
-                                title: 'Country:', text: address.address),
-                            Utils.verticalSpace(4.0),
-                            // AddressWidget(
-                            //    title: 'State:', text: " Dhaka"),
-                            Utils.verticalSpace(4.0),
-                            //  AddressWidget(
-                            //     title: 'City:', text: " Mirpur"),
-                            // Utils.verticalSpace(4.0),
-                            // AddressWidget(
-                            //     title: 'Address:', text: " Mirpur-10"),
-                          ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const CustomText(
+                    text: 'Billing Address',
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                  ),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, RouteNames.editAddressScreen);
+                        },
+                        child: const CustomImage(
+                            path: KImages.editIcon, height: 25),
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () {
+                          cubit.deleteAddress('${address.id}');
+                        },
+                        child: BlocBuilder<GetAddressCubit, AddressStateModel>(
+                          builder: (context, state) {
+                            final deleteState = state.addressState;
+                            if (deleteState is DeleteAddressLoading &&
+                                deleteState.addressId ==
+                                    address.id.toString()) {
+                              return const LoadingWidget();
+                            }
+                            return const CustomImage(
+                                path: KImages.deleteIcon, height: 25);
+                          },
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                );
-              }),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, RouteNames.editAddressScreen);
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.add),
-                    Utils.horizontalSpace(8.0),
-                    const CustomText(
-                      text: 'Add new',
-                      decoration: TextDecoration.underline,
-                    ),
-                  ],
-                ),
+                ],
               ),
-              Utils.verticalSpace(20.0),
+              Utils.verticalSpace(10.0),
+              AddressWidget(title: 'Full Name:', text: address.name),
+              AddressWidget(title: 'Email:', text: address.email),
+              AddressWidget(title: 'Phone:', text: address.phone),
+              AddressWidget(title: 'Address:', text: address.address),
             ],
           ),
         ),
@@ -236,18 +162,19 @@ class _AddressDataState extends State<AddressData> {
 }
 
 class AddressWidget extends StatelessWidget {
+  final String text;
+  final String title;
+
   const AddressWidget({
     super.key,
     required this.text,
     required this.title,
   });
 
-  final String text;
-  final String title;
-
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CustomText(
           text: title,
@@ -255,11 +182,14 @@ class AddressWidget extends StatelessWidget {
           fontWeight: FontWeight.w500,
           color: blackColor.withOpacity(0.7),
         ),
-        CustomText(
-          text: text,
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: blackColor,
+        Flexible(
+          child: CustomText(
+            text: text,
+            maxLine: 2,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: blackColor,
+          ),
         ),
       ],
     );

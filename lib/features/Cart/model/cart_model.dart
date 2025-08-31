@@ -90,8 +90,8 @@ class CartItems extends Equatable {
   final Addons addons;
   final String addonPrice;
   final String totalPrice;
-  final Product product;
-  final Restaurants restaurant;
+  final Product? product;
+  final Restaurants? restaurant;
   final String createdAt;
   final String updatedAt;
 
@@ -150,8 +150,8 @@ class CartItems extends Equatable {
       'addons': addons.toMap(),
       'addon_price': addonPrice,
       'total_price': totalPrice,
-      'product': product.toMap(),
-      'restaurant': restaurant.toMap(),
+      'product': product?.toMap(),
+      'restaurant': restaurant?.toMap(),
       'created_at': createdAt,
       'updated_at': updatedAt,
     };
@@ -160,16 +160,23 @@ class CartItems extends Equatable {
   factory CartItems.fromMap(Map<String, dynamic> map) {
     return CartItems(
       cartId: map['cart_id'] ?? 0,
-      productId: map['product_id'] is int ? map['product_id'] as int : int.tryParse(map['product_id'].toString()) ?? 0,
+      productId: map['product_id'] is int
+          ? map['product_id'] as int
+          : int.tryParse(map['product_id'].toString()) ?? 0,
       size: map['size'] ?? '',
       sizePrice: map['size_price'] ?? '',
-      qty: map['qty'] is int ? map['qty'] as int : int.tryParse(map['qty'].toString()) ?? 0,
+      qty: map['qty'] is int
+          ? map['qty'] as int
+          : int.tryParse(map['qty'].toString()) ?? 0,
       addons: Addons.fromMap(map['addons'] as Map<String, dynamic>),
       addonPrice: map['addon_price'] ?? '',
       totalPrice: map['total_price'] ?? '',
-      product: Product.fromMap(map['product'] as Map<String, dynamic>),
-      restaurant:
-          Restaurants.fromMap(map['restaurant'] as Map<String, dynamic>),
+      product: map['product'] != null
+          ? Product.fromMap(map['product'] as Map<String, dynamic>)
+          : null,
+      restaurant: map['restaurant'] != null
+          ? Restaurants.fromMap(map['restaurant'] as Map<String, dynamic>)
+          : null,
       createdAt: map['created_at'] ?? '',
       updatedAt: map['updated_at'] ?? '',
     );
@@ -194,8 +201,8 @@ class CartItems extends Equatable {
       addons,
       addonPrice,
       totalPrice,
-      product,
-      restaurant,
+      product!,
+      restaurant!,
       createdAt,
       updatedAt,
     ];
@@ -255,6 +262,7 @@ class Product extends Equatable {
   final String shortDescription;
   final Restaurants? restaurant;
   final Categories? category;
+
   // final String averageRating;
   final int totalReviews;
 
@@ -322,7 +330,9 @@ class Product extends Equatable {
           ? Categories.fromMap(map['category'] as Map<String, dynamic>)
           : null,
       // averageRating: map['average_rating'] ?? '',
-      totalReviews: map['total_reviews'] is int ? map['total_reviews'] as int : int.tryParse(map['total_reviews'].toString()) ?? 0,
+      totalReviews: map['total_reviews'] is int
+          ? map['total_reviews'] as int
+          : int.tryParse(map['total_reviews'].toString()) ?? 0,
     );
   }
 

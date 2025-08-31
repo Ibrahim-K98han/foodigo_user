@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 
 class Errors extends Equatable {
   final List<String> name;
+  final List<String> addressType;
   final List<String> age;
   final List<String> gender;
   final List<String> title;
@@ -95,6 +96,7 @@ class Errors extends Equatable {
 
   const Errors({
     required this.email,
+    required this.addressType,
     required this.username,
     required this.age,
     required this.gender,
@@ -185,6 +187,7 @@ class Errors extends Equatable {
 
   Errors copyWith({
     List<String>? email,
+    List<String>? addressType,
     List<String>? phone,
     List<String>? age,
     List<String>? gender,
@@ -274,6 +277,7 @@ class Errors extends Equatable {
   }) {
     return Errors(
       email: email ?? this.email,
+      addressType: addressType ?? this.addressType,
       phone: phone ?? this.phone,
       age: age ?? this.age,
       gender: gender ?? this.gender,
@@ -366,6 +370,7 @@ class Errors extends Equatable {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'name': name,
+      'address_type': addressType,
       'title': title,
       'age': age,
       'gender': gender,
@@ -464,6 +469,9 @@ class Errors extends Equatable {
     return Errors(
       username: map['username'] != null
           ? List<String>.from(map['username'].map((x) => x))
+          : [],
+      addressType: map['address_type'] != null
+          ? List<String>.from(map['address_type'].map((x) => x))
           : [],
       title: map['title'] != null
           ? List<String>.from(map['title'].map((x) => x))

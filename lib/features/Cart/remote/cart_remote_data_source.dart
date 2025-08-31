@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 
 abstract class CartRemoteDataSource {
   Future getCart(String token);
+
+  Future deleteProduct(String token, String id);
 }
 
 class CartRemoteDataSourceImpl implements CartRemoteDataSource {
@@ -22,6 +24,17 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
     final uri = Uri.parse(RemoteUrls.getCartData);
     print('Cart====$uri');
     final clientMethod = client.get(uri, headers: authHeader(token));
+    final responseJsonBody =
+        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    return responseJsonBody;
+  }
+
+  ///Delete Product
+  @override
+  Future deleteProduct(String token, String id) async {
+    final uri = Uri.parse(RemoteUrls.deleteProduct(id));
+    print('Product Delete====$uri');
+    final clientMethod = client.delete(uri, headers: authHeader(token));
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
     return responseJsonBody;

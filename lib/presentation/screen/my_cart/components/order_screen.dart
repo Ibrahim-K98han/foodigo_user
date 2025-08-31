@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/address/cubit/get_address_cubit.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_form.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
 import 'package:foodigo/widget/primary_button.dart';
 
+import '../../../../features/Cart/cubit/cart_cubit.dart';
+import '../../../../features/address/model/address_model.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
@@ -12,10 +16,14 @@ import '../../../core/routes/route_names.dart';
 import '../my_cart_screen.dart';
 
 class OrderScreen extends StatelessWidget {
-  const OrderScreen({super.key});
+  const OrderScreen({super.key, });
+
 
   @override
   Widget build(BuildContext context) {
+    final order = context.read<CartCubit>();
+    final Address? selectedAddress =
+    ModalRoute.of(context)?.settings.arguments as Address?;
     return Scaffold(
       appBar: const CustomAppBar(title: "Order Now"),
       body: Container(
@@ -35,11 +43,16 @@ class OrderScreen extends StatelessWidget {
             scrollDirection: Axis.vertical,
             child: Column(
               children: [
-                ...List.generate(2, (index) {
+                ...List.generate(order.cartModel!.cartItems!.length, (index) {
+                  final orderItem = order.cartModel!.cartItems![index];
                   return Padding(
                     padding: Utils.only(bottom: 10.0),
-                    // child:  CheckoutCart(),
-                    child: CustomText(text: 'text'),
+                    child: CheckoutCart(
+                      cartItem: orderItem,
+                      onDelete: (id) {
+                        context.read<CartCubit>().deleteProduct(id);
+                      },
+                    ),
                   );
                 }),
                 Utils.verticalSpace(10.0),
@@ -64,12 +77,12 @@ class OrderScreen extends StatelessWidget {
                           padding: Utils.all(value: 10.0),
                           child: Row(
                             children: [
-                              const Flexible(
+                              Flexible(
                                 child: CustomText(
-                                  text: 'Sulfat Street 131366 Pluto. Cyber Arm',
+                                  text: selectedAddress?.address ?? 'No address selected',
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
-                                  color: Color(0xFF334155),
+                                  color: const Color(0xFF334155),
                                   maxLine: 3,
                                 ),
                               ),
@@ -112,13 +125,13 @@ class OrderScreen extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                       children: [
-                        const SummaryField(
+                        SummaryField(
                           title: 'Sub Total',
-                          subTitle: "\$57.92",
+                          subTitle: '\$${order.cartModel!.subtotal}',
                         ),
-                        const SummaryField(
+                         SummaryField(
                           title: 'Extra Addons',
-                          subTitle: "\$10.92",
+                          subTitle: ''
                         ),
                         const SummaryField(
                           title: 'Fee and Delivery',

@@ -125,7 +125,9 @@ class RouteNames {
 
       case RouteNames.orderScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const OrderScreen());
+          settings: settings,
+          builder: (_) => const OrderScreen(),
+        );
 
       case RouteNames.addressScreen:
         return MaterialPageRoute(

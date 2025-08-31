@@ -7,7 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-
+import 'package:geocoding/geocoding.dart';
 import '../widget/custom_text_style.dart';
 import 'constraints.dart';
 import 'k_strings.dart';
@@ -16,6 +16,25 @@ class Utils {
   static final _selectedDate = DateTime.now();
 
   static final _initialTime = TimeOfDay.now();
+
+
+  static Future<String?> getAddressFromLatLng(double lat, double lng) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
+        return '${place.street}, ${place.locality}, ${place.country}';
+      }
+      return null;
+    } catch (e) {
+      print('Error in getAddressFromLatLng: $e');
+      return null;
+    }
+  }
+
+  static EdgeInsets symmetric({double h = 16.0, double v = 16.0}) {
+    return EdgeInsets.symmetric(horizontal: h, vertical: v);
+  }
 
   static Size mediaQuery(BuildContext context) => MediaQuery.sizeOf(context);
 
@@ -121,11 +140,11 @@ class Utils {
     return size.h;
   }
 
-  static EdgeInsets symmetric({double h = 20.0, v = 0.0}) {
-    return EdgeInsets.symmetric(
-        horizontal: Utils.hPadding(size: h.h),
-        vertical: Utils.vPadding(size: v));
-  }
+  // static EdgeInsets symmetric({double h = 20.0, v = 0.0}) {
+  //   return EdgeInsets.symmetric(
+  //       horizontal: Utils.hPadding(size: h.h),
+  //       vertical: Utils.vPadding(size: v));
+  // }
 
   static double radius(double radius) {
     return radius.sp;

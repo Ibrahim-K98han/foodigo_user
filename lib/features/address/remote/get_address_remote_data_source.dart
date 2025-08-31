@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:foodigo/data/network_parser.dart';
 import 'package:foodigo/data/remote_url.dart';
+import 'package:foodigo/features/address/model/address_model.dart';
+import 'package:foodigo/features/address/model/address_state_model.dart';
 import 'package:http/http.dart' as http;
 
 abstract class GetAddressRemoteDataSource {
   Future getAllAddress(String token);
 
   Future deleteAddress(String token, String addressId);
+
+  Future addAddress(AddressStateModel body, String token);
 }
 
 class GetAddressRemoteDataSourceImpl implements GetAddressRemoteDataSource {
@@ -13,7 +19,7 @@ class GetAddressRemoteDataSourceImpl implements GetAddressRemoteDataSource {
 
   GetAddressRemoteDataSourceImpl({required this.client});
 
-  Map<String, String> authHeader(String token) => {
+  authHeader(String token) => {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       };
@@ -32,12 +38,25 @@ class GetAddressRemoteDataSourceImpl implements GetAddressRemoteDataSource {
 
   @override
   Future deleteAddress(String token, String addressId) async {
-    // final uri = Uri.parse('${RemoteUrls.deleteAddress}/$addressId');
     final uri = Uri.parse(RemoteUrls.deleteAddress(addressId));
     print('delete address $uri');
 
     final clientMethod = client.delete(uri, headers: authHeader(token));
 
+    final responseJsonBody =
+        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    return responseJsonBody;
+  }
+
+  @override
+  Future addAddress(AddressStateModel body, String token) async {
+    final uri = Uri.parse(RemoteUrls.addAddress);
+    print('Add Address $uri');
+    final clientMethod = client.post(
+      uri,
+      body: jsonEncode(body.toMap()),
+      headers: authHeader(token),
+    );
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
     return responseJsonBody;

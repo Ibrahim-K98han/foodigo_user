@@ -7,6 +7,8 @@ import '../remote/cart_remote_data_source.dart';
 
 abstract class CartRepository {
   Future<Either<Failure, CartModel>> getCartData(String token);
+
+  Future<Either<Failure, CartModel>> deleteProduct(String token, String id);
 }
 
 class CartRepositoryImpl implements CartRepository {
@@ -25,6 +27,19 @@ class CartRepositoryImpl implements CartRepository {
       // final data =
       //     List<Restaurants>.from(res.map((e) => Restaurants.fromMap(e)))
       //         .toList();
+      return Right(data);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    }
+  }
+
+  ///Delete Product
+  @override
+  Future<Either<Failure, CartModel>> deleteProduct(
+      String token, String id) async {
+    try {
+      final result = await remoteDataSource.deleteProduct(token, id);
+      final data = CartModel.fromMap(result['data']);
       return Right(data);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));

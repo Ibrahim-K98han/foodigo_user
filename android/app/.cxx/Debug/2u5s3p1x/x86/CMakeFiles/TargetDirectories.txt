@@ -1,0 +1,2 @@
+F:/quomodo/foodigo_user/android/app/.cxx/Debug/2u5s3p1x/x86/CMakeFiles/edit_cache.dir
+F:/quomodo/foodigo_user/android/app/.cxx/Debug/2u5s3p1x/x86/CMakeFiles/rebuild_cache.dir
