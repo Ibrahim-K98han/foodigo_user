@@ -4,7 +4,7 @@ import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/HomeData/feature_product_model.dart';
 import 'package:foodigo/features/ProductDetails/cubit/product_details_cubit.dart';
 import 'package:foodigo/features/ProductDetails/cubit/product_details_state.dart';
-import 'package:foodigo/features/add_to_cart/cubit/add_car_cubit.dart';
+import 'package:foodigo/features/add_to_cart/cubit/add_cart_cubit.dart';
 import 'package:foodigo/widget/fetch_error_text.dart';
 import 'package:foodigo/widget/loading_widget.dart';
 

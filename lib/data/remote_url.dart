@@ -9,15 +9,23 @@ class RemoteUrls {
   static String singleRestaurantsData(String slug) =>
       '${baseUrl}restaurants/$slug';
   static const String getCartData = '${baseUrl}cart';
+  static const String clearCart = '${baseUrl}cart/clear';
 
   static String productDetailsData(int id) => '${baseUrl}products/$id';
 
   static const String login = '${baseUrl}auth/login';
   static const String getProfile = '${baseUrl}auth/profile';
   static const String addProduct = '${baseUrl}cart/add';
+
   static String deleteProduct(String id) => '${baseUrl}cart/remove/$id';
+
+  static String incrementProduct(String id) => '${baseUrl}cart/increment/$id';
+
+  static String decrementProduct(String id) => '${baseUrl}cart/decrement/$id';
+
   static const String getAddress = '${baseUrl}dashboard/addresses';
   static const String addAddress = '${baseUrl}dashboard/addresses';
+  static const String checkOut = '${baseUrl}checkout/validate';
 
   static String deleteAddress(String id) => '${baseUrl}dashboard/addresses/$id';
 

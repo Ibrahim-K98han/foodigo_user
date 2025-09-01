@@ -6,6 +6,12 @@ abstract class CartRemoteDataSource {
   Future getCart(String token);
 
   Future deleteProduct(String token, String id);
+
+  Future incrementProduct(String id, String token);
+
+  Future decrementProduct(String id, String productId);
+
+  Future clearCart(String token);
 }
 
 class CartRemoteDataSourceImpl implements CartRemoteDataSource {
@@ -34,6 +40,39 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
   Future deleteProduct(String token, String id) async {
     final uri = Uri.parse(RemoteUrls.deleteProduct(id));
     print('Product Delete====$uri');
+    final clientMethod = client.delete(uri, headers: authHeader(token));
+    final responseJsonBody =
+        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    return responseJsonBody;
+  }
+
+  ///Decrement Product
+
+  @override
+  Future decrementProduct(String id, String token) async {
+    final uri = Uri.parse(RemoteUrls.decrementProduct(id));
+    print('Product Decrement=====$uri');
+    final clientMethod = client.post(uri, headers: authHeader(token));
+    final responseJsonBody =
+        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    return responseJsonBody;
+  }
+
+  ///Increment Product
+  @override
+  Future incrementProduct(String id, String token) async {
+    final uri = Uri.parse(RemoteUrls.incrementProduct(id));
+    print('Product Increment=====$uri');
+    final clientMethod = client.post(uri, headers: authHeader(token));
+    final responseJsonBody =
+        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    return responseJsonBody;
+  }
+
+  @override
+  Future clearCart(String token) async {
+    final uri = Uri.parse(RemoteUrls.clearCart);
+    print('Clear Cart ====$uri');
     final clientMethod = client.delete(uri, headers: authHeader(token));
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);

@@ -5,10 +5,10 @@ import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/Cart/cubit/cart_cubit.dart';
 import 'package:foodigo/features/Cart/cubit/cart_state.dart';
 import 'package:foodigo/features/Cart/model/cart_model.dart';
+import 'package:foodigo/features/Cart/model/cart_state_model.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
-import 'package:foodigo/widget/fetch_error_text.dart';
 import 'package:foodigo/widget/loading_widget.dart';
 import 'package:foodigo/widget/primary_button.dart';
 
@@ -50,38 +50,60 @@ class _MyCartScreenState extends State<MyCartScreen> {
               );
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(
-                  value: 'Clear All',
-                  child: CustomText(
+              PopupMenuItem<String>(
+                value: 'Clear All',
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                   cartCubit.clearCart();
+                  },
+                  child: const CustomText(
                     text: 'Clear All',
                     color: Colors.red,
-                  )),
+                  ),
+                ),
+              ),
             ],
           ),
         ],
       ),
-      body: BlocConsumer<CartCubit, CartState>(
+      body: BlocConsumer<CartCubit, CartStateModel>(
         listener: (context, state) {
-          if (state is CartDeleteSuccess) {
+          if (state.cartState is CartDeleteSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Product removed from cart')),
             );
           }
-          if (state is CartError) {
+          if (state.cartState is CartError) {
+            final error = state.cartState as CartError;
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              SnackBar(content: Text(error.message)),
             );
           }
         },
         builder: (context, state) {
-          if (state is CartLoading || state is CartInitial) {
+          if (state.cartState is CartLoading ||
+              state.cartState is CartInitial) {
             return const LoadingWidget();
           }
 
-          if (state is CartLoaded || state is CartDeleteSuccess) {
-            final cart = (state is CartLoaded)
-                ? state.cartModel
-                : (state as CartDeleteSuccess).updatedCart;
+          if (state.cartState is CartLoaded) {
+            final cart = (state.cartState as CartLoaded).cartModel;
+            return CartDataLoaded(cartModel: cart);
+          }
+
+          if (state.cartState is CartDeleteSuccess) {
+            final cart = (state.cartState as CartDeleteSuccess).updatedCart;
+            return CartDataLoaded(cartModel: cart);
+          }
+
+          if (state.cartState is CartIncrementSuccess) {
+            final cart = (state.cartState as CartIncrementSuccess).updatedCart;
+            return CartDataLoaded(cartModel: cart);
+          }
+
+          if (state.cartState is CartDecrementSuccess) {
+            final cart = (state.cartState as CartDecrementSuccess).updatedCart;
             return CartDataLoaded(cartModel: cart);
           }
 
@@ -93,7 +115,7 @@ class _MyCartScreenState extends State<MyCartScreen> {
         child: PrimaryButton(
             text: 'Checkout',
             onPressed: () {
-              Navigator.pushNamed(context, RouteNames.orderScreen);
+              Navigator.pushNamed(context, RouteNames.addressScreen);
             }),
       ),
     );
@@ -174,6 +196,8 @@ class CheckoutCart extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final Product? product = cartItem.product;
+    final productId = product?.id ?? cartItem.cartId;
+    final cartCubit = context.read<CartCubit>();
     return Dismissible(
       key: ValueKey(product?.id ?? cartItem.cartId),
       direction: DismissDirection.endToStart,
@@ -281,41 +305,53 @@ class CheckoutCart extends StatelessWidget {
                         ),
                         Row(
                           children: [
-                            Container(
-                              height: 25,
-                              width: 25,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4.0),
-                                shape: BoxShape.rectangle,
-                                color: primaryColor.withOpacity(0.2),
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.remove,
-                                  color: Colors.amber,
+                            GestureDetector(
+                              onTap: () {
+                                cartCubit
+                                    .decrementProduct(productId.toString());
+                              },
+                              child: Container(
+                                height: 25,
+                                width: 25,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                  shape: BoxShape.rectangle,
+                                  color: primaryColor.withOpacity(0.2),
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.remove,
+                                    color: Colors.amber,
+                                  ),
                                 ),
                               ),
                             ),
                             Utils.horizontalSpace(8.0),
-                            const CustomText(
-                              text: '1',
+                            CustomText(
+                              text: cartItem.qty.toString(),
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                             ),
                             Utils.horizontalSpace(8.0),
-                            Container(
-                              height: 25,
-                              width: 25,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4.0),
-                                shape: BoxShape.rectangle,
-                                color: primaryColor,
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.add,
-                                  size: 18,
-                                  color: blackColor,
+                            GestureDetector(
+                              onTap: () {
+                                cartCubit
+                                    .incrementProduct(productId.toString());
+                              },
+                              child: Container(
+                                height: 25,
+                                width: 25,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                  shape: BoxShape.rectangle,
+                                  color: primaryColor,
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 18,
+                                    color: blackColor,
+                                  ),
                                 ),
                               ),
                             ),

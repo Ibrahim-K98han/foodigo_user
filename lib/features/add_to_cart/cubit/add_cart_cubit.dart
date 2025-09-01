@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foodigo/features/add_to_cart/cubit/add_car_state.dart';
+import 'package:foodigo/features/add_to_cart/cubit/add_cart_state.dart';
 import 'package:foodigo/features/add_to_cart/model/add_cart_response_model.dart';
 import 'package:foodigo/features/add_to_cart/model/add_cart_state_model.dart';
 import 'package:foodigo/features/add_to_cart/repository/add_cart_repository.dart';

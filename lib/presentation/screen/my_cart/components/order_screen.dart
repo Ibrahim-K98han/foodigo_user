@@ -1,29 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/features/address/cubit/get_address_cubit.dart';
+import 'package:foodigo/features/checkout/cubit/checkout_cubit.dart';
+import 'package:foodigo/features/checkout/model/checkout_response_model.dart';
+import 'package:foodigo/features/checkout/model/checkout_state_model.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_form.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
+import 'package:foodigo/widget/loading_widget.dart';
 import 'package:foodigo/widget/primary_button.dart';
 
 import '../../../../features/Cart/cubit/cart_cubit.dart';
 import '../../../../features/address/model/address_model.dart';
+import '../../../../features/checkout/cubit/checkout_state.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
 import '../../../core/routes/route_names.dart';
 import '../my_cart_screen.dart';
 
-class OrderScreen extends StatelessWidget {
-  const OrderScreen({super.key, });
+class OrderScreen extends StatefulWidget {
+  const OrderScreen({
+    super.key,
+  });
 
+  @override
+  State<OrderScreen> createState() => _OrderScreenState();
+}
+
+class _OrderScreenState extends State<OrderScreen> {
+  String? selectedOrderType;
+  final List<String> orderTypeValue = ['delivery', 'pickup'];
+
+  late CheckoutCubit checkoutCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    checkoutCubit = context.read<CheckoutCubit>();
+  }
 
   @override
   Widget build(BuildContext context) {
     final order = context.read<CartCubit>();
-    final Address? selectedAddress =
-    ModalRoute.of(context)?.settings.arguments as Address?;
+    final address = ModalRoute.of(context)!.settings.arguments as Address;
     return Scaffold(
       appBar: const CustomAppBar(title: "Order Now"),
       body: Container(
@@ -79,7 +101,7 @@ class OrderScreen extends StatelessWidget {
                             children: [
                               Flexible(
                                 child: CustomText(
-                                  text: selectedAddress?.address ?? 'No address selected',
+                                  text: address.address,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                   color: const Color(0xFF334155),
@@ -120,85 +142,96 @@ class OrderScreen extends StatelessWidget {
                       iconColor: blackColor,
                       childrenPadding: Utils.symmetric(h: 12.0, v: 10.0),
                       title: const CustomText(
-                        text: 'Payment Summary',
+                        text: 'Coupon & Order Type',
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
                       children: [
-                        SummaryField(
-                          title: 'Sub Total',
-                          subTitle: '\$${order.cartModel!.subtotal}',
-                        ),
-                         SummaryField(
-                          title: 'Extra Addons',
-                          subTitle: ''
-                        ),
-                        const SummaryField(
-                          title: 'Fee and Delivery',
-                          subTitle: "\$10.92",
-                        ),
-                        Utils.verticalSpace(10.0),
-                        Container(
-                          height: 0.5,
-                          width: double.infinity,
-                          color: borderColor,
-                        ),
-                        Utils.verticalSpace(10.0),
-                        const SummaryField(
-                          title: 'Total Price',
-                          subTitle: "\$89.92",
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const CustomText(
+                              text: 'Order Type',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            Utils.verticalSpace(4),
+                            DropdownButtonFormField<String>(
+                              dropdownColor: whiteColor,
+                              value: selectedOrderType,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 14,
+                                ),
+                              ),
+                              hint: const CustomText(
+                                  text: 'Delivery Type', color: lightGrayColor),
+                              items: orderTypeValue.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: CustomText(text: value, fontSize: 14),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  checkoutCubit.orderType(newValue!);
+                                });
+                              },
+                              validator: (value) => value == null
+                                  ? 'Please select an option'
+                                  : null,
+                            ),
+                            Utils.verticalSpace(8),
+                            const CustomText(
+                              text: 'Coupon',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            TextFormField(
+                              onChanged: (value) {
+                                checkoutCubit.couponCode(value);
+                              },
+                              decoration: InputDecoration(
+                                contentPadding: Utils.symmetric(v: 12.0),
+                                suffixIcon: GestureDetector(
+                                  onTap: () {},
+                                  child: Container(
+                                    width: 80.w,
+                                    height: 36.h,
+                                    margin: Utils.symmetric(v: 4.0, h: 4.0),
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFF0C1321),
+                                        borderRadius:
+                                            BorderRadius.circular(6.r)),
+                                    child: const Center(
+                                      child: CustomText(
+                                        text: 'Apply',
+                                        color: whiteColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ),
                 Utils.verticalSpace(10.0),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: whiteColor,
-                    border: Border.all(color: borderColor),
-                    borderRadius: Utils.borderRadius(),
-                  ),
-                  child: Theme(
-                    data: Theme.of(context).copyWith(dividerColor: transparent),
-                    child: ExpansionTile(
-                      iconColor: blackColor,
-                      childrenPadding: Utils.symmetric(h: 12.0, v: 10.0),
-                      title: const CustomText(
-                        text: 'Payment Methods',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const CustomImage(path: KImages.paypal),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, RouteNames.paymentMethodScreen);
-                              },
-                              child: const CustomText(
-                                text: "Change",
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
-                                color: Color(0xFFE94222),
-                                decoration: TextDecoration.underline,
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ),
                 Utils.verticalSpace(12.0),
                 CustomFormWidget(
                   label: 'Special instructions',
                   labelColor: const Color(0xFF0C1321),
                   child: TextFormField(
+                    onChanged: (value) {
+                      checkoutCubit.deliveryInstruction(value);
+                    },
                     decoration: const InputDecoration(
                         hintText: 'comments', fillColor: whiteColor),
                     maxLines: 4,
@@ -212,11 +245,57 @@ class OrderScreen extends StatelessWidget {
       ),
       bottomNavigationBar: Padding(
         padding: Utils.symmetric(v: 20.0),
-        child: PrimaryButton(
-            text: 'Order Now',
-            onPressed: () {
-              Navigator.pushNamed(context, RouteNames.paymentMethodScreen);
-            }),
+        child: BlocListener<CheckoutCubit, CheckoutStateModel>(
+          listener: (context, state) {
+            final cart = state.checkoutState;
+            if (cart is CheckoutStateLoading) {
+              Utils.loadingDialog(context);
+            } else {
+              Utils.closeDialog(context);
+              if (cart is CheckoutStateError) {
+                Utils.showSnackBar(context, cart.message);
+              } else if (cart is CheckoutStateSuccess) {
+                showModalBottomSheet(
+                  context: context,
+                  showDragHandle: true,
+                  backgroundColor: whiteColor,
+                  constraints: BoxConstraints.loose(
+                    Size(
+                      Utils.mediaQuery(context).width,
+                      Utils.mediaQuery(context).height * 0.9,
+                    ),
+                  ),
+                  isScrollControlled: false,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(Utils.radius(20.0)),
+                      topRight: Radius.circular(Utils.radius(20.0)),
+                    ),
+                  ),
+                  builder: (context) => DraggableScrollableSheet(
+                    initialChildSize: 0.85,
+                    minChildSize: 0.5,
+                    maxChildSize: 0.95,
+                    expand: false,
+                    builder: (context, scrollController) {
+                      return SingleChildScrollView(
+                        controller: scrollController,
+                        child: FilterBottomSheetAllLawyer(
+                          checkoutResponseModel: cart.checkoutResponseModel,
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }
+            }
+          },
+          child: PrimaryButton(
+              text: "Order Now",
+              onPressed: () {
+                checkoutCubit.checkOut(address.id.toString());
+              }),
+        ),
       ),
     );
   }
@@ -244,6 +323,104 @@ class SummaryField extends StatelessWidget {
             color: const Color(0xFF334155)),
         CustomText(text: subTitle, fontSize: 14, fontWeight: FontWeight.w600),
       ],
+    );
+  }
+}
+
+class FilterBottomSheetAllLawyer extends StatefulWidget {
+  final CheckoutResponseModel checkoutResponseModel;
+
+  const FilterBottomSheetAllLawyer(
+      {super.key, required this.checkoutResponseModel});
+
+  @override
+  State<FilterBottomSheetAllLawyer> createState() =>
+      _FilterBottomSheetAllLawyerState();
+}
+
+class _FilterBottomSheetAllLawyerState
+    extends State<FilterBottomSheetAllLawyer> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: Utils.symmetric(h: 12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: Utils.symmetric(h: 12.0, v: 8.0),
+            decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(6.r)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const CustomText(
+                  text: 'Order Summary',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+                Utils.verticalSpace(4),
+                const Divider(
+                  color: Color(0xFFF1F5F9),
+                ),
+                Utils.verticalSpace(4),
+                SummaryField(
+                  title: 'Sub Total',
+                  subTitle:
+                      '${widget.checkoutResponseModel.checkoutData!.pricingBreakdown.subtotal}',
+                ),
+                // SummaryField(
+                //   title: 'Extra Addon (3)',
+                //   subTitle: ,
+                // ),
+                SummaryField(
+                  title: 'Fee and Delivery',
+                  subTitle:
+                      '\$${widget.checkoutResponseModel.checkoutData!.pricingBreakdown.deliveryFee}',
+                ),
+                SummaryField(
+                  title: 'Vat',
+                  subTitle: widget.checkoutResponseModel.checkoutData!
+                      .pricingBreakdown.taxRate,
+                ),
+                SummaryField(
+                  title: 'Discount Amount',
+                  subTitle:
+                      '\$${widget.checkoutResponseModel.checkoutData!.pricingBreakdown.couponDiscount}',
+                ),
+                Utils.verticalSpace(4),
+                const Divider(
+                  color: Color(0xFFF1F5F9),
+                ),
+                Utils.verticalSpace(4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const CustomText(
+                      text: 'Total Price',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    CustomText(
+                      text:
+                          '\$${widget.checkoutResponseModel.checkoutData!.pricingBreakdown.totalAmount}',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+          Utils.verticalSpace(16),
+          PrimaryButton(
+              text: 'Pay Now',
+              onPressed: () {
+                Navigator.pushNamed(context, RouteNames.paymentMethodScreen);
+              })
+        ],
+      ),
     );
   }
 }

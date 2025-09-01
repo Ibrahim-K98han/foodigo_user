@@ -14,12 +14,15 @@ import 'package:foodigo/features/ProductDetails/repository/product_details_repos
 import 'package:foodigo/features/SingleRestaurant/cubit/single_restaurant_cubit.dart';
 import 'package:foodigo/features/SingleRestaurant/remote/single_restaurant_remote_data_source.dart';
 import 'package:foodigo/features/SingleRestaurant/repository/single_restaurant_repository.dart';
-import 'package:foodigo/features/add_to_cart/cubit/add_car_cubit.dart';
+import 'package:foodigo/features/add_to_cart/cubit/add_cart_cubit.dart';
 import 'package:foodigo/features/add_to_cart/remote/add_cart_remote_data_source.dart';
 import 'package:foodigo/features/add_to_cart/repository/add_cart_repository.dart';
 import 'package:foodigo/features/address/cubit/get_address_cubit.dart';
 import 'package:foodigo/features/address/remote/get_address_remote_data_source.dart';
 import 'package:foodigo/features/address/repository/get_address_repository.dart';
+import 'package:foodigo/features/checkout/cubit/checkout_cubit.dart';
+import 'package:foodigo/features/checkout/remote/checkout_remote_data_source.dart';
+import 'package:foodigo/features/checkout/repository/checkout_repository.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/local_data_source.dart';
@@ -140,6 +143,16 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<CheckoutRemoteDataSource>(
+      create: (context) => CheckoutRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<CheckoutRepository>(
+      create: (context) => CheckoutRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -186,6 +199,12 @@ class DInjector {
     ),
     BlocProvider<GetAddressCubit>(
       create: (context) => GetAddressCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<CheckoutCubit>(
+      create: (context) => CheckoutCubit(
         repository: context.read(),
         loginBloc: context.read(),
       ),

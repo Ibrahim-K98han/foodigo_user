@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foodigo/features/add_to_cart/cubit/add_car_cubit.dart';
+import 'package:foodigo/features/add_to_cart/cubit/add_cart_cubit.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
 import 'package:mason/mason.dart';
 import '../../../../features/HomeData/feature_product_model.dart';

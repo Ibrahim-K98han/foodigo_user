@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../features/ProductDetails/cubit/product_details_cubit.dart';
-import '../../../../features/add_to_cart/cubit/add_car_cubit.dart';
+import '../../../../features/add_to_cart/cubit/add_cart_cubit.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
