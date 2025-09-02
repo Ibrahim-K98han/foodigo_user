@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/HomeData/home_data_model.dart';
 import 'package:foodigo/features/Login/model/user_response_model.dart';
 import 'package:foodigo/widget/page_refresh.dart';
-import '../../../features/GetProfile/cubit/get_profile_cubit.dart';
+
 import '../../../features/HomeData/cubit/home_data_cubit.dart';
 import '../../../features/HomeData/cubit/home_data_state.dart';
 import '../../../utils/k_images.dart';
@@ -107,18 +107,20 @@ class LoadedHomeData extends StatelessWidget {
       child: Column(
         children: [
           const HomeHeader(),
-          Utils.verticalSpace(30.0),
+          // Utils.verticalSpace(30.0),
           Expanded(
             child: SingleChildScrollView(
+              padding: EdgeInsets.zero,
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
                   CategoryList(
                     categories: homeModel.categories!,
                   ),
-                  Utils.verticalSpace(12.0),
+                  // Utils.verticalSpace(12.0),
                   FeatureFood(
                     featuredProducts: homeModel.featuredProducts!,
+                    restaurant: homeModel.restaurants!,
                   ),
                   Utils.verticalSpace(20.0),
 
@@ -131,6 +133,7 @@ class LoadedHomeData extends StatelessWidget {
                   Utils.verticalSpace(20.0),
                   ArrivalFood(
                     newArrivalProducts: homeModel.newArrivalProducts!,
+                    restaurant: homeModel.restaurants!,
                   ),
                 ],
               ),

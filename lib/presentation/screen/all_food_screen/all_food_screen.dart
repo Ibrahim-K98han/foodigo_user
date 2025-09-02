@@ -26,20 +26,17 @@ class AllFoodScreen extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 showModalBottomSheet(
-                    context: context,
-                    //useSafeArea: true,
-                    backgroundColor: whiteColor,
-                    constraints: BoxConstraints.loose(
-                      Size(Utils.mediaQuery(context).width,
-                          Utils.mediaQuery(context).height * 0.9),
-                    ),
-                    isScrollControlled: true,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(Utils.radius(16.0)),
-                            topRight: Radius.circular(Utils.radius(16.0)))),
-                    builder: (context) =>
-                        const IntrinsicHeight(child: FilterBottomSheet()));
+                  context: context,
+                  isScrollControlled: true, // allows full height scrolling content
+                  backgroundColor: Colors.white,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                  ),
+                  builder: (_) => const SizedBox(
+                    height: 600,
+                    child: FilterBottomSheet(),
+                  ),
+                );
               },
               child: CustomImage(
                 path: KImages.filterFood,
@@ -71,6 +68,7 @@ class AllFoodScreen extends StatelessWidget {
                 child: FoodCart(
                   newArrivalProducts:
                       hCubit.homeModel!.newArrivalProducts![index],
+                  restaurants: hCubit.homeModel!.restaurants![index],
                 ),
               );
             }),

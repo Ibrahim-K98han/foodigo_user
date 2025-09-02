@@ -38,17 +38,22 @@ class _AddToCartButtonState extends State<AddToCartButton> {
                 onTap: widget.decrementBtn,
                 child: const Icon(
                   Icons.remove,
+                  size: 30,
                 ),
               ),
-              Utils.horizontalSpace(6.0),
+              Utils.horizontalSpace(8.0),
               CustomText(
                 text: widget.text ?? '',
                 fontWeight: FontWeight.w500,
-                fontSize: 16,
+                fontSize: 20,
               ),
-              Utils.horizontalSpace(6.0),
+              Utils.horizontalSpace(8.0),
               GestureDetector(
-                  onTap: widget.incrementBtn, child: const Icon(Icons.add)),
+                  onTap: widget.incrementBtn,
+                  child: const Icon(
+                    Icons.add,
+                    size: 30,
+                  )),
             ],
           ),
           GestureDetector(

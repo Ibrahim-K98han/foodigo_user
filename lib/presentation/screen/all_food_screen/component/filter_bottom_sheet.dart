@@ -1,9 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/HomeData/cubit/home_data_cubit.dart';
+import 'package:foodigo/features/HomeData/cubit/home_data_state.dart';
+import 'package:foodigo/features/HomeData/cubit/search_state_model.dart';
+import 'package:foodigo/features/HomeData/feature_product_model.dart';
 import 'package:foodigo/presentation/screen/all_food_screen/component/single_expension_tile.dart';
 import 'package:foodigo/utils/constraints.dart';
 
+import '../../../../features/HomeData/cubit/search_data_cubit.dart';
+import '../../../../features/Login/bloc/login_bloc.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
+import '../../../../widget/fetch_error_text.dart';
 import '../../../../widget/primary_button.dart';
 
 class FilterBottomSheet extends StatefulWidget {
@@ -14,6 +24,106 @@ class FilterBottomSheet extends StatefulWidget {
 }
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
+  late SearchDataCubit searchDataCubit;
+
+  @override
+  void initState() {
+    searchDataCubit = context.read<SearchDataCubit>();
+    searchDataCubit.getSearchAttribute();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<SearchDataCubit, SearchStateModel>(
+        listener: (context, state) {
+      final cars = state.homeDataState;
+      if (cars is HomeDataError) {
+        if (cars.statusCode == 503 || searchDataCubit.feature.isNotEmpty) {
+          Utils.errorSnackBar(context, cars.message);
+        }
+      }
+    }, builder: (context, state) {
+      final food = state.homeDataState;
+      if (food is HomeDataError) {
+        if (food.statusCode == 503 || searchDataCubit.feature.isNotEmpty) {
+          return LoadSearchData(food: searchDataCubit.feature);
+        } else {
+          return FetchErrorText(text: food.message);
+        }
+      } else if (food is HomeDataLoaded) {
+        return LoadSearchData(food: searchDataCubit.feature);
+      } else if (food is HomeDataLoading) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (food is HomeDataInitial) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (searchDataCubit.feature.isNotEmpty) {
+        return LoadSearchData(food: searchDataCubit.feature);
+      } else {
+        return LoadSearchData(food: searchDataCubit.feature);
+      }
+    });
+  }
+}
+
+class LoadSearchData extends StatefulWidget {
+  const LoadSearchData({super.key, required this.food});
+
+  final List<FeaturedProducts> food;
+
+  @override
+  State<LoadSearchData> createState() => _LoadSearchDataState();
+}
+
+class _LoadSearchDataState extends State<LoadSearchData> {
+  late SearchDataCubit searchDataCubit;
+  late List<FeaturedProducts> _displayedList;
+  late TextEditingController _searchController;
+  int? _minPrice;
+  int? _maxPrice;
+  String? _search;
+  String? type;
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+    _displayedList = widget.food;
+    searchDataCubit = context.read<SearchDataCubit>();
+    _searchController =
+        TextEditingController(text: searchDataCubit.state.search);
+    _searchController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    // Cancel any existing debounce timer
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+
+    _debounce = Timer(const Duration(seconds: 1), () {
+      if (query.isNotEmpty) {
+        searchDataCubit.search(query);
+      } else {
+        setState(() {
+          _displayedList = widget.food;
+        });
+      }
+    });
+  }
+
+  void _clearSearch() {
+    _searchController.clear(); // Clear input text
+    searchDataCubit.clearFilters(); // Clear filters in cubit
+    // carsCubit.getAllCarsList(); // Refresh cars list
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -40,16 +150,18 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     const Spacer(),
                     GestureDetector(
                       onTap: () => Navigator.of(context).pop(),
-                      child: CircleAvatar(
+                      child: const CircleAvatar(
                           backgroundColor: redColor,
                           maxRadius: 14.0,
-                          child: const Icon(Icons.clear,
-                              color: whiteColor, size: 20.0)),
+                          child:
+                              Icon(Icons.clear, color: whiteColor, size: 20.0)),
                     ),
                   ],
                 ),
                 Utils.verticalSpace(12.0),
                 TextFormField(
+                  controller: _searchController,
+                  onChanged: _onSearchChanged,
                   decoration: InputDecoration(
                     contentPadding: Utils.symmetric(v: 14.0, h: 14.0),
                     hintText: 'Food search...',
@@ -97,7 +209,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                               value: true,
                               // value: addBillCubit.updatedStaffIds.contains(user.id),
                               activeColor: primaryColor,
-                              side: BorderSide(color: const Color(0xFFE7E7E7)),
+                              side: const BorderSide(color: Color(0xFFE7E7E7)),
                               // shape: RoundedRectangleBorder(side: BorderSide(color: const Color(0xFFE7E7E7))),
                               onChanged: (val) {
                                 // addBillCubit.storeStaffIds(user.id);
@@ -212,7 +324,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       color: blackColor,
                     ),
                     Utils.verticalSpace(16.0),
-                    CustomText(
+                    const CustomText(
                       text: '1000 - 2000',
                       fontSize: 14.0,
                       fontWeight: FontWeight.w400,
@@ -270,7 +382,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 Spacer(flex: 2),
                 Expanded(
                   flex: 2,
-                  child: PrimaryButton(text: 'Search', onPressed: () {}),
+                  child: PrimaryButton(
+                      text: 'Search',
+                      onPressed: () {
+                        searchDataCubit.applyFilters();
+                      }),
                 )
               ],
             ),

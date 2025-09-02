@@ -34,7 +34,7 @@ class _CategoryListState extends State<CategoryList> {
             Navigator.pushNamed(context, RouteNames.allCategoryScreen);
           },
         ),
-        Utils.verticalSpace(16),
+        // Utils.verticalSpace(16),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),

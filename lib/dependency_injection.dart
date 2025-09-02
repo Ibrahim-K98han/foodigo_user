@@ -14,9 +14,15 @@ import 'package:foodigo/features/Order/repository/order_repository.dart';
 import 'package:foodigo/features/ProductDetails/cubit/product_details_cubit.dart';
 import 'package:foodigo/features/ProductDetails/remote/product_details_remote_data_source.dart';
 import 'package:foodigo/features/ProductDetails/repository/product_details_repository.dart';
+import 'package:foodigo/features/Review/cubit/review_cubit.dart';
+import 'package:foodigo/features/Review/remote/review_remote_data_source.dart';
+import 'package:foodigo/features/Review/repository/review_repository.dart';
 import 'package:foodigo/features/SingleRestaurant/cubit/single_restaurant_cubit.dart';
 import 'package:foodigo/features/SingleRestaurant/remote/single_restaurant_remote_data_source.dart';
 import 'package:foodigo/features/SingleRestaurant/repository/single_restaurant_repository.dart';
+import 'package:foodigo/features/WishList/cubit/wish_list_cubit.dart';
+import 'package:foodigo/features/WishList/remote/wish_list_remote_data_source.dart';
+import 'package:foodigo/features/WishList/repository/wish_list_repository.dart';
 import 'package:foodigo/features/add_to_cart/cubit/add_cart_cubit.dart';
 import 'package:foodigo/features/add_to_cart/remote/add_cart_remote_data_source.dart';
 import 'package:foodigo/features/add_to_cart/repository/add_cart_repository.dart';
@@ -33,6 +39,7 @@ import 'features/AllRestaurant/cubit/all_restaurant_cubit.dart';
 import 'features/AllRestaurant/remote/all_restaurant_remote_data_source.dart';
 import 'features/AllRestaurant/repository/all_restaurant_repository.dart';
 import 'features/HomeData/cubit/home_data_cubit.dart';
+import 'features/HomeData/cubit/search_data_cubit.dart';
 import 'features/HomeData/remote/home_data_remote_data_source.dart';
 import 'features/HomeData/repository/home_data_repository.dart';
 
@@ -166,6 +173,26 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<WishListRemoteDataSource>(
+      create: (context) => WishListRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<WishListRepository>(
+      create: (context) => WishListRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<ReviewRemoteDataSource>(
+      create: (context) => ReviewRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<ReviewRepository>(
+      create: (context) => ReviewRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -224,6 +251,24 @@ class DInjector {
     ),
     BlocProvider<OrderCubit>(
       create: (context) => OrderCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<WishListCubit>(
+      create: (context) => WishListCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<ReviewCubit>(
+      create: (context) => ReviewCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<SearchDataCubit>(
+      create: (context) => SearchDataCubit(
         repository: context.read(),
         loginBloc: context.read(),
       ),

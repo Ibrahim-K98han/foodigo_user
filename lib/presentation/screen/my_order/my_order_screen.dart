@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/Order/cubit/order_cubit.dart';
 import 'package:foodigo/features/Order/cubit/order_state.dart';
 import 'package:foodigo/features/Order/model/order_model.dart';
+import 'package:foodigo/utils/k_images.dart';
+import 'package:foodigo/widget/custom_appbar.dart';
+import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/fetch_error_text.dart';
 import 'package:foodigo/widget/page_refresh.dart';
 
@@ -30,12 +33,18 @@ class _MyOrderScreenState extends State<MyOrderScreen>
     orderCubit = context.read<OrderCubit>();
     orderCubit.getOrderData();
 
-    tabController = TabController(length: 6, vsync: this); // 6 টি স্ট্যাটাস
+    tabController = TabController(length: 6, vsync: this);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF6F8FA),
+      appBar: const CustomAppBar(
+        bgColor: Color(0xFFF6F8FA),
+        title: 'My Orders',
+        visibleLeading: false,
+      ),
       body: PageRefresh(
         onRefresh: () async {
           orderCubit.getOrderData();
@@ -71,7 +80,6 @@ class LoadOrderData extends StatelessWidget {
   final List<OrderModel> orders;
   final TabController tabController;
 
-  // order_status → label mapping
   static const Map<int, String> statusMap = {
     1: "Pending",
     2: "Confirmed",
@@ -85,24 +93,31 @@ class LoadOrderData extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // TabBar
-        Material(
-          color: scaffoldBgColor,
-          child: TabBar(
-            controller: tabController,
-            isScrollable: true,
-            labelColor: whiteColor,
-            unselectedLabelColor: blackColor,
-            indicator: BoxDecoration(
-              color: primaryColor,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            tabs: statusMap.values
-                .map((label) => Tab(text: label))
-                .toList(),
+        TabBar(
+          controller: tabController,
+          isScrollable: true,
+          indicator: BoxDecoration(
+            color: primaryColor,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: primaryColor),
           ),
+          indicatorSize: TabBarIndicatorSize.tab,
+          dividerColor: Colors.transparent,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.black,
+          tabs: statusMap.values.map((label) {
+            return Tab(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: CustomText(
+                  text: label,
+                  fontSize: 14,
+                ),
+              ),
+            );
+          }).toList(),
         ),
-        // TabBarView
         Expanded(
           child: TabBarView(
             controller: tabController,
@@ -113,33 +128,22 @@ class LoadOrderData extends StatelessWidget {
               }).toList();
               if (filteredOrders.isEmpty) {
                 return const Center(
-                  child: CustomText(
-                    text: "No Orders Found",
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: blackColor,
-                  ),
+                  child: CustomImage(path: KImages.cartNotFound),
                 );
               }
-
               return ListView.builder(
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
-                shrinkWrap: true, // 👈 ListView height issue fix
-                physics: const BouncingScrollPhysics(), // 👈 safe scrolling
+                shrinkWrap: true,
+                physics: const BouncingScrollPhysics(),
                 itemCount: filteredOrders.length,
                 itemBuilder: (context, index) {
                   final order = filteredOrders[index];
-
-                  // 👇 null safe status parse
-                  final statusValue = int.tryParse(order.orderStatus ?? "0") ?? 0;
-
                   return Padding(
                     padding: Utils.symmetric(h: 20.0, v: 6.0),
                     child: OrderCard(orderModel: order),
                   );
                 },
               );
-
             }).toList(),
           ),
         ),
