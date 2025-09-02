@@ -27,10 +27,11 @@ class AllFoodScreen extends StatelessWidget {
               onTap: () {
                 showModalBottomSheet(
                   context: context,
-                  isScrollControlled: true, // allows full height scrolling content
+                  isScrollControlled: true,
                   backgroundColor: Colors.white,
                   shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(16)),
                   ),
                   builder: (_) => const SizedBox(
                     height: 600,
