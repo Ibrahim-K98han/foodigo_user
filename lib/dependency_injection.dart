@@ -8,6 +8,9 @@ import 'package:foodigo/features/GetProfile/repository/get_profile_repository.da
 import 'package:foodigo/features/Login/bloc/login_bloc.dart';
 import 'package:foodigo/features/Login/remote/login_remote_data.dart';
 import 'package:foodigo/features/Login/repository/login_repository.dart';
+import 'package:foodigo/features/Order/cubit/order_cubit.dart';
+import 'package:foodigo/features/Order/remote/order_remote_data_source.dart';
+import 'package:foodigo/features/Order/repository/order_repository.dart';
 import 'package:foodigo/features/ProductDetails/cubit/product_details_cubit.dart';
 import 'package:foodigo/features/ProductDetails/remote/product_details_remote_data_source.dart';
 import 'package:foodigo/features/ProductDetails/repository/product_details_repository.dart';
@@ -153,6 +156,16 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<OrderRemoteDataSource>(
+      create: (context) => OrderRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<OrderRepository>(
+      create: (context) => OrderRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -205,6 +218,12 @@ class DInjector {
     ),
     BlocProvider<CheckoutCubit>(
       create: (context) => CheckoutCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<OrderCubit>(
+      create: (context) => OrderCubit(
         repository: context.read(),
         loginBloc: context.read(),
       ),

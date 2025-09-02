@@ -26,6 +26,7 @@ class RemoteUrls {
   static const String getAddress = '${baseUrl}dashboard/addresses';
   static const String addAddress = '${baseUrl}dashboard/addresses';
   static const String checkOut = '${baseUrl}checkout/validate';
+  static const String getOrder = '${baseUrl}dashboard/orders';
 
   static String deleteAddress(String id) => '${baseUrl}dashboard/addresses/$id';
 
