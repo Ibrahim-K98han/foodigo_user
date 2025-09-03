@@ -81,31 +81,41 @@ class CartCubit extends Cubit<CartStateModel> {
     );
 
     result.fold(
-      (l) => emit(state.copyWith(
-          cartState: CartIncrementError(l.message, l.statusCode))),
+      (l) =>
+          emit(state.copyWith(cartState: CartError(l.message, l.statusCode))),
       (success) {
         cartModel = success;
-        emit(state.copyWith(cartState: CartIncrementSuccess(success)));
+        emit(state.copyWith(cartState: CartLoaded(success)));
       },
     );
   }
 
   /// Decrement product quantity
   Future<void> decrementProduct(String productId) async {
-    emit(state.copyWith(cartState: CartDecrementLoading()));
-    final result = await _repository.decrementProduct(
-      productId,
-      _loginBloc.userInformation!.token,
-    );
+    final currentItem = state.cartState is CartLoaded
+        ? (state.cartState as CartLoaded)
+            .cartModel
+            .cartItems
+            ?.firstWhere((item) => item.productId.toString() == productId)
+        : null;
 
-    result.fold(
-      (l) => emit(state.copyWith(
-          cartState: CartDecrementError(l.message, l.statusCode))),
-      (success) {
-        cartModel = success;
-        emit(state.copyWith(cartState: CartDecrementSuccess(success)));
-      },
-    );
+    if (currentItem != null && currentItem.qty > 1) {
+      emit(state.copyWith(cartState: CartDecrementLoading()));
+
+      final result = await _repository.decrementProduct(
+        productId,
+        _loginBloc.userInformation!.token,
+      );
+
+      result.fold(
+        (l) =>
+            emit(state.copyWith(cartState: CartError(l.message, l.statusCode))),
+        (success) {
+          cartModel = success;
+          emit(state.copyWith(cartState: CartLoaded(success)));
+        },
+      );
+    }
   }
 
   ///Clear Cart

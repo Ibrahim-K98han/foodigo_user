@@ -82,8 +82,7 @@ class _MyCartScreenState extends State<MyCartScreen> {
           }
         },
         builder: (context, state) {
-          if (state.cartState is CartLoading ||
-              state.cartState is CartInitial) {
+          if (state.cartState is CartLoading) {
             return const LoadingWidget();
           }
 
@@ -92,22 +91,11 @@ class _MyCartScreenState extends State<MyCartScreen> {
             return CartDataLoaded(cartModel: cart);
           }
 
-          if (state.cartState is CartDeleteSuccess) {
-            final cart = (state.cartState as CartDeleteSuccess).updatedCart;
-            return CartDataLoaded(cartModel: cart);
+          if (state.cartState is CartError) {
+            return const Center(child: CustomImage(path: KImages.cartNotFound));
           }
 
-          if (state.cartState is CartIncrementSuccess) {
-            final cart = (state.cartState as CartIncrementSuccess).updatedCart;
-            return CartDataLoaded(cartModel: cart);
-          }
-
-          if (state.cartState is CartDecrementSuccess) {
-            final cart = (state.cartState as CartDecrementSuccess).updatedCart;
-            return CartDataLoaded(cartModel: cart);
-          }
-
-          return const Center(child: CustomImage(path: KImages.cartNotFound));
+          return const SizedBox.shrink();
         },
       ),
       bottomNavigationBar: BlocBuilder<CartCubit, CartStateModel>(
@@ -189,36 +177,25 @@ class CartDataLoaded extends StatefulWidget {
 }
 
 class _CartDataLoadedState extends State<CartDataLoaded> {
-  late List<CartItems> items;
-
-  @override
-  void initState() {
-    super.initState();
-    items = List.from(widget.cartModel.cartItems ?? []);
-  }
+  // late List<CartItems> items;
+  //
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   items = List.from(widget.cartModel.cartItems ?? []);
+  // }
 
   @override
   Widget build(BuildContext context) {
+    final items = widget.cartModel.cartItems ?? [];
     return ListView(
       children: [
         Container(
           padding: Utils.symmetric(),
-          decoration: const BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x0A000000),
-                blurRadius: 40,
-                offset: Offset(0, 2),
-                spreadRadius: 10,
-              )
-            ],
-          ),
-          child: (widget.cartModel.cartItems != null &&
-                  widget.cartModel.cartItems!.isNotEmpty)
+          child: items.isNotEmpty
               ? Column(
-                  children: List.generate(widget.cartModel.cartItems!.length,
-                      (index) {
-                    final cartItem = widget.cartModel.cartItems![index];
+                  children: List.generate(items.length, (index) {
+                    final cartItem = items[index];
                     return Padding(
                       padding: Utils.only(bottom: 12.0),
                       child: CheckoutCart(
@@ -253,7 +230,7 @@ class CheckoutCart extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final Product? product = cartItem.product;
-    final productId = product?.id ?? cartItem.cartId;
+    final productId = cartItem.productId;
     final cartCubit = context.read<CartCubit>();
     return Dismissible(
       key: ValueKey(product?.id ?? cartItem.cartId),
