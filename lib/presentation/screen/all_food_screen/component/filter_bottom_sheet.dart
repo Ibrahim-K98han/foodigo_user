@@ -57,7 +57,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      searchCubit.search;
+      searchCubit.updateSearch(query);
     });
   }
 
@@ -99,14 +99,15 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       _maxPrice = values.end.toInt();
     });
 
-    searchCubit.minPrice.toString();
-    searchCubit.maxPrice.toString();
+    searchCubit.minPriceFilter(_minPrice.toString());
+    searchCubit.maxPriceFilter(_maxPrice.toString());
   }
 
   void _onSortChanged(String sort) {
     setState(() {
       selectedSort = sort;
     });
+    searchCubit.updateSort(sort);
   }
 
   void _clearAll() {

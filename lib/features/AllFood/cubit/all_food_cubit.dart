@@ -115,11 +115,11 @@ class AllFoodCubit extends Cubit<AllFoodState> {
 
     // 🔹 sort filter
     if (sort.isNotEmpty) {
-      if (sort == 'Price Low-High') {
+      if (sort == 'price_min') {
         result.sort((a, b) => int.parse(a.price).compareTo(int.parse(b.price)));
-      } else if (sort == 'Price High-Low') {
+      } else if (sort == 'price_max') {
         result.sort((a, b) => int.parse(b.price).compareTo(int.parse(a.price)));
-      } else if (sort == 'Most Recent') {
+      } else if (sort == 'most_recent') {
         result.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       }
     }
