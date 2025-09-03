@@ -17,6 +17,7 @@ import '../../../../utils/utils.dart';
 import '../../../../widget/custom_image.dart';
 import '../../../../widget/fetch_error_text.dart';
 import '../../../../widget/loading_widget.dart';
+import '../../product_details/product_details_screen.dart';
 
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
@@ -123,6 +124,7 @@ class LoadWishListData extends StatelessWidget {
     );
   }
 }
+
 class WishCard extends StatelessWidget {
   const WishCard({
     super.key,
@@ -230,7 +232,38 @@ class WishCard extends StatelessWidget {
                       // Add to Cart button
                       GestureDetector(
                         onTap: () async {
-                          // Handle add to cart
+                          showModalBottomSheet(
+                            context: context,
+                            showDragHandle: true,
+                            backgroundColor: whiteColor,
+                            constraints: BoxConstraints.loose(
+                              Size(
+                                Utils.mediaQuery(context).width,
+                                Utils.mediaQuery(context).height * 0.9,
+                              ),
+                            ),
+                            isScrollControlled: true,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(Utils.radius(10.0)),
+                                topRight: Radius.circular(Utils.radius(10.0)),
+                              ),
+                            ),
+                            builder: (context) => DraggableScrollableSheet(
+                              initialChildSize: 0.85,
+                              minChildSize: 0.5,
+                              maxChildSize: 0.95,
+                              expand: false,
+                              builder: (context, scrollController) {
+                                return SingleChildScrollView(
+                                  controller: scrollController,
+                                  child: ProductDetailsScreen(
+                                    id: product.id,
+                                  ),
+                                );
+                              },
+                            ),
+                          );
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(right: 6.0),
@@ -263,4 +296,3 @@ class WishCard extends StatelessWidget {
     );
   }
 }
-

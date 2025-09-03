@@ -25,16 +25,19 @@ class RemoteUrls {
 
   static const String getAddress = '${baseUrl}dashboard/addresses';
   static const String addAddress = '${baseUrl}dashboard/addresses';
+
+  static String updateAddress(String id) => '${baseUrl}dashboard/addresses/$id';
+
+  static String deleteAddress(String id) => '${baseUrl}dashboard/addresses/$id';
   static const String checkOut = '${baseUrl}checkout/validate';
   static const String getOrder = '${baseUrl}dashboard/orders';
   static const String getWishList = '${baseUrl}wishlist';
   static const String addWishList = '${baseUrl}wishlist/add';
 
   static String removeWishList(String id) => '${baseUrl}wishlist/remove/$id';
-
-  static String deleteAddress(String id) => '${baseUrl}dashboard/addresses/$id';
   static const String getReview = '${baseUrl}dashboard/reviews';
   static const String getSearch = '${baseUrl}home/search';
+  static const String logout = '${baseUrl}auth/logout';
 
   static imageUrl(String imageUrl) => rootUrl + imageUrl;
 }

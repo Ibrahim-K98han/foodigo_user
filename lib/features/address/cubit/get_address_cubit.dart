@@ -62,10 +62,11 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
     emit(const AddressStateModel());
   }
 
+  ///Add address
   Future<void> addAddress() async {
     // Ensure productId is in state
     emit(state.copyWith(addressState: AddAddressStateLoading()));
-    log("cart body: ${state.toMap()}");
+    log("address body: ${state.toMap()}");
 
     final uri = Utils.tokenWithCode(
       RemoteUrls.addAddress,
@@ -94,11 +95,12 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
     );
   }
 
+  ///Show Address
   Future<void> getAllAddressData() async {
     emit(state.copyWith(addressState: AllAddressLoading()));
 
-    final result = await _repository
-        .getAllRestaurantData(_loginBloc.userInformation!.token);
+    final result =
+        await _repository.getAllAddressData(_loginBloc.userInformation!.token);
 
     result.fold(
       (l) => emit(state.copyWith(
@@ -109,6 +111,7 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
     );
   }
 
+  ///Delete Address
   Future<void> deleteAddress(String id) async {
     emit(state.copyWith(addressState: DeleteAddressLoading(id)));
 
@@ -121,6 +124,32 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
       (success) {
         final updated = getAddress.where((e) => e.id.toString() != id).toList();
         emit(state.copyWith(addressState: AllAddressLoaded(updated)));
+      },
+    );
+  }
+
+  /// Update address
+  Future<void> updateAddress(String id) async {
+    emit(state.copyWith(addressState: UpdateAddressLoading(id)));
+    log("update address body: ${state.toMap()}");
+
+    final result = await _repository.updateAddress(
+        state, _loginBloc.userInformation!.token, id);
+
+    result.fold(
+      (failure) {
+        if (failure is InvalidAuthData) {
+          emit(state.copyWith(
+              addressState: UpdateAddressFormValidate(failure.errors)));
+        } else {
+          emit(state.copyWith(
+              addressState:
+                  UpdateAddressError(failure.message, failure.statusCode)));
+        }
+      },
+      (success) {
+        addr = success;
+        emit(state.copyWith(addressState: UpdateAddressSuccess(success)));
       },
     );
   }

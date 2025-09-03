@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../features/ProductDetails/cubit/product_details_cubit.dart';
 import '../../../../features/add_to_cart/cubit/add_cart_cubit.dart';
+import '../../../../features/add_to_cart/model/add_cart_state_model.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
@@ -65,68 +66,66 @@ class _SelectAddonSectionState extends State<SelectAddonSection> {
                 ],
               ),
               children: [
-                Padding(
-                  padding: Utils.symmetric(h: 10.0),
-                  child: Column(
-                    children: addonData.map((addonId) {
-                      final isChecked = selectedAddons.contains(addonId);
-                      final currentQty =
-                          addCartCubit.state.addonsQty['$addonId'] ?? 1;
+                BlocConsumer<AddCartCubit, AddCartStateModel>(
+                  listener: (context, state) {},
+                  builder: (context, state) {
+                    return Column(
+                      children: addonData.map((addonId) {
+                        final isChecked = state.addons.contains(addonId);
+                        final qty = state.addonsQty['$addonId'] ?? 1;
 
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: CheckboxListTile(
-                              title: Text('Addon $addonId'),
-                              value: isChecked,
-                              activeColor: primaryColor,
-                              onChanged: (val) {
-                                setState(() {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: CustomText(
+                                  text: 'Addon $addonId',
+                                  fontSize: 14,
+                                ),
+                                value: isChecked,
+                                activeColor: primaryColor,
+                                onChanged: (val) {
+                                  final selected = List<int>.from(state.addons);
                                   if (val == true) {
-                                    selectedAddons.add(addonId);
+                                    selected.add(addonId);
                                   } else {
-                                    selectedAddons.remove(addonId);
+                                    selected.remove(addonId);
                                   }
-                                  // Update selected addons in Cubit
-                                  addCartCubit.selectAddons(selectedAddons);
-                                });
-                              },
-                              controlAffinity: ListTileControlAffinity.leading,
+                                  context
+                                      .read<AddCartCubit>()
+                                      .selectAddons(selected);
+                                },
+                                controlAffinity:
+                                    ListTileControlAffinity.leading,
+                              ),
                             ),
-                          ),
-
-                          ///================ Increment/Decrement Buttons =================///
-                          if (isChecked)
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.remove_circle_outline,color: primaryColor,),
-                                  onPressed: () {
-                                    if (currentQty > 1) {
-                                      final updatedQty = Map<String, int>.from(
-                                          addCartCubit.state.addonsQty);
-                                      updatedQty['$addonId'] = currentQty - 1;
-                                      addCartCubit.updateAddonQty(updatedQty);
-                                    }
-                                  },
-                                ),
-                                Text('$currentQty'),
-                                IconButton(
-                                  icon: const Icon(Icons.add_circle_outline,color: primaryColor,),
-                                  onPressed: () {
-                                    final updatedQty = Map<String, int>.from(
-                                        addCartCubit.state.addonsQty);
-                                    updatedQty['$addonId'] = currentQty + 1;
-                                    addCartCubit.updateAddonQty(updatedQty);
-                                  },
-                                ),
-                              ],
-                            ),
-                        ],
-                      );
-                    }).toList(),
-                  ),
+                            if (isChecked)
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                        Icons.remove_circle_outline,
+                                        color: primaryColor),
+                                    onPressed: () => context
+                                        .read<AddCartCubit>()
+                                        .decrementAddon(addonId),
+                                  ),
+                                  CustomText(text: '$qty'),
+                                  IconButton(
+                                    icon: const Icon(Icons.add_circle_outline,
+                                        color: primaryColor),
+                                    onPressed: () => context
+                                        .read<AddCartCubit>()
+                                        .incrementAddon(addonId),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        );
+                      }).toList(),
+                    );
+                  },
                 ),
               ],
             ),

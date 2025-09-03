@@ -2,10 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/features/HomeData/cubit/home_data_cubit.dart';
+import 'package:foodigo/utils/constraints.dart';
+import 'package:foodigo/widget/custom_text_style.dart';
+import 'package:foodigo/widget/primary_button.dart';
 
+import '../../../../features/AllFood/cubit/all_food_cubit.dart';
 import '../../../../features/HomeData/category_model.dart';
-import '../../../../features/HomeData/cubit/search_data_cubit.dart';
 import '../../../../features/HomeData/cuisines_model.dart';
 
 class FilterBottomSheet extends StatefulWidget {
@@ -18,7 +22,7 @@ class FilterBottomSheet extends StatefulWidget {
 }
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
-  late SearchDataCubit searchCubit;
+  late AllFoodCubit searchCubit;
   late HomeDataCubit homeCubit;
 
   final TextEditingController _searchController = TextEditingController();
@@ -33,10 +37,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   @override
   void initState() {
     super.initState();
-    searchCubit = context.read<SearchDataCubit>();
+    searchCubit = context.read<AllFoodCubit>();
     homeCubit = context.read<HomeDataCubit>();
 
-    _searchController.text = searchCubit.state.search;
+    _searchController.text = searchCubit.search;
 
     _searchController.addListener(() {
       _onSearchChanged(_searchController.text);
@@ -53,7 +57,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      searchCubit.search(query);
+      searchCubit.search;
     });
   }
 
@@ -95,8 +99,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       _maxPrice = values.end.toInt();
     });
 
-    searchCubit.minPrice(_minPrice.toString());
-    searchCubit.maxPrice(_maxPrice.toString());
+    searchCubit.minPrice.toString();
+    searchCubit.maxPrice.toString();
   }
 
   void _onSortChanged(String sort) {
@@ -123,10 +127,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     final cuisines = homeCubit.homeModel?.cuisines ?? [];
     final sorts = [
       'Most Recent',
-      'Price Low-High',
-      'Price High-Low',
-      'Rating',
-      'Popular'
     ];
 
     return SizedBox(
@@ -139,54 +139,111 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               child: TextFormField(
                 controller: _searchController,
                 decoration: const InputDecoration(
-                    hintText: "Search food...",
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.search)),
+                  hintText: "Search food...",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    size: 25,
+                  ),
+                ),
               ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Sort
-                ExpansionTile(
-                  title: const Text("Sort By"),
-                  children: sorts.map((sort) {
-                    return RadioListTile<String>(
-                      title: Text(sort),
-                      value: sort,
-                      groupValue: selectedSort,
-                      onChanged: (val) {
-                        if (val != null) _onSortChanged(val);
-                      },
-                    );
-                  }).toList(),
+                Theme(
+                  data: Theme.of(context)
+                      .copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    iconColor: blackColor,
+                    title: const CustomText(
+                      text: "Sort By",
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    children: sorts.map((sort) {
+                      return RadioListTile<String>(
+                        activeColor: primaryColor,
+                        title: CustomText(
+                          text: sort,
+                          fontSize: 14,
+                        ),
+                        value: sort,
+                        groupValue: selectedSort,
+                        onChanged: (val) {
+                          if (val != null) _onSortChanged(val);
+                        },
+                      );
+                    }).toList(),
+                  ),
                 ),
                 // Categories
-                ExpansionTile(
-                  title: const Text("Category"),
-                  children: categories.map((cat) {
-                    return CheckboxListTile(
-                      title: Text(cat.name),
-                      value: selectedCategoryIds.contains(cat.id.toString()),
-                      onChanged: (val) => _onCategoryChanged(val, cat),
-                    );
-                  }).toList(),
+                Theme(
+                  data: Theme.of(context)
+                      .copyWith(dividerColor: Colors.transparent),
+                  child: Theme(
+                    data: Theme.of(context)
+                        .copyWith(dividerColor: Colors.transparent),
+                    child: ExpansionTile(
+                      iconColor: blackColor,
+                      title: const CustomText(
+                        text: "Category",
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      children: categories.map((cat) {
+                        return CheckboxListTile(
+                          activeColor: primaryColor,
+                          title: CustomText(
+                            text: cat.name,
+                            fontSize: 14,
+                          ),
+                          value:
+                              selectedCategoryIds.contains(cat.id.toString()),
+                          onChanged: (val) => _onCategoryChanged(val, cat),
+                        );
+                      }).toList(),
+                    ),
+                  ),
                 ),
                 // Cuisines
-                ExpansionTile(
-                  title: const Text("Cuisine"),
-                  children: cuisines.map((c) {
-                    return CheckboxListTile(
-                      title: Text(c.name),
-                      value: selectedCuisineIds.contains(c.id.toString()),
-                      onChanged: (val) => _onCuisineChanged(val, c),
-                    );
-                  }).toList(),
+                Theme(
+                  data: Theme.of(context)
+                      .copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    iconColor: blackColor,
+                    title: const CustomText(
+                      text: "Cuisine",
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    children: cuisines.map((c) {
+                      return CheckboxListTile(
+                        activeColor: primaryColor,
+                        title: CustomText(
+                          text: c.name,
+                          fontSize: 14,
+                        ),
+                        value: selectedCuisineIds.contains(c.id.toString()),
+                        onChanged: (val) => _onCuisineChanged(val, c),
+                      );
+                    }).toList(),
+                  ),
                 ),
                 // Price
-                const SizedBox(height: 12),
-                const Text("Price Range"),
+                SizedBox(height: 12.h),
+                Padding(
+                  padding: EdgeInsets.only(left: 15.w),
+                  child: const CustomText(
+                    text: "Price Range",
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 RangeSlider(
+                  activeColor: primaryColor,
+                  inactiveColor: primaryColor.withOpacity(0.2),
                   values: RangeValues((_minPrice ?? 0).toDouble(),
                       (_maxPrice ?? 100).toDouble()),
                   min: 0,
@@ -198,17 +255,32 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 ),
               ],
             ),
-            Row(
-              children: [
-                TextButton(
-                    onPressed: _clearAll, child: const Text("Clear All")),
-                TextButton(
-                    onPressed: () {
-                      searchCubit.applyFilters();
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Search")),
-              ],
+            Padding(
+              padding: EdgeInsets.only(top: 50.h),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: _clearAll,
+                      child: const CustomText(
+                        text: "Clear All",
+                        fontSize: 18,
+                        color: redColor,
+                      ),
+                    ),
+                    PrimaryButton(
+                      minimumSize: Size(120.w, 45.h),
+                      text: 'Search',
+                      fontSize: 16,
+                      onPressed: () {
+                        searchCubit.applyFilters();
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                ),
+              ),
             ),
           ],
         ),

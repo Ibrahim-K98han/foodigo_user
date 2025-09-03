@@ -33,7 +33,12 @@ class AddCartCubit extends Cubit<AddCartStateModel> {
   }
 
   // Update addon quantities
-  void updateAddonQty(Map<String, int> addonsQty) {
+  void incrementAddonQty(Map<String, int> addonsQty) {
+    emit(state.copyWith(addonsQty: Map.from(addonsQty)));
+  }
+
+  // Update addon quantities
+  void decrementAddonQty(Map<String, int> addonsQty) {
     emit(state.copyWith(addonsQty: Map.from(addonsQty)));
   }
 
@@ -51,6 +56,20 @@ class AddCartCubit extends Cubit<AddCartStateModel> {
   void decrementQty() {
     if (state.qty > 1) {
       emit(state.copyWith(qty: state.qty - 1));
+    }
+  }
+
+  void incrementAddon(int addonId) {
+    final updatedQty = Map<String, int>.from(state.addonsQty);
+    updatedQty['$addonId'] = (updatedQty['$addonId'] ?? 0) + 1;
+    emit(state.copyWith(addonsQty: updatedQty));
+  }
+
+  void decrementAddon(int addonId) {
+    final updatedQty = Map<String, int>.from(state.addonsQty);
+    if ((updatedQty['$addonId'] ?? 1) > 1) {
+      updatedQty['$addonId'] = updatedQty['$addonId']! - 1;
+      emit(state.copyWith(addonsQty: updatedQty));
     }
   }
 

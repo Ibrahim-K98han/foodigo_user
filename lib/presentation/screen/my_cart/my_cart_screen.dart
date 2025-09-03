@@ -55,7 +55,7 @@ class _MyCartScreenState extends State<MyCartScreen> {
                 child: GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
-                   cartCubit.clearCart();
+                    cartCubit.clearCart();
                   },
                   child: const CustomText(
                     text: 'Clear All',
@@ -110,13 +110,70 @@ class _MyCartScreenState extends State<MyCartScreen> {
           return const Center(child: CustomImage(path: KImages.cartNotFound));
         },
       ),
-      bottomNavigationBar: Padding(
-        padding: Utils.symmetric(v: 4.0),
-        child: PrimaryButton(
-            text: 'Checkout',
-            onPressed: () {
-              Navigator.pushNamed(context, RouteNames.addressScreen);
-            }),
+      bottomNavigationBar: BlocBuilder<CartCubit, CartStateModel>(
+        builder: (context, state) {
+          if (state.cartState is CartLoaded) {
+            final cart = (state.cartState as CartLoaded).cartModel;
+            if (cart.cartItems != null && cart.cartItems!.isNotEmpty) {
+              return Padding(
+                padding: Utils.symmetric(v: 4.0),
+                child: PrimaryButton(
+                  text: 'Checkout',
+                  onPressed: () {
+                    Navigator.pushNamed(context, RouteNames.addressScreen);
+                  },
+                ),
+              );
+            }
+          }
+
+          if (state.cartState is CartDeleteSuccess) {
+            final cart = (state.cartState as CartDeleteSuccess).updatedCart;
+            if (cart.cartItems != null && cart.cartItems!.isNotEmpty) {
+              return Padding(
+                padding: Utils.symmetric(v: 4.0),
+                child: PrimaryButton(
+                  text: 'Checkout',
+                  onPressed: () {
+                    Navigator.pushNamed(context, RouteNames.addressScreen);
+                  },
+                ),
+              );
+            }
+          }
+
+          if (state.cartState is CartIncrementSuccess) {
+            final cart = (state.cartState as CartIncrementSuccess).updatedCart;
+            if (cart.cartItems != null && cart.cartItems!.isNotEmpty) {
+              return Padding(
+                padding: Utils.symmetric(v: 4.0),
+                child: PrimaryButton(
+                  text: 'Checkout',
+                  onPressed: () {
+                    Navigator.pushNamed(context, RouteNames.addressScreen);
+                  },
+                ),
+              );
+            }
+          }
+
+          if (state.cartState is CartDecrementSuccess) {
+            final cart = (state.cartState as CartDecrementSuccess).updatedCart;
+            if (cart.cartItems != null && cart.cartItems!.isNotEmpty) {
+              return Padding(
+                padding: Utils.symmetric(v: 4.0),
+                child: PrimaryButton(
+                  text: 'Checkout',
+                  onPressed: () {
+                    Navigator.pushNamed(context, RouteNames.addressScreen);
+                  },
+                ),
+              );
+            }
+          }
+
+          return const SizedBox.shrink();
+        },
       ),
     );
   }

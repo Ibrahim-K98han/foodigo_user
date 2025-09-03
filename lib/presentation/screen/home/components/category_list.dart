@@ -51,6 +51,11 @@ class _CategoryListState extends State<CategoryList> {
                       setState(() {
                         selectedIndex = index;
                       });
+                      Navigator.pushNamed(
+                        context,
+                        RouteNames.allFoodScreen,
+                        arguments: widget.categories[index],
+                      );
                     },
                     categories: widget.categories[index],
                   ),
@@ -82,7 +87,7 @@ class CategoryCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(50.0),
       onTap: onTap,
       child: Container(
-          padding: Utils.symmetric(h: 16.0, v: 10.0),
+          padding: Utils.symmetric(h: 12.0, v: 10.0),
           decoration: BoxDecoration(
             color: whiteColor, // always white background
             borderRadius: BorderRadius.circular(50.0),
@@ -100,13 +105,15 @@ class CategoryCard extends StatelessWidget {
                 width: 20,
                 fit: BoxFit.cover,
               ),
-              Utils.horizontalSpace(6.0),
+              Utils.horizontalSpace(4.0),
               Flexible(
                 child: CustomText(
                   text: categories.name,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   overflow: TextOverflow.ellipsis,
+                  maxLine: 1,
+                  textAlign: TextAlign.center,
                 ),
               ),
             ],

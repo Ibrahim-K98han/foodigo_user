@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/AllFood/remote/all_food_remote_data.dart';
+import 'package:foodigo/features/AllFood/repository/all_food_repository.dart';
 import 'package:foodigo/features/Cart/cubit/cart_cubit.dart';
 import 'package:foodigo/features/Cart/remote/cart_remote_data_source.dart';
 import 'package:foodigo/features/Cart/repository/cart_repository.dart';
@@ -39,7 +41,7 @@ import 'features/AllRestaurant/cubit/all_restaurant_cubit.dart';
 import 'features/AllRestaurant/remote/all_restaurant_remote_data_source.dart';
 import 'features/AllRestaurant/repository/all_restaurant_repository.dart';
 import 'features/HomeData/cubit/home_data_cubit.dart';
-import 'features/HomeData/cubit/search_data_cubit.dart';
+import 'features/AllFood/cubit/all_food_cubit.dart';
 import 'features/HomeData/remote/home_data_remote_data_source.dart';
 import 'features/HomeData/repository/home_data_repository.dart';
 
@@ -193,6 +195,16 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<AllFoodRemoteDataSource>(
+      create: (context) => AllFoodRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<AllFoodRepository>(
+      create: (context) => AllFoodRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -267,8 +279,8 @@ class DInjector {
         loginBloc: context.read(),
       ),
     ),
-    BlocProvider<SearchDataCubit>(
-      create: (context) => SearchDataCubit(
+    BlocProvider<AllFoodCubit>(
+      create: (context) => AllFoodCubit(
         repository: context.read(),
         loginBloc: context.read(),
       ),

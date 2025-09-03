@@ -10,7 +10,8 @@ import '../../../data/local_data_source.dart';
 abstract class LoginRepository {
   Future<Either<dynamic, UserResponseModel>> login(LoginStateModel body);
 
-// Future<Either<Failure, String>> logout(Uri uri);
+  Future<Either<Failure, String>> logout(Uri uri, String token);
+
 //
   Either<Failure, UserResponseModel> getExistingUserInfo();
 
@@ -37,8 +38,7 @@ class LoginRepositoryImpl implements LoginRepository {
   final LocalDataSources localDataSources;
 
   LoginRepositoryImpl(
-      {required this.remoteDataSources,
-        required this.localDataSources});
+      {required this.remoteDataSources, required this.localDataSources});
 
   @override
   Future<Either<dynamic, UserResponseModel>> login(LoginStateModel body) async {
@@ -65,17 +65,17 @@ class LoginRepositoryImpl implements LoginRepository {
       return Left(DatabaseFailure(e.message));
     }
   }
-//
-// @override
-// Future<Either<Failure, String>> logout(Uri uri) async {
-//   try {
-//     final logout = await remoteDataSources.logout(uri);
-//     localDataSources.clearUserResponse();
-//     return Right(logout['message']);
-//   } on ServerException catch (e) {
-//     return Left(ServerFailure(e.message, e.statusCode));
-//   }
-// }
+
+  @override
+  Future<Either<Failure, String>> logout(Uri uri, String token) async {
+    try {
+      final logout = await remoteDataSources.logout(uri, token);
+      localDataSources.clearUserResponse();
+      return Right(logout['message']);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    }
+  }
 //
 // @override
 // Future<Either<dynamic, String>> signUp(RegisterStateModel body) async {

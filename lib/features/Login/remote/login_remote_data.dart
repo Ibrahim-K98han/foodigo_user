@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 
 abstract class LoginRemoteDataSource {
   Future login(LoginStateModel body);
+
+  Future logout(Uri uri, String token);
 }
 
 class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
@@ -12,11 +14,11 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
 
   LoginRemoteDataSourceImpl({required this.client});
 
-  final contentHeader = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest',
-  };
+  authHeader(String token) => {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+        // 'Accept': "x-www-form-urlencoded/application"
+      };
 
   final postDeleteHeader = {
     'Accept': 'application/json',
@@ -36,6 +38,14 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
 
+    return responseJsonBody;
+  }
+
+  @override
+  Future logout(Uri uri, String token) async {
+    final clientMethod = client.post(uri, headers: authHeader(token));
+    final responseJsonBody =
+        await NetworkParser.callClientWithCatchException(() => clientMethod);
     return responseJsonBody;
   }
 }

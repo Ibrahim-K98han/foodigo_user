@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/Login/bloc/login_bloc.dart';
+import 'package:foodigo/features/Login/bloc/login_event.dart';
+import 'package:foodigo/features/Login/bloc/login_state.dart';
+import 'package:foodigo/features/Login/model/login_state_model.dart';
 import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import '../../../utils/constraints.dart';
@@ -176,57 +181,78 @@ class ProfileImage extends StatelessWidget {
 }
 
 class LogoutPrompt extends StatelessWidget {
-  const LogoutPrompt({
-    super.key,
-  });
+  const LogoutPrompt({super.key});
 
   @override
   Widget build(BuildContext context) {
     return FeedBackDialog(
-        image: KImages.logoutImage,
-        //   height: 280.0,
-        message: "Are you sure you want Logout ?",
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: PrimaryButton(
-                    text: 'Not now',
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    borderRadiusSize: 4.0,
-                    isGradient: false,
-                    bgColor: blackColor,
-                    textColor: whiteColor,
-                    fontSize: 16.0,
-                    minimumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
-                    maximumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
-                  ),
+      image: KImages.logoutImage,
+      message: "Are you sure you want Logout ?",
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(
+                child: PrimaryButton(
+                  text: 'Not now',
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  borderRadiusSize: 4.0,
+                  isGradient: false,
+                  bgColor: blackColor,
+                  textColor: whiteColor,
+                  fontSize: 16.0,
+                  minimumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
+                  maximumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
                 ),
-                Utils.horizontalSpace(20),
-                Expanded(
-                  child: PrimaryButton(
-                    text: 'Logout',
-                    onPressed: () {
+              ),
+              Utils.horizontalSpace(20),
+              Expanded(
+                child: BlocConsumer<LoginBloc, LoginStateModel>(
+                  listener: (context, state) {
+                    if (state.loginState is LoginStateLogoutLoaded) {
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                          RouteNames.authenticationScreen, (route) => false);
-                    },
-                    bgColor: redColor,
-                    textColor: whiteColor,
-                    borderRadiusSize: 4.0,
-                    fontSize: 16.0,
-                    minimumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
-                    maximumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
-                  ),
+                        RouteNames.authenticationScreen,
+                        (route) => false,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state.loginState is LoginStateLogoutLoading) {
+                      return const Center(
+                        child: SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: CircularProgressIndicator(
+                            color: redColor,
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      );
+                    }
+                    return PrimaryButton(
+                      text: 'Logout',
+                      onPressed: () {
+                        context.read<LoginBloc>().add(const LoginEventLogout());
+                      },
+                      bgColor: redColor,
+                      textColor: whiteColor,
+                      borderRadiusSize: 4.0,
+                      fontSize: 16.0,
+                      minimumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
+                      maximumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
+                    );
+                  },
                 ),
-              ],
-            ),
-          ],
-        ));
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 

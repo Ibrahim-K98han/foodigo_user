@@ -38,6 +38,19 @@ class _ChangeAddressScreenState extends State<ChangeAddressScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Select Address'),
+      bottomNavigationBar: Padding(
+        padding: Utils.symmetric(),
+        child: PrimaryButton(
+          text: 'Add Address',
+          onPressed: () {
+            Navigator.pushNamed(
+              context,
+              RouteNames.editAddressScreen,
+              arguments: {"isEdit": false},
+            );
+          },
+        ),
+      ),
       body: PageRefresh(
         onRefresh: () async => addressCubit.getAllAddressData(),
         child: BlocBuilder<GetAddressCubit, AddressStateModel>(
@@ -60,21 +73,15 @@ class _ChangeAddressScreenState extends State<ChangeAddressScreen> {
                 padding: Utils.symmetric(),
                 child: Column(
                   children: [
-                    ...addresses.map((address) => AddressItem(
-                          address: address,
-                          onTap: () {
-                            Navigator.pushNamed(context, RouteNames.orderScreen,
-                                arguments: address);
-                          },
-                        )),
-                    PrimaryButton(
-                      text: 'Add Address',
-                      onPressed: () {
-                        Navigator.pushNamed(
-                            context, RouteNames.editAddressScreen);
-                      },
+                    ...addresses.map(
+                      (address) => AddressItem(
+                        address: address,
+                        onTap: () {
+                          Navigator.pushNamed(context, RouteNames.orderScreen,
+                              arguments: address);
+                        },
+                      ),
                     ),
-                    Utils.verticalSpace(20.0),
                   ],
                 ),
               ),
@@ -121,7 +128,10 @@ class AddressItem extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           Navigator.pushNamed(
-                              context, RouteNames.editAddressScreen);
+                              context, RouteNames.editAddressScreen,
+                              arguments: {
+                                'id': address.id,
+                              });
                         },
                         child: const CustomImage(
                             path: KImages.editIcon, height: 25),

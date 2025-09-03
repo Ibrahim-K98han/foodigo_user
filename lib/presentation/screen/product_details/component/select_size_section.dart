@@ -49,7 +49,6 @@ class _SelectSizeSectionState extends State<SelectSizeSection> {
       ),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-
         child: ExpansionTile(
           title: Row(
             children: [
@@ -120,7 +119,6 @@ class SelectSizeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CheckboxListTile(
-
       activeColor: primaryColor,
       value: isChecked,
       onChanged: onTap,

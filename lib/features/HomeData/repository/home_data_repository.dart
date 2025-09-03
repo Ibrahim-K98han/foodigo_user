@@ -9,7 +9,6 @@ import '../remote/home_data_remote_data_source.dart';
 abstract class HomeDataRepository {
   Future<Either<Failure, HomeModel>> getHomeDataData();
 
-  Future<Either<Failure, FeaturedProducts>> getSearchAttribute(Uri url);
 }
 
 class HomeDataRepositoryImpl implements HomeDataRepository {
@@ -31,15 +30,4 @@ class HomeDataRepositoryImpl implements HomeDataRepository {
     }
   }
 
-  @override
-  Future<Either<Failure, FeaturedProducts>> getSearchAttribute(Uri url) async {
-    try {
-      final result = await remoteDataSource.getSearchAttribute(url);
-      final data = FeaturedProducts.fromMap(result);
-      print('Search=========$data');
-      return Right(data);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message, e.statusCode));
-    }
-  }
 }

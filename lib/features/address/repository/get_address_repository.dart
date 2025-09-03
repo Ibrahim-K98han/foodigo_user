@@ -7,12 +7,15 @@ import '../model/address_state_model.dart';
 import '../remote/get_address_remote_data_source.dart';
 
 abstract class GetAddressRepository {
-  Future<Either<Failure, List<Address>>> getAllRestaurantData(String token);
+  Future<Either<Failure, List<Address>>> getAllAddressData(String token);
 
   Future<Either<Failure, bool>> deleteAddress(String token, String addressId);
 
   Future<Either<dynamic, Address>> addAddress(
       AddressStateModel body, String token);
+
+  Future<Either<dynamic, Address>> updateAddress(
+      AddressStateModel body, String token, String addressId);
 }
 
 class GetAddressRepositoryImpl implements GetAddressRepository {
@@ -22,9 +25,9 @@ class GetAddressRepositoryImpl implements GetAddressRepository {
     required this.remoteDataSource,
   });
 
+  ///Show All Address
   @override
-  Future<Either<Failure, List<Address>>> getAllRestaurantData(
-      String token) async {
+  Future<Either<Failure, List<Address>>> getAllAddressData(String token) async {
     try {
       final result = await remoteDataSource.getAllAddress(token);
       final res = result['data'] as List;
@@ -35,6 +38,7 @@ class GetAddressRepositoryImpl implements GetAddressRepository {
     }
   }
 
+  ///delete Address
   @override
   Future<Either<Failure, bool>> deleteAddress(
       String token, String addressId) async {
@@ -50,6 +54,7 @@ class GetAddressRepositoryImpl implements GetAddressRepository {
     }
   }
 
+  ///Add Address
   @override
   Future<Either<dynamic, Address>> addAddress(
       AddressStateModel body, String token) async {
@@ -69,4 +74,23 @@ class GetAddressRepositoryImpl implements GetAddressRepository {
     }
   }
 
+  ///Update Address
+  @override
+  Future<Either<dynamic, Address>> updateAddress(
+      AddressStateModel body, String token, String addressId) async {
+    try {
+      final result =
+          await remoteDataSource.updateAddress(body, token, addressId);
+      if (result is Map<String, dynamic> && result['data'] != null) {
+        final response = Address.fromMap(result['data']);
+        return Right(response);
+      } else {
+        return const Left(ServerFailure('Invalid response format', 500));
+      }
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    } on InvalidAuthData catch (e) {
+      return Left(InvalidAuthData(e.errors));
+    }
+  }
 }
