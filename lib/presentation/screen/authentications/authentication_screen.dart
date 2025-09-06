@@ -174,7 +174,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                       ),
                       GestureDetector(
                         onTap: () => Navigator.pushNamed(
-                            context, RouteNames.forgotPasswordEmailPhoneScreen),
+                            context, RouteNames.forgotPassScreen),
                         child: const CustomText(
                           text: 'Forgot Password?',
                           fontWeight: FontWeight.w600,

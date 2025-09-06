@@ -44,10 +44,7 @@ class _MyCartScreenState extends State<MyCartScreen> {
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert), // The three-dot icon
             onSelected: (String value) {
-              // Handle selection
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Selected: $value')),
-              );
+              Utils.successSnackBar(context, 'Selected: $value');
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               PopupMenuItem<String>(

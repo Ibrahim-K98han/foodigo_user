@@ -4,6 +4,9 @@ import 'package:foodigo/features/AllFood/repository/all_food_repository.dart';
 import 'package:foodigo/features/Cart/cubit/cart_cubit.dart';
 import 'package:foodigo/features/Cart/remote/cart_remote_data_source.dart';
 import 'package:foodigo/features/Cart/repository/cart_repository.dart';
+import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_cubit.dart';
+import 'package:foodigo/features/ForgotPassword/remote/forgot_password_remote_data_source.dart';
+import 'package:foodigo/features/ForgotPassword/repository/forgot_password_repository.dart';
 import 'package:foodigo/features/GetProfile/cubit/get_profile_cubit.dart';
 import 'package:foodigo/features/GetProfile/remote/get_profile_remote_data_source.dart';
 import 'package:foodigo/features/GetProfile/repository/get_profile_repository.dart';
@@ -34,6 +37,9 @@ import 'package:foodigo/features/address/repository/get_address_repository.dart'
 import 'package:foodigo/features/checkout/cubit/checkout_cubit.dart';
 import 'package:foodigo/features/checkout/remote/checkout_remote_data_source.dart';
 import 'package:foodigo/features/checkout/repository/checkout_repository.dart';
+import 'package:foodigo/features/register/cubit/register_cubit.dart';
+import 'package:foodigo/features/register/remote/register_remote_data_source.dart';
+import 'package:foodigo/features/register/repository/register_repository.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/local_data_source.dart';
@@ -205,6 +211,26 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<RegisterRemoteDataSource>(
+      create: (context) => RegisterRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<RegisterRepository>(
+      create: (context) => RegisterRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<ForgotPasswordRemoteDataSource>(
+      create: (context) => ForgotPasswordRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<ForgotPasswordRepository>(
+      create: (context) => ForgotPasswordRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -283,6 +309,16 @@ class DInjector {
       create: (context) => AllFoodCubit(
         repository: context.read(),
         loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<RegisterCubit>(
+      create: (context) => RegisterCubit(
+        registerRepository: context.read(),
+      ),
+    ),
+    BlocProvider<ForgotPasswordCubit>(
+      create: (context) => ForgotPasswordCubit(
+        forgotPasswordRepository: context.read(),
       ),
     ),
   ];

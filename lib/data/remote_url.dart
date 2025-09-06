@@ -38,6 +38,12 @@ class RemoteUrls {
   static const String getReview = '${baseUrl}dashboard/reviews';
   static const String getSearch = '${baseUrl}home/search';
   static const String logout = '${baseUrl}auth/logout';
+  static const String register = '${baseUrl}auth/register';
+  static const String otpVerify = '${baseUrl}auth/verify-email';
+  static const String resendVerificationCode =
+      '${baseUrl}auth/resend-verification';
+  static const String forgotPassword = '${baseUrl}auth/forgot-password';
+  static const String resetPassword = '${baseUrl}auth/reset-password';
 
   static imageUrl(String imageUrl) => rootUrl + imageUrl;
 }

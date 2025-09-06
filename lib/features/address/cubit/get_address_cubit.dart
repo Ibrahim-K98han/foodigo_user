@@ -62,18 +62,9 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
     emit(const AddressStateModel());
   }
 
-  ///Add address
+  /// Add address
   Future<void> addAddress() async {
-    // Ensure productId is in state
     emit(state.copyWith(addressState: AddAddressStateLoading()));
-    log("address body: ${state.toMap()}");
-
-    final uri = Utils.tokenWithCode(
-      RemoteUrls.addAddress,
-      _loginBloc.userInformation!.token,
-      _loginBloc.state.languageCode,
-    );
-    print('$uri');
     final result =
         await _repository.addAddress(state, _loginBloc.userInformation!.token);
 
@@ -84,13 +75,15 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
               addressState: AddAddressStateFormValidate(failure.errors)));
         } else {
           emit(state.copyWith(
-              addressState:
-                  AddAddresstStateError(failure.message, failure.statusCode)));
+            addressState:
+                AddAddresstStateError(failure.message, failure.statusCode),
+          ));
         }
       },
       (success) {
         addr = success;
-        emit(state.copyWith(addressState: AddAddressStateSuccess(success)));
+        // reload all addresses after success
+        getAllAddressData();
       },
     );
   }
@@ -111,7 +104,7 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
     );
   }
 
-  ///Delete Address
+  /// Delete address
   Future<void> deleteAddress(String id) async {
     emit(state.copyWith(addressState: DeleteAddressLoading(id)));
 
@@ -120,10 +113,11 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
 
     result.fold(
       (l) => emit(state.copyWith(
-          addressState: DeleteAddressError(l.message, l.statusCode))),
-      (success) {
-        final updated = getAddress.where((e) => e.id.toString() != id).toList();
-        emit(state.copyWith(addressState: AllAddressLoaded(updated)));
+        addressState: DeleteAddressError(l.message, l.statusCode),
+      )),
+      (success) async {
+        // reload all addresses after delete
+        await getAllAddressData();
       },
     );
   }

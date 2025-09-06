@@ -7,7 +7,6 @@ import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/WishList/cubit/wish_list_cubit.dart';
 import 'package:foodigo/features/WishList/cubit/wish_list_state.dart';
 import 'package:foodigo/features/WishList/model/wish_list_model.dart';
-import 'package:foodigo/utils/k_images.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
 import 'package:foodigo/widget/page_refresh.dart';

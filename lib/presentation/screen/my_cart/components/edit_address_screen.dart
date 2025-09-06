@@ -261,10 +261,10 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
       bottomNavigationBar: Padding(
         padding: Utils.symmetric(v: 20.0),
         child: PrimaryButton(
-          text: 'Update Now',
+          text: isEdit ? 'Update Now' : 'Save',
           onPressed: () {
             addAddressCubit.addAddress();
-            addAddressCubit.updateAddress(addAddressCubit.addr!.id.toString());
+            // addAddressCubit.updateAddress(addAddressCubit.addr!.id.toString());
             Navigator.pop(context);
           },
         ),

@@ -45,7 +45,7 @@ class GetAddressRepositoryImpl implements GetAddressRepository {
     try {
       final result = await remoteDataSource.deleteAddress(token, addressId);
       if (result['success'] == true) {
-        return Right(true);
+        return const Right(true);
       } else {
         return Left(ServerFailure(result['message'] ?? 'Delete failed', 400));
       }
