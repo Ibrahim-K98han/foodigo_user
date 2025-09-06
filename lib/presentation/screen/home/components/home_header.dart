@@ -1,10 +1,12 @@
 import 'package:badges/badges.dart' as badges;
+import 'package:dartz/dartz.dart' as product;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/GetProfile/cubit/get_profile_cubit.dart';
 import 'package:foodigo/features/Login/bloc/login_bloc.dart';
 
 import '../../../../data/remote_url.dart';
+import '../../../../features/WishList/cubit/wish_list_cubit.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
@@ -156,7 +158,7 @@ class _HomeHeaderState extends State<HomeHeader> {
             ),
           ),
           Positioned(
-            bottom: -15.0,
+            bottom: -18.0,
             left: 0,
             right: 0,
             child: Padding(
@@ -168,7 +170,9 @@ class _HomeHeaderState extends State<HomeHeader> {
                       child: CustomImage(path: KImages.searchIcon),
                     ),
                     suffixIcon: GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, RouteNames.allFoodScreen);
+                      },
                       child: const Padding(
                         padding: EdgeInsets.all(12.0),
                         child: CustomImage(path: KImages.filterIcon),

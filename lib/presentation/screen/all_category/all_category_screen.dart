@@ -5,6 +5,7 @@ import 'package:foodigo/widget/custom_appbar.dart';
 
 import '../../../features/HomeData/cubit/home_data_cubit.dart';
 import '../../../utils/utils.dart';
+import '../../core/routes/route_names.dart';
 
 class AllCategoryScreen extends StatefulWidget {
   const AllCategoryScreen({super.key});
@@ -33,28 +34,34 @@ class _AllCategoryScreenState extends State<AllCategoryScreen> {
           ],
         ),
         child: Padding(
-            padding: Utils.symmetric(),
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: 16.0,
-                crossAxisSpacing: 10.0,
-                childAspectRatio: 2.1,
-              ),
-              itemCount: homeCubit.homeModel!.categories!.length,
-              itemBuilder: (BuildContext context, index) {
-                final category = homeCubit.homeModel!.categories![index];
-                return CategoryCard(
-                  categories: category,
-                  isSelected: selectedIndex == index,
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = index;
-                    });
-                  },
-                );
-              },
-            )),
+          padding: Utils.symmetric(),
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 16.0,
+              crossAxisSpacing: 10.0,
+              childAspectRatio: 2.1,
+            ),
+            itemCount: homeCubit.homeModel!.categories!.length,
+            itemBuilder: (BuildContext context, index) {
+              final category = homeCubit.homeModel!.categories![index];
+              return CategoryCard(
+                categories: category,
+                isSelected: selectedIndex == index,
+                onTap: () {
+                  setState(() {
+                    selectedIndex = index;
+                  });
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.allFoodScreen,
+                    arguments: category,
+                  );
+                },
+              );
+            },
+          ),
+        ),
       ),
     );
   }

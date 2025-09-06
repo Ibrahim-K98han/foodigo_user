@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 import 'package:equatable/equatable.dart';
-import '../cubit/add_car_state.dart';
+import '../cubit/add_cart_state.dart';
 
 class AddCartStateModel extends Equatable {
   final int productId;

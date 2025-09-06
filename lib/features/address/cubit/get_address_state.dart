@@ -103,3 +103,49 @@ class AddressAdded extends AllAddressState {
   @override
   List<Object?> get props => [address];
 }
+
+class UpdateAddressLoading extends AllAddressState {
+  final String id;
+
+  const UpdateAddressLoading(this.id);
+
+  @override
+  List<Object?> get props => [id];
+}
+
+class UpdateAddressLoaded extends AllAddressState {
+  final String message;
+
+  const UpdateAddressLoaded(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class UpdateAddressSuccess extends AllAddressState {
+  final Address updatedAddress;
+
+  const UpdateAddressSuccess(this.updatedAddress);
+
+  @override
+  List<Object?> get props => [updatedAddress];
+}
+
+class UpdateAddressError extends AllAddressState {
+  final String message;
+  final int statusCode;
+
+  const UpdateAddressError(this.message, this.statusCode);
+
+  @override
+  List<Object?> get props => [message, statusCode];
+}
+
+class UpdateAddressFormValidate extends AllAddressState {
+  final Errors errors;
+
+  const UpdateAddressFormValidate(this.errors);
+
+  @override
+  List<Object?> get props => [errors];
+}

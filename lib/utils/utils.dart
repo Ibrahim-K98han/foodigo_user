@@ -4,6 +4,8 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/features/HomeData/category_model.dart';
+import 'package:foodigo/features/HomeData/cuisines_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -16,6 +18,55 @@ class Utils {
   static final _selectedDate = DateTime.now();
 
   static final _initialTime = TimeOfDay.now();
+
+  static void successSnackBar (BuildContext context,String message){
+    final snackBar =   SnackBar(
+      /// need to set following properties for best effect of awesome_snackbar_content
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Oh Hey!!',
+        message:message,
+        contentType: ContentType.success,
+      ),
+    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
+
+  static Uri tokenWithCodeSearch(
+      String url,
+      String search,
+
+      List<Categories> categories,
+      List<Cuisines> cuisines,
+      String minPrice,
+      String maxPrice,
+      ) {
+    // Map query parameters, including the car types
+    final queryParams = {
+      "categories": categories,
+      "cuisines": cuisines,
+      "search": search,
+    };
+
+    // Add features to the query parameters if it's not empty
+    if (categories.isNotEmpty) {
+      for (int i = 0; i < categories.length; i++) {
+        queryParams["categories[$i]"] = categories[i]; // Use the feature directly
+      }
+    }
+
+    if (cuisines.isNotEmpty) {
+      for (int i = 0; i < cuisines.length; i++) {
+        queryParams["cuisines[$i]"] = cuisines[i];
+      }
+    }
+
+    return Uri.parse('$url?').replace(queryParameters: queryParams);
+  }
 
 
   static Future<String?> getAddressFromLatLng(double lat, double lng) async {

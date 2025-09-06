@@ -49,10 +49,7 @@ class CartModel extends Equatable {
     return CartModel(
       cartItems: map['cart_items'] != null
           ? List<CartItems>.from(
-              (map['cart_items'] as List<dynamic>).map<CartItems?>(
-                (x) => CartItems.fromMap(x as Map<String, dynamic>),
-              ),
-            )
+              (map['cart_items'] ?? []).map((x) => CartItems.fromMap(x)))
           : null,
       subtotal: map['subtotal'] ?? 0,
       cartCount: map['cart_count'] ?? 0,
@@ -87,7 +84,7 @@ class CartItems extends Equatable {
   final String size;
   final String sizePrice;
   final int qty;
-  final Addons addons;
+  final Map<String, dynamic> addons;
   final String addonPrice;
   final String totalPrice;
   final Product? product;
@@ -110,67 +107,18 @@ class CartItems extends Equatable {
     required this.updatedAt,
   });
 
-  CartItems copyWith({
-    int? cartId,
-    int? productId,
-    String? size,
-    String? sizePrice,
-    int? qty,
-    Addons? addons,
-    String? addonPrice,
-    String? totalPrice,
-    Product? product,
-    Restaurants? restaurant,
-    String? createdAt,
-    String? updatedAt,
-  }) {
-    return CartItems(
-      cartId: cartId ?? this.cartId,
-      productId: productId ?? this.productId,
-      size: size ?? this.size,
-      sizePrice: sizePrice ?? this.sizePrice,
-      qty: qty ?? this.qty,
-      addons: addons ?? this.addons,
-      addonPrice: addonPrice ?? this.addonPrice,
-      totalPrice: totalPrice ?? this.totalPrice,
-      product: product ?? this.product,
-      restaurant: restaurant ?? this.restaurant,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'cart_id': cartId,
-      'product_id': productId,
-      'size': size,
-      'size_price': sizePrice,
-      'qty': qty,
-      'addons': addons.toMap(),
-      'addon_price': addonPrice,
-      'total_price': totalPrice,
-      'product': product?.toMap(),
-      'restaurant': restaurant?.toMap(),
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-    };
-  }
-
   factory CartItems.fromMap(Map<String, dynamic> map) {
     return CartItems(
-      cartId: map['cart_id'] ?? 0,
-      productId: map['product_id'] is int
-          ? map['product_id'] as int
-          : int.tryParse(map['product_id'].toString()) ?? 0,
+      cartId: map['id'] ?? map['cart_id'] ?? 0,
+      productId: int.tryParse(map['product_id'].toString()) ?? 0,
       size: map['size'] ?? '',
-      sizePrice: map['size_price'] ?? '',
-      qty: map['qty'] is int
-          ? map['qty'] as int
-          : int.tryParse(map['qty'].toString()) ?? 0,
-      addons: Addons.fromMap(map['addons'] as Map<String, dynamic>),
-      addonPrice: map['addon_price'] ?? '',
-      totalPrice: map['total_price'] ?? '',
+      sizePrice: map['size_price'] ?? '0',
+      qty: int.tryParse(map['qty'].toString()) ?? 0,
+      addons: map['addons'] is Map
+          ? map['addons'] as Map<String, dynamic>
+          : <String, dynamic>{},
+      addonPrice: map['addon_price'] ?? '0',
+      totalPrice: map['total_price'] ?? '0',
       product: map['product'] != null
           ? Product.fromMap(map['product'] as Map<String, dynamic>)
           : null,
@@ -182,32 +130,40 @@ class CartItems extends Equatable {
     );
   }
 
-  String toJson() => json.encode(toMap());
-
-  factory CartItems.fromJson(String source) =>
-      CartItems.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  bool get stringify => true;
-
-  @override
-  List<Object> get props {
-    return [
-      cartId,
-      productId,
-      size,
-      sizePrice,
-      qty,
-      addons,
-      addonPrice,
-      totalPrice,
-      product!,
-      restaurant!,
-      createdAt,
-      updatedAt,
-    ];
+  Map<String, dynamic> toMap() {
+    return {
+      'id': cartId,
+      'product_id': productId,
+      'size': size,
+      'size_price': sizePrice,
+      'qty': qty,
+      'addons': addons,
+      'addon_price': addonPrice,
+      'total_price': totalPrice,
+      'product': product?.toMap(),
+      'restaurant': restaurant?.toMap(),
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
   }
+
+  @override
+  List<Object?> get props => [
+    cartId,
+    productId,
+    size,
+    sizePrice,
+    qty,
+    addons,
+    addonPrice,
+    totalPrice,
+    product,
+    restaurant,
+    createdAt,
+    updatedAt,
+  ];
 }
+
 
 class Addons extends Equatable {
   final int i1;

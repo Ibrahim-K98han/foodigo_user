@@ -1,282 +1,291 @@
-import 'package:flutter/material.dart';
-import 'package:foodigo/presentation/screen/all_food_screen/component/single_expension_tile.dart';
-import 'package:foodigo/utils/constraints.dart';
+import 'dart:async';
 
-import '../../../../utils/utils.dart';
-import '../../../../widget/custom_text_style.dart';
-import '../../../../widget/primary_button.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/features/HomeData/cubit/home_data_cubit.dart';
+import 'package:foodigo/utils/constraints.dart';
+import 'package:foodigo/widget/custom_text_style.dart';
+import 'package:foodigo/widget/primary_button.dart';
+
+import '../../../../features/AllFood/cubit/all_food_cubit.dart';
+import '../../../../features/HomeData/category_model.dart';
+import '../../../../features/HomeData/cuisines_model.dart';
 
 class FilterBottomSheet extends StatefulWidget {
-  const FilterBottomSheet({super.key});
+  const FilterBottomSheet({super.key, this.scrollController});
+
+  final ScrollController? scrollController;
 
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();
 }
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
+  late AllFoodCubit searchCubit;
+  late HomeDataCubit homeCubit;
+
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
+
+  Set<String> selectedCategoryIds = {};
+  Set<String> selectedCuisineIds = {};
+  String selectedSort = '';
+  int? _minPrice;
+  int? _maxPrice;
+
+  @override
+  void initState() {
+    super.initState();
+    searchCubit = context.read<AllFoodCubit>();
+    homeCubit = context.read<HomeDataCubit>();
+
+    _searchController.text = searchCubit.search;
+
+    _searchController.addListener(() {
+      _onSearchChanged(_searchController.text);
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      searchCubit.updateSearch(query);
+    });
+  }
+
+  void _onCategoryChanged(bool? value, Categories cat) {
+    setState(() {
+      if (value == true) {
+        selectedCategoryIds.add(cat.id.toString());
+      } else {
+        selectedCategoryIds.remove(cat.id.toString());
+      }
+    });
+
+    final selected = homeCubit.homeModel?.categories
+            ?.where((c) => selectedCategoryIds.contains(c.id.toString()))
+            .toList() ??
+        [];
+    searchCubit.categories(selected);
+  }
+
+  void _onCuisineChanged(bool? value, Cuisines cuisine) {
+    setState(() {
+      if (value == true) {
+        selectedCuisineIds.add(cuisine.id.toString());
+      } else {
+        selectedCuisineIds.remove(cuisine.id.toString());
+      }
+    });
+
+    final selected = homeCubit.homeModel?.cuisines
+            ?.where((c) => selectedCuisineIds.contains(c.id.toString()))
+            .toList() ??
+        [];
+    searchCubit.cuisine(selected);
+  }
+
+  void _onPriceChanged(RangeValues values) {
+    setState(() {
+      _minPrice = values.start.toInt();
+      _maxPrice = values.end.toInt();
+    });
+
+    searchCubit.minPriceFilter(_minPrice.toString());
+    searchCubit.maxPriceFilter(_maxPrice.toString());
+  }
+
+  void _onSortChanged(String sort) {
+    setState(() {
+      selectedSort = sort;
+    });
+    searchCubit.updateSort(sort);
+  }
+
+  void _clearAll() {
+    setState(() {
+      selectedCategoryIds.clear();
+      selectedCuisineIds.clear();
+      selectedSort = '';
+      _minPrice = null;
+      _maxPrice = null;
+      _searchController.clear();
+    });
+    searchCubit.clearFilters();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            padding: Utils.symmetric(h: 16.0).copyWith(top: 16.0),
-            scrollDirection: Axis.vertical,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // const Spacer(),
-                    const CustomText(
-                      text: 'Search Food',
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w500,
-                      color: greyColor,
-                    ),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: CircleAvatar(
-                          backgroundColor: redColor,
-                          maxRadius: 14.0,
-                          child: const Icon(Icons.clear,
-                              color: whiteColor, size: 20.0)),
-                    ),
-                  ],
-                ),
-                Utils.verticalSpace(12.0),
-                TextFormField(
-                  decoration: InputDecoration(
-                    contentPadding: Utils.symmetric(v: 14.0, h: 14.0),
-                    hintText: 'Food search...',
-                    border: OutlineInputBorder(
-                      borderRadius: Utils.borderRadius(r: 4.0),
-                      borderSide: const BorderSide(color: borderColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: Utils.borderRadius(r: 4.0),
-                      borderSide: const BorderSide(color: borderColor),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: Utils.borderRadius(r: 4.0),
-                      borderSide: const BorderSide(color: borderColor),
-                    ),
-                    fillColor: const Color(0xFFFAFAFA),
-                    //fillColor: fillColor,
-                    filled: true,
+    final categories = homeCubit.homeModel?.categories ?? [];
+    final cuisines = homeCubit.homeModel?.cuisines ?? [];
+    final sorts = [
+      'Most Recent',
+    ];
+
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.85,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextFormField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: "Search food...",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    size: 25,
                   ),
                 ),
-                Utils.verticalSpace(12.0),
-                SingleExpansionTile(
-                  heading: 'Sort By',
-                  child: List.generate(5, (index) {
-                    return Padding(
-                      padding: Utils.symmetric(v: 4.0, h: 0.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              padding: Utils.symmetric(v: 4.0, h: 4.0),
-                              // decoration: BoxDecoration(color: redColor),
-                              child: const CustomText(
-                                  text: 'Most Recent',
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.w400,
-                                  color: greyColor),
-                            ),
-                          ),
-                          Transform.scale(
-                            scale: 1.2,
-                            child: Checkbox(
-                              // value: state.staffs.contains(user.id),
-                              value: true,
-                              // value: addBillCubit.updatedStaffIds.contains(user.id),
-                              activeColor: primaryColor,
-                              side: BorderSide(color: const Color(0xFFE7E7E7)),
-                              // shape: RoundedRectangleBorder(side: BorderSide(color: const Color(0xFFE7E7E7))),
-                              onChanged: (val) {
-                                // addBillCubit.storeStaffIds(user.id);
-                                // print('staff id ${user.id}');
-                              },
-                              visualDensity: const VisualDensity(
-                                horizontal: -4.0,
-                                vertical: -4.0,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                ),
-                Utils.verticalSpace(12.0),
-                SingleExpansionTile(
-                  heading: 'Category',
-                  child: List.generate(5, (index) {
-                    return Padding(
-                      padding: Utils.symmetric(v: 4.0, h: 0.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              padding: Utils.symmetric(v: 4.0, h: 4.0),
-                              // decoration: BoxDecoration(color: redColor),
-                              child: const CustomText(
-                                  text: 'Category',
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.w400,
-                                  color: greyColor),
-                            ),
-                          ),
-                          Transform.scale(
-                            scale: 1.2,
-                            child: Checkbox(
-                              // value: state.staffs.contains(user.id),
-                              value: true,
-                              // value: addBillCubit.updatedStaffIds.contains(user.id),
-                              activeColor: primaryColor,
-                              side: BorderSide(color: const Color(0xFFE7E7E7)),
-                              // shape: RoundedRectangleBorder(side: BorderSide(color: const Color(0xFFE7E7E7))),
-                              onChanged: (val) {
-                                // addBillCubit.storeStaffIds(user.id);
-                                // print('staff id ${user.id}');
-                              },
-                              visualDensity: const VisualDensity(
-                                horizontal: -4.0,
-                                vertical: -4.0,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                ),
-                Utils.verticalSpace(12.0),
-                SingleExpansionTile(
-                  heading: 'Select Cuisine',
-                  child: List.generate(5, (index) {
-                    return Padding(
-                      padding: Utils.symmetric(v: 4.0, h: 0.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              padding: Utils.symmetric(v: 4.0, h: 4.0),
-                              child: const CustomText(
-                                  text: 'Bengli',
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.w400,
-                                  color: greyColor),
-                            ),
-                          ),
-                          Transform.scale(
-                            scale: 1.2,
-                            child: Checkbox(
-                              // value: state.staffs.contains(user.id),
-                              value: true,
-                              // value: addBillCubit.updatedStaffIds.contains(user.id),
-                              activeColor: primaryColor,
-                              side: BorderSide(color: const Color(0xFFE7E7E7)),
-                              // shape: RoundedRectangleBorder(side: BorderSide(color: const Color(0xFFE7E7E7))),
-                              onChanged: (val) {
-                                // addBillCubit.storeStaffIds(user.id);
-                                // print('staff id ${user.id}');
-                              },
-                              visualDensity: const VisualDensity(
-                                horizontal: -4.0,
-                                vertical: -4.0,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                ),
-                Utils.verticalSpace(12.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CustomText(
-                      text: 'Price Range',
-                      fontSize: 18.0,
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Sort
+                Theme(
+                  data: Theme.of(context)
+                      .copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    iconColor: blackColor,
+                    title: const CustomText(
+                      text: "Sort By",
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: blackColor,
                     ),
-                    Utils.verticalSpace(16.0),
-                    CustomText(
-                      text: '1000 - 2000',
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w400,
-                      color: greyColor,
-                    ),
-                    Container(
-                      height: Utils.hSize(30.0),
-                      margin: Utils.only(bottom: 16.0),
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          trackHeight: 5.0,
-                          trackShape: FullWidthTrackShape(),
-                          thumbShape: const RoundSliderThumbShape(
-                              enabledThumbRadius: 8.0),
-                          overlayShape: SliderComponentShape.noOverlay,
+                    children: sorts.map((sort) {
+                      return RadioListTile<String>(
+                        activeColor: primaryColor,
+                        title: CustomText(
+                          text: sort,
+                          fontSize: 14,
                         ),
-                        child: RangeSlider(
-                          values: const RangeValues(10, 60.0),
-                          min: 0,
-                          max: 100,
-                          activeColor: primaryColor,
-                          inactiveColor: greyColor,
-                          labels: const RangeLabels('0', '100'),
-                          onChanged: (RangeValues values) {},
-                        ),
+                        value: sort,
+                        groupValue: selectedSort,
+                        onChanged: (val) {
+                          if (val != null) _onSortChanged(val);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+                // Categories
+                Theme(
+                  data: Theme.of(context)
+                      .copyWith(dividerColor: Colors.transparent),
+                  child: Theme(
+                    data: Theme.of(context)
+                        .copyWith(dividerColor: Colors.transparent),
+                    child: ExpansionTile(
+                      iconColor: blackColor,
+                      title: const CustomText(
+                        text: "Category",
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
+                      children: categories.map((cat) {
+                        return CheckboxListTile(
+                          activeColor: primaryColor,
+                          title: CustomText(
+                            text: cat.name,
+                            fontSize: 14,
+                          ),
+                          value:
+                              selectedCategoryIds.contains(cat.id.toString()),
+                          onChanged: (val) => _onCategoryChanged(val, cat),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+                // Cuisines
+                Theme(
+                  data: Theme.of(context)
+                      .copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    iconColor: blackColor,
+                    title: const CustomText(
+                      text: "Cuisine",
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    children: cuisines.map((c) {
+                      return CheckboxListTile(
+                        activeColor: primaryColor,
+                        title: CustomText(
+                          text: c.name,
+                          fontSize: 14,
+                        ),
+                        value: selectedCuisineIds.contains(c.id.toString()),
+                        onChanged: (val) => _onCuisineChanged(val, c),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                // Price
+                SizedBox(height: 12.h),
+                Padding(
+                  padding: EdgeInsets.only(left: 15.w),
+                  child: const CustomText(
+                    text: "Price Range",
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                RangeSlider(
+                  activeColor: primaryColor,
+                  inactiveColor: primaryColor.withOpacity(0.2),
+                  values: RangeValues((_minPrice ?? 0).toDouble(),
+                      (_maxPrice ?? 100).toDouble()),
+                  min: 0,
+                  max: 100,
+                  divisions: 10,
+                  labels: RangeLabels((_minPrice ?? 0).toString(),
+                      (_maxPrice ?? 100).toString()),
+                  onChanged: _onPriceChanged,
+                ),
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 50.h),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: _clearAll,
+                      child: const CustomText(
+                        text: "Clear All",
+                        fontSize: 18,
+                        color: redColor,
+                      ),
+                    ),
+                    PrimaryButton(
+                      minimumSize: Size(120.w, 45.h),
+                      text: 'Search',
+                      fontSize: 16,
+                      onPressed: () {
+                        searchCubit.applyFilters();
+                        Navigator.pop(context);
+                      },
                     )
                   ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
-        Container(
-          width: Utils.mediaQuery(context).width,
-          // margin: Utils.only(top: 14.0),
-          padding: Utils.only(
-            left: 16.0,
-            right: 16.0,
-            top: 10.0,
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          decoration: BoxDecoration(color: whiteColor, boxShadow: boxShadow),
-          child: Padding(
-            padding: Utils.symmetric(v: 14.0, h: 0.0),
-            child: Row(
-              children: [
-                CustomText(
-                  text: 'Clear all',
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16.0,
-                  decoration: TextDecoration.underline,
-                  color: greyColor,
-                ),
-                Spacer(flex: 2),
-                Expanded(
-                  flex: 2,
-                  child: PrimaryButton(text: 'Search', onPressed: () {}),
-                )
-              ],
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

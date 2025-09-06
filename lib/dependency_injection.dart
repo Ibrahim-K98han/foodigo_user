@@ -1,25 +1,45 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/AllFood/remote/all_food_remote_data.dart';
+import 'package:foodigo/features/AllFood/repository/all_food_repository.dart';
 import 'package:foodigo/features/Cart/cubit/cart_cubit.dart';
 import 'package:foodigo/features/Cart/remote/cart_remote_data_source.dart';
 import 'package:foodigo/features/Cart/repository/cart_repository.dart';
+import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_cubit.dart';
+import 'package:foodigo/features/ForgotPassword/remote/forgot_password_remote_data_source.dart';
+import 'package:foodigo/features/ForgotPassword/repository/forgot_password_repository.dart';
 import 'package:foodigo/features/GetProfile/cubit/get_profile_cubit.dart';
 import 'package:foodigo/features/GetProfile/remote/get_profile_remote_data_source.dart';
 import 'package:foodigo/features/GetProfile/repository/get_profile_repository.dart';
 import 'package:foodigo/features/Login/bloc/login_bloc.dart';
 import 'package:foodigo/features/Login/remote/login_remote_data.dart';
 import 'package:foodigo/features/Login/repository/login_repository.dart';
+import 'package:foodigo/features/Order/cubit/order_cubit.dart';
+import 'package:foodigo/features/Order/remote/order_remote_data_source.dart';
+import 'package:foodigo/features/Order/repository/order_repository.dart';
 import 'package:foodigo/features/ProductDetails/cubit/product_details_cubit.dart';
 import 'package:foodigo/features/ProductDetails/remote/product_details_remote_data_source.dart';
 import 'package:foodigo/features/ProductDetails/repository/product_details_repository.dart';
+import 'package:foodigo/features/Review/cubit/review_cubit.dart';
+import 'package:foodigo/features/Review/remote/review_remote_data_source.dart';
+import 'package:foodigo/features/Review/repository/review_repository.dart';
 import 'package:foodigo/features/SingleRestaurant/cubit/single_restaurant_cubit.dart';
 import 'package:foodigo/features/SingleRestaurant/remote/single_restaurant_remote_data_source.dart';
 import 'package:foodigo/features/SingleRestaurant/repository/single_restaurant_repository.dart';
-import 'package:foodigo/features/add_to_cart/cubit/add_car_cubit.dart';
+import 'package:foodigo/features/WishList/cubit/wish_list_cubit.dart';
+import 'package:foodigo/features/WishList/remote/wish_list_remote_data_source.dart';
+import 'package:foodigo/features/WishList/repository/wish_list_repository.dart';
+import 'package:foodigo/features/add_to_cart/cubit/add_cart_cubit.dart';
 import 'package:foodigo/features/add_to_cart/remote/add_cart_remote_data_source.dart';
 import 'package:foodigo/features/add_to_cart/repository/add_cart_repository.dart';
 import 'package:foodigo/features/address/cubit/get_address_cubit.dart';
 import 'package:foodigo/features/address/remote/get_address_remote_data_source.dart';
 import 'package:foodigo/features/address/repository/get_address_repository.dart';
+import 'package:foodigo/features/checkout/cubit/checkout_cubit.dart';
+import 'package:foodigo/features/checkout/remote/checkout_remote_data_source.dart';
+import 'package:foodigo/features/checkout/repository/checkout_repository.dart';
+import 'package:foodigo/features/register/cubit/register_cubit.dart';
+import 'package:foodigo/features/register/remote/register_remote_data_source.dart';
+import 'package:foodigo/features/register/repository/register_repository.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/local_data_source.dart';
@@ -27,6 +47,7 @@ import 'features/AllRestaurant/cubit/all_restaurant_cubit.dart';
 import 'features/AllRestaurant/remote/all_restaurant_remote_data_source.dart';
 import 'features/AllRestaurant/repository/all_restaurant_repository.dart';
 import 'features/HomeData/cubit/home_data_cubit.dart';
+import 'features/AllFood/cubit/all_food_cubit.dart';
 import 'features/HomeData/remote/home_data_remote_data_source.dart';
 import 'features/HomeData/repository/home_data_repository.dart';
 
@@ -140,6 +161,76 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<CheckoutRemoteDataSource>(
+      create: (context) => CheckoutRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<CheckoutRepository>(
+      create: (context) => CheckoutRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<OrderRemoteDataSource>(
+      create: (context) => OrderRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<OrderRepository>(
+      create: (context) => OrderRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<WishListRemoteDataSource>(
+      create: (context) => WishListRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<WishListRepository>(
+      create: (context) => WishListRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<ReviewRemoteDataSource>(
+      create: (context) => ReviewRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<ReviewRepository>(
+      create: (context) => ReviewRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<AllFoodRemoteDataSource>(
+      create: (context) => AllFoodRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<AllFoodRepository>(
+      create: (context) => AllFoodRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<RegisterRemoteDataSource>(
+      create: (context) => RegisterRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<RegisterRepository>(
+      create: (context) => RegisterRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<ForgotPasswordRemoteDataSource>(
+      create: (context) => ForgotPasswordRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<ForgotPasswordRepository>(
+      create: (context) => ForgotPasswordRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -188,6 +279,46 @@ class DInjector {
       create: (context) => GetAddressCubit(
         repository: context.read(),
         loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<CheckoutCubit>(
+      create: (context) => CheckoutCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<OrderCubit>(
+      create: (context) => OrderCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<WishListCubit>(
+      create: (context) => WishListCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<ReviewCubit>(
+      create: (context) => ReviewCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<AllFoodCubit>(
+      create: (context) => AllFoodCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<RegisterCubit>(
+      create: (context) => RegisterCubit(
+        registerRepository: context.read(),
+      ),
+    ),
+    BlocProvider<ForgotPasswordCubit>(
+      create: (context) => ForgotPasswordCubit(
+        forgotPasswordRepository: context.read(),
       ),
     ),
   ];

@@ -1,22 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/features/AllFood/cubit/all_food_cubit.dart';
+import 'package:foodigo/features/AllFood/cubit/all_food_state.dart';
+import 'package:foodigo/features/AllFood/cubit/all_food_state_model.dart';
+import 'package:foodigo/features/AllFood/model/all_food_model.dart';
+import 'package:foodigo/features/HomeData/category_model.dart';
+import 'package:foodigo/features/HomeData/feature_product_model.dart';
+import 'package:foodigo/features/HomeData/restaurant_model.dart';
 import 'package:foodigo/presentation/screen/home/components/arrival_food.dart';
 import 'package:foodigo/utils/k_images.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_image.dart';
+import 'package:foodigo/widget/custom_text_style.dart';
 
 import '../../../features/HomeData/cubit/home_data_cubit.dart';
 import '../../../utils/constraints.dart';
 import '../../../utils/utils.dart';
+import '../../../widget/fetch_error_text.dart';
+import '../../../widget/loading_widget.dart';
+import '../../../widget/page_refresh.dart';
+import 'component/all_food_cart.dart';
 import 'component/filter_bottom_sheet.dart';
 
-class AllFoodScreen extends StatelessWidget {
-  const AllFoodScreen({super.key});
+class AllFoodScreen extends StatefulWidget {
+  const AllFoodScreen({
+    super.key,
+  });
+
+  @override
+  State<AllFoodScreen> createState() => _AllFoodScreenState();
+}
+
+class _AllFoodScreenState extends State<AllFoodScreen> {
+  late AllFoodCubit allFoodCubit;
+  late HomeDataCubit hCubit;
+
+  @override
+  void initState() {
+    allFoodCubit = context.read<AllFoodCubit>();
+    hCubit = context.read<HomeDataCubit>();
+    allFoodCubit.getAllFood();
+    hCubit.getHomeDataData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final hCubit = context.read<HomeDataCubit>();
     return Scaffold(
       appBar: CustomAppBar(
         title: 'All Food ',
@@ -26,20 +56,18 @@ class AllFoodScreen extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 showModalBottomSheet(
-                    context: context,
-                    //useSafeArea: true,
-                    backgroundColor: whiteColor,
-                    constraints: BoxConstraints.loose(
-                      Size(Utils.mediaQuery(context).width,
-                          Utils.mediaQuery(context).height * 0.9),
-                    ),
-                    isScrollControlled: true,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(Utils.radius(16.0)),
-                            topRight: Radius.circular(Utils.radius(16.0)))),
-                    builder: (context) =>
-                        const IntrinsicHeight(child: FilterBottomSheet()));
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.white,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(16)),
+                  ),
+                  builder: (_) => const SizedBox(
+                    height: 600,
+                    child: FilterBottomSheet(),
+                  ),
+                );
               },
               child: CustomImage(
                 path: KImages.filterFood,
@@ -51,29 +79,77 @@ class AllFoodScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x0A000000),
-              blurRadius: 40,
-              offset: Offset(0, 2),
-              spreadRadius: 10,
-            )
-          ],
+      body: PageRefresh(
+        onRefresh: () async {
+          allFoodCubit.getAllFood();
+        },
+        child: BlocConsumer<AllFoodCubit, AllFoodState>(
+          listener: (context, state) {
+            if (state is AllFoodError) {
+              Utils.failureSnackBar(context, state.message);
+            }
+          },
+          builder: (context, state) {
+            if (state is AllFoodLoading) {
+              return const LoadingWidget();
+            } else if (state is AllFoodError) {
+              return FetchErrorText(text: state.message);
+            } else if (state is AllFoodLoaded) {
+              return LoadFoodData(
+                food: state.allFood,
+                res: hCubit.homeModel!.restaurants!,
+              ); // Use state.allFood, not cubit.food
+            } else if (state is AllFoodMoreLoaded) {
+              return LoadFoodData(
+                  food: state.allFood.foods ?? [],
+                  res: hCubit.homeModel!.restaurants!);
+            } else {
+              return const FetchErrorText(text: 'Something Went Wrong');
+            }
+          },
         ),
-        child: ListView.builder(
-            itemCount: hCubit.homeModel!.newArrivalProducts!.length,
-            padding: Utils.symmetric(),
-            itemBuilder: (BuildContext context, int index) {
-              return Padding(
-                padding: Utils.only(bottom: 16.0),
-                child: FoodCart(
-                  newArrivalProducts:
-                      hCubit.homeModel!.newArrivalProducts![index],
-                ),
-              );
-            }),
+      ),
+    );
+  }
+}
+
+class LoadFoodData extends StatefulWidget {
+  const LoadFoodData({super.key, required this.food, required this.res});
+
+  final List<Foods> food;
+  final List<Restaurants> res;
+
+  @override
+  State<LoadFoodData> createState() => _LoadFoodDataState();
+}
+
+class _LoadFoodDataState extends State<LoadFoodData> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x0A000000),
+            blurRadius: 40,
+            offset: Offset(0, 2),
+            spreadRadius: 10,
+          )
+        ],
+      ),
+      child: ListView.builder(
+        itemCount: widget.food.length,
+        padding: Utils.symmetric(),
+        itemBuilder: (BuildContext context, int index) {
+          final item = widget.food[index];
+          return Padding(
+            padding: Utils.only(bottom: 16.0),
+            child: AllFoodCart(
+              foods: item,
+              restaurants: widget.res[index],
+            ),
+          );
+        },
       ),
     );
   }

@@ -1,16 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_cubit.dart';
+import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_state.dart';
+import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_state_model.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 
+import '../../../features/register/cubit/register_cubit.dart';
+import '../../../features/register/cubit/register_state.dart';
+import '../../../features/register/model/register_state_model.dart';
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
 import '../../../widget/custom_form.dart';
 import '../../../widget/custom_image.dart';
 import '../../../widget/custom_text_style.dart';
+import '../../../widget/fetch_error_text.dart';
+import '../../../widget/loading_widget.dart';
 import '../../../widget/primary_button.dart';
 import '../../core/routes/route_names.dart';
 
-class ForgotPasswordScreen extends StatelessWidget {
+class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
+
+  @override
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
+
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  late ForgotPasswordCubit fpCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    fpCubit = context.read<ForgotPasswordCubit>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +53,6 @@ class ForgotPasswordScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-
                 children: [
                   Utils.verticalSpace(30),
                   const SizedBox(
@@ -55,28 +77,75 @@ class ForgotPasswordScreen extends StatelessWidget {
                     ),
                   ),
                   Utils.verticalSpace(24),
-                  const Center(child: CustomImage(path: KImages.passwordImage,height: 160,)),
+                  const Center(
+                      child: CustomImage(
+                    path: KImages.passwordImage,
+                    height: 160,
+                  )),
                   Utils.verticalSpace(24),
-                  CustomFormWidget(
-                    label: 'Email or Phone',
-                    bottomSpace: 20.0,
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: 'email or phone number',
-                        fillColor: Color(0xffF8FAFC),
-                        filled: true,
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                    ),
+                  BlocBuilder<ForgotPasswordCubit, ForgotPasswordStateModel>(
+                    builder: (context, state) {
+                      final validate = state.passwordState;
+                      return Column(
+                        children: [
+                          CustomFormWidget(
+                            label: 'Email',
+                            bottomSpace: 16.0,
+                            child: TextFormField(
+                              initialValue: state.email,
+                              onChanged: fpCubit.changeEmail,
+                              decoration: const InputDecoration(
+                                fillColor: Color(0xffF8FAFC),
+                                filled: true,
+                                hintText: 'Enter Email Address',
+                              ),
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required(
+                                  errorText: 'Please enter a Email',
+                                ),
+                              ]),
+                              keyboardType: TextInputType.emailAddress,
+                            ),
+                          ),
+                          if (validate is ForgotPasswordFormValidateError) ...[
+                            if (validate.errors.email.isNotEmpty)
+                              FetchErrorText(text: validate.errors.email.first),
+                          ]
+                        ],
+                      );
+                    },
                   ),
                   Utils.verticalSpace(24),
-                  PrimaryButton(
-                      text: "Send Code",
-                      fontSize: 16,
-                      onPressed: () {
+                  BlocConsumer<ForgotPasswordCubit, ForgotPasswordStateModel>(
+                    listener: (context, state) {
+                      final password = state.passwordState;
+                      if (password is ForgotPasswordStateError) {
+                        Utils.errorSnackBar(context, password.message);
+                      } else if (password is ForgotPasswordStateLoaded) {
+                        Utils.showSnackBar(context, password.message);
                         Navigator.pushNamed(
-                            context, RouteNames.otpScreen);
-                      }),
+                          context,
+                          RouteNames.registerOTPScreen,
+                          arguments: {
+                            "isChangePassword": true,
+                          },
+                        );
+                      }
+                    },
+                    builder: (context, state) {
+                      final password = state.passwordState;
+                      if (password is ForgotPasswordStateLoading) {
+                        return const LoadingWidget();
+                      }
+                      return PrimaryButton(
+                        text: 'Send Code',
+                        onPressed: () {
+                          Utils.closeKeyBoard(context);
+                          fpCubit.forgotPasswordCode();
+                        },
+                      );
+                    },
+                  ),
                   Utils.verticalSpace(12),
                 ],
               ),

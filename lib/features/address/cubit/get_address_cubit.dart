@@ -62,17 +62,9 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
     emit(const AddressStateModel());
   }
 
+  /// Add address
   Future<void> addAddress() async {
-    // Ensure productId is in state
     emit(state.copyWith(addressState: AddAddressStateLoading()));
-    log("cart body: ${state.toMap()}");
-
-    final uri = Utils.tokenWithCode(
-      RemoteUrls.addAddress,
-      _loginBloc.userInformation!.token,
-      _loginBloc.state.languageCode,
-    );
-    print('$uri');
     final result =
         await _repository.addAddress(state, _loginBloc.userInformation!.token);
 
@@ -83,22 +75,25 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
               addressState: AddAddressStateFormValidate(failure.errors)));
         } else {
           emit(state.copyWith(
-              addressState:
-                  AddAddresstStateError(failure.message, failure.statusCode)));
+            addressState:
+                AddAddresstStateError(failure.message, failure.statusCode),
+          ));
         }
       },
       (success) {
         addr = success;
-        emit(state.copyWith(addressState: AddAddressStateSuccess(success)));
+        // reload all addresses after success
+        getAllAddressData();
       },
     );
   }
 
+  ///Show Address
   Future<void> getAllAddressData() async {
     emit(state.copyWith(addressState: AllAddressLoading()));
 
-    final result = await _repository
-        .getAllRestaurantData(_loginBloc.userInformation!.token);
+    final result =
+        await _repository.getAllAddressData(_loginBloc.userInformation!.token);
 
     result.fold(
       (l) => emit(state.copyWith(
@@ -109,6 +104,7 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
     );
   }
 
+  /// Delete address
   Future<void> deleteAddress(String id) async {
     emit(state.copyWith(addressState: DeleteAddressLoading(id)));
 
@@ -117,10 +113,37 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
 
     result.fold(
       (l) => emit(state.copyWith(
-          addressState: DeleteAddressError(l.message, l.statusCode))),
+        addressState: DeleteAddressError(l.message, l.statusCode),
+      )),
+      (success) async {
+        // reload all addresses after delete
+        await getAllAddressData();
+      },
+    );
+  }
+
+  /// Update address
+  Future<void> updateAddress(String id) async {
+    emit(state.copyWith(addressState: UpdateAddressLoading(id)));
+    log("update address body: ${state.toMap()}");
+
+    final result = await _repository.updateAddress(
+        state, _loginBloc.userInformation!.token, id);
+
+    result.fold(
+      (failure) {
+        if (failure is InvalidAuthData) {
+          emit(state.copyWith(
+              addressState: UpdateAddressFormValidate(failure.errors)));
+        } else {
+          emit(state.copyWith(
+              addressState:
+                  UpdateAddressError(failure.message, failure.statusCode)));
+        }
+      },
       (success) {
-        final updated = getAddress.where((e) => e.id.toString() != id).toList();
-        emit(state.copyWith(addressState: AllAddressLoaded(updated)));
+        addr = success;
+        emit(state.copyWith(addressState: UpdateAddressSuccess(success)));
       },
     );
   }

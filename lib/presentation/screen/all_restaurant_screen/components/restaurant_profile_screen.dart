@@ -3,19 +3,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/data/remote_url.dart';
+import 'package:foodigo/features/Review/cubit/review_cubit.dart';
+import 'package:foodigo/features/Review/cubit/review_state.dart';
+import 'package:foodigo/features/Review/model/review_model.dart';
 import 'package:foodigo/features/SingleRestaurant/cubit/single_restaurant_cubit.dart';
 import 'package:foodigo/features/SingleRestaurant/cubit/single_restaurant_state.dart';
 import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/presentation/screen/all_restaurant_screen/components/profile_tab_info.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
-import 'package:foodigo/widget/feedback_dialog.dart';
 import 'package:foodigo/widget/fetch_error_text.dart';
 import 'package:foodigo/widget/loading_widget.dart';
 import 'package:foodigo/widget/primary_button.dart';
+
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
+import '../../../../widget/page_refresh.dart';
 
 class RestaurantProfileScreen extends StatefulWidget {
   const RestaurantProfileScreen({super.key, required this.slug});
@@ -209,50 +213,111 @@ class _RestaurantProfileScreenState extends State<RestaurantProfileScreen> {
 }
 
 void _showReviewDialog(BuildContext context) {
+  final reviewCubit = context.read<ReviewCubit>();
+  reviewCubit.getReview();
   showDialog(
     context: context,
     builder: (context) {
-      return Dialog(
-        backgroundColor: dialogBgColor,
-        // insetPadding: const EdgeInsets.all(12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.r)),
-        child: SizedBox(
-          width: 400,
-          height: 600,
-          child: Column(
-            children: [
-              _dialogHeader(context, 'Reviews'),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: ListView(
-                    children: [
-                      _ratingSummary(),
-                      const SizedBox(height: 16),
-                      _filterChips(),
-                      const SizedBox(height: 16),
-                      ...List.generate(3, (_) => const ReviewCard()),
-                      const SizedBox(height: 12),
-                      Center(
-                        child: TextButton(
-                          onPressed: () {},
-                          child: const CustomText(
-                            text: 'See more',
-                            fontWeight: FontWeight.w500,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+      return PageRefresh(
+        onRefresh: () async {
+          reviewCubit.getReview();
+        },
+        child: BlocConsumer<ReviewCubit, ReviewState>(
+          listener: (context, state) {
+            final review = state;
+            if (review is ReviewError) {
+              if (review.statusCode == 503) {
+                FetchErrorText(text: review.message);
+              }
+            }
+          },
+          builder: (context, state) {
+            final review = state;
+            if (review is ReviewLoading) {
+              return const LoadingWidget();
+            } else if (state is ReviewLoaded) {
+              if (state.reviewModel.review == null ||
+                  state.reviewModel.review!.isEmpty) {
+                return const Center(child: Text("No reviews yet"));
+              }
+              return LoadReviewDialog(reviewModel: state.reviewModel);
+            } else if (review is ReviewLoaded) {
+              return LoadReviewDialog(
+                reviewModel: reviewCubit.reviewModel!,
+              );
+            }
+            if (reviewCubit.reviewModel != null) {
+              return LoadReviewDialog(
+                reviewModel: reviewCubit.reviewModel!,
+              );
+            } else {
+              return const FetchErrorText(text: 'Something Went Wrong');
+            }
+          },
         ),
       );
     },
   );
+}
+
+class LoadReviewDialog extends StatelessWidget {
+  const LoadReviewDialog({super.key, required this.reviewModel});
+
+  final ReviewModel reviewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    if (reviewModel.review == null || reviewModel.review!.isEmpty) {
+      return const Center(child: Text("No reviews yet"));
+    }
+    return Dialog(
+      backgroundColor: dialogBgColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.r)),
+      child: SizedBox(
+        width: 400.w,
+        height: 600.h,
+        child: Column(
+          children: [
+            _dialogHeader(context, 'Reviews'),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: ListView(
+                  children: [
+                    _ratingSummary(),
+                    const SizedBox(height: 16),
+                    _filterChips(),
+                    const SizedBox(height: 16),
+                    ListView(
+                      padding: const EdgeInsets.all(16),
+                      children: [
+                        ...List.generate(
+                          reviewModel.review!.length,
+                          (index) =>
+                              ReviewCard(review: reviewModel.review![index]),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Center(
+                      child: TextButton(
+                        onPressed: () {},
+                        child: const CustomText(
+                          text: 'See more',
+                          fontWeight: FontWeight.w500,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 Widget _dialogHeader(BuildContext context, String? text) {
@@ -504,7 +569,9 @@ Widget build(BuildContext context) {
 }
 
 class ReviewCard extends StatelessWidget {
-  const ReviewCard({super.key});
+  const ReviewCard({super.key, required this.review});
+
+  final Review review;
 
   @override
   Widget build(BuildContext context) {
@@ -523,14 +590,15 @@ class ReviewCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               CircleAvatar(
-                child: CustomImage(path: KImages.profile),
+                child: CustomImage(
+                    path: RemoteUrls.imageUrl(review.product!.image)),
               ),
               SizedBox(width: 8),
               CustomText(
-                text: 'Brain Loon',
+                text: 'Rkdfkdkf',
                 fontWeight: FontWeight.w500,
               ),
             ],
@@ -539,10 +607,11 @@ class ReviewCard extends StatelessWidget {
           Row(
             children: [
               Row(
-                  children: List.generate(
-                      5,
-                      (_) => const Icon(Icons.star,
-                          color: Colors.amber, size: 18))),
+                children: List.generate(
+                  5,
+                  (_) => const Icon(Icons.star, color: Colors.amber, size: 18),
+                ),
+              ),
               Utils.horizontalSpace(4),
               const CustomText(
                 text: '2 days ago',
@@ -551,8 +620,8 @@ class ReviewCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          const CustomText(
-            text: "“Wow tasty, really enjoy it”",
+          CustomText(
+            text: review.review,
           ),
           const SizedBox(height: 6),
           const Row(

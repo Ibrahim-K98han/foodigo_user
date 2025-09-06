@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/Login/repository/login_repository.dart';
 import '../../../data/errors/failure.dart';
+import '../../../data/remote_url.dart';
 import '../model/login_state_model.dart';
 import '../model/user_response_model.dart';
 import 'login_event.dart';
@@ -46,6 +47,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginStateModel> {
     });
 
     on<LoginEventSubmit>(_loginEvent);
+    on<LoginEventLogout>(_logoutEvent);
 
     final result = _repository.getExistingUserInfo();
     result.fold((failure) => _users = null, (success) {
@@ -79,6 +81,33 @@ class LoginBloc extends Bloc<LoginEvent, LoginStateModel> {
         print('Login token: ${_users?.token}');
         emit(state.copyWith(
             loginState: LoginStateLoaded(userResponseModel: success)));
+      },
+    );
+  }
+
+  Future<void> _logoutEvent(
+      LoginEventLogout event, Emitter<LoginStateModel> emit) async {
+    emit(state.copyWith(loginState: LoginStateLogoutLoading()));
+    final url = Uri.parse(RemoteUrls.logout).replace(queryParameters: {
+      'token': userInformation!.token,
+      'lang_code': state.languageCode,
+    });
+    final result = await _repository.logout(url, userInformation!.token);
+    result.fold(
+      (failure) {
+        if (failure.statusCode == 500) {
+          const loadedData = LoginStateLogoutLoaded('logout success', 200);
+          emit(state.copyWith(loginState: loadedData));
+        } else {
+          final errors =
+              LoginStateLogoutError(failure.message, failure.statusCode);
+          emit(state.copyWith(loginState: errors));
+        }
+      },
+      (logout) {
+        _users = null;
+        emit(state.copyWith(loginState: LoginStateLogoutLoaded(logout, 200)));
+        //remoteCredentials();
       },
     );
   }

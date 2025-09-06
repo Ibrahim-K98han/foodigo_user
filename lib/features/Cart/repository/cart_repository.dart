@@ -9,6 +9,12 @@ abstract class CartRepository {
   Future<Either<Failure, CartModel>> getCartData(String token);
 
   Future<Either<Failure, CartModel>> deleteProduct(String token, String id);
+
+  Future<Either<Failure, CartModel>> incrementProduct(String token, String id);
+
+  Future<Either<Failure, CartModel>> decrementProduct(String token, String id);
+
+  Future<Either<Failure, CartModel>> clearCart(String token);
 }
 
 class CartRepositoryImpl implements CartRepository {
@@ -40,6 +46,48 @@ class CartRepositoryImpl implements CartRepository {
     try {
       final result = await remoteDataSource.deleteProduct(token, id);
       final data = CartModel.fromMap(result['data']);
+      return Right(data);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    }
+  }
+
+  ///Product Decrement
+  @override
+  Future<Either<Failure, CartModel>> decrementProduct(
+      String token, String id) async {
+    try {
+      final result = await remoteDataSource.decrementProduct(token, id);
+      final data = CartModel.fromMap(result['data']);
+      return Right(data);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    }
+  }
+
+  ///Product Increment
+  @override
+  Future<Either<Failure, CartModel>> incrementProduct(
+      String token, String id) async {
+    try {
+      final result = await remoteDataSource.incrementProduct(token, id);
+      final data = CartModel.fromMap(result['data']);
+      return Right(data);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    }
+  }
+
+  @override
+  Future<Either<Failure, CartModel>> clearCart(String token) async {
+    try {
+      final result = await remoteDataSource.clearCart(token);
+
+      final dataMap = result['data'] is Map<String, dynamic>
+          ? result['data']
+          : {'cart_items': []};
+
+      final data = CartModel.fromMap(dataMap);
       return Right(data);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));

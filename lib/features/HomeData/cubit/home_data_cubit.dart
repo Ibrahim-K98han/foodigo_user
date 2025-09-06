@@ -9,7 +9,7 @@ class HomeDataCubit extends Cubit<HomeDataState> {
 
   HomeDataCubit({required HomeDataRepository repository})
       : _repository = repository,
-        super(HomeDataInitial());
+        super(const HomeDataInitial());
 
   HomeModel? homeModel;
 
