@@ -44,6 +44,10 @@ class RemoteUrls {
       '${baseUrl}auth/resend-verification';
   static const String forgotPassword = '${baseUrl}auth/forgot-password';
   static const String resetPassword = '${baseUrl}auth/reset-password';
+  static const String applyCoupon = '${baseUrl}cart/coupon/apply';
+  static const String getAllPaymentMethod =
+      '${baseUrl}checkout/payment-methods';
+  static const String changeProfilePass = '${baseUrl}auth/change-password';
 
   static imageUrl(String imageUrl) => rootUrl + imageUrl;
 }

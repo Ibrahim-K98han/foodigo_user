@@ -125,7 +125,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         Utils.showSnackBar(context, password.message);
                         Navigator.pushNamed(
                           context,
-                          RouteNames.registerOTPScreen,
+                          RouteNames.otpScreen,
                           arguments: {
                             "isChangePassword": true,
                           },

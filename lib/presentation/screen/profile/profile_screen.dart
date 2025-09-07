@@ -65,7 +65,7 @@ class ProfileScreen extends StatelessWidget {
                 title: "Change Password",
                 icon: KImages.unlock,
                 onTap: () {
-                  Navigator.pushNamed(context, RouteNames.changePasswordScreen);
+                  Navigator.pushNamed(context, RouteNames.profilePasswordChangeScreen);
                 }),
             Utils.verticalSpace(40.0),
             SwitchWidget(

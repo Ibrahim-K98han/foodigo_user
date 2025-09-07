@@ -1,9 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/AllFood/remote/all_food_remote_data.dart';
 import 'package:foodigo/features/AllFood/repository/all_food_repository.dart';
+import 'package:foodigo/features/ApplyCoupon/cubit/apply_coupon_cubit.dart';
+import 'package:foodigo/features/ApplyCoupon/remote/apply_coupon_remote_data_source.dart';
+import 'package:foodigo/features/ApplyCoupon/repository/apply_coupon_repository.dart';
 import 'package:foodigo/features/Cart/cubit/cart_cubit.dart';
 import 'package:foodigo/features/Cart/remote/cart_remote_data_source.dart';
 import 'package:foodigo/features/Cart/repository/cart_repository.dart';
+import 'package:foodigo/features/ChangeProfilePass/cubit/change_profile_pass_cubit.dart';
+import 'package:foodigo/features/ChangeProfilePass/remote/change_profile_pass_remote_data_source.dart';
+import 'package:foodigo/features/ChangeProfilePass/repository/change_profile_pass_repository.dart';
 import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_cubit.dart';
 import 'package:foodigo/features/ForgotPassword/remote/forgot_password_remote_data_source.dart';
 import 'package:foodigo/features/ForgotPassword/repository/forgot_password_repository.dart';
@@ -16,6 +22,9 @@ import 'package:foodigo/features/Login/repository/login_repository.dart';
 import 'package:foodigo/features/Order/cubit/order_cubit.dart';
 import 'package:foodigo/features/Order/remote/order_remote_data_source.dart';
 import 'package:foodigo/features/Order/repository/order_repository.dart';
+import 'package:foodigo/features/PaymentMethod/cubit/payment_method_cubit.dart';
+import 'package:foodigo/features/PaymentMethod/remote/payment_method_remote_data_source.dart';
+import 'package:foodigo/features/PaymentMethod/repository/payment_method_repository.dart';
 import 'package:foodigo/features/ProductDetails/cubit/product_details_cubit.dart';
 import 'package:foodigo/features/ProductDetails/remote/product_details_remote_data_source.dart';
 import 'package:foodigo/features/ProductDetails/repository/product_details_repository.dart';
@@ -231,6 +240,36 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<ApplyCouponRemoteDataSource>(
+      create: (context) => ApplyCouponRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<ApplyCouponRepository>(
+      create: (context) => ApplyCouponRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<PaymentMethodRemoteDataSource>(
+      create: (context) => PaymentMethodRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<PaymentMethodRepository>(
+      create: (context) => PaymentMethodRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<ChangeProfilePassRemoteDataSource>(
+      create: (context) => ChangeProfilePassRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<ChangeProfilePassRepository>(
+      create: (context) => ChangeProfilePassRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -319,6 +358,24 @@ class DInjector {
     BlocProvider<ForgotPasswordCubit>(
       create: (context) => ForgotPasswordCubit(
         forgotPasswordRepository: context.read(),
+      ),
+    ),
+    BlocProvider<ApplyCouponCubit>(
+      create: (context) => ApplyCouponCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<PaymentCubit>(
+      create: (context) => PaymentCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<ChangeProfilePassCubit>(
+      create: (context) => ChangeProfilePassCubit(
+        registerRepository: context.read(),
+        loginBloc: context.read(),
       ),
     ),
   ];

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/features/ApplyCoupon/cubit/apply_coupon_cubit.dart';
 import 'package:foodigo/features/address/cubit/get_address_cubit.dart';
 import 'package:foodigo/features/checkout/cubit/checkout_cubit.dart';
 import 'package:foodigo/features/checkout/model/checkout_response_model.dart';
@@ -35,11 +36,14 @@ class _OrderScreenState extends State<OrderScreen> {
   final List<String> orderTypeValue = ['delivery', 'pickup'];
 
   late CheckoutCubit checkoutCubit;
+  late ApplyCouponCubit applyCouponCubit;
 
   @override
   void initState() {
     super.initState();
     checkoutCubit = context.read<CheckoutCubit>();
+    applyCouponCubit = context.read<ApplyCouponCubit>();
+
   }
 
   @override
@@ -193,12 +197,14 @@ class _OrderScreenState extends State<OrderScreen> {
                             ),
                             TextFormField(
                               onChanged: (value) {
-                                checkoutCubit.couponCode(value);
+                                applyCouponCubit.couponCode(value);
                               },
                               decoration: InputDecoration(
                                 contentPadding: Utils.symmetric(v: 12.0),
                                 suffixIcon: GestureDetector(
-                                  onTap: () {},
+                                  onTap: () {
+                                    applyCouponCubit.applyCoupon();
+                                  },
                                   child: Container(
                                     width: 80.w,
                                     height: 36.h,
@@ -280,7 +286,7 @@ class _OrderScreenState extends State<OrderScreen> {
                     builder: (context, scrollController) {
                       return SingleChildScrollView(
                         controller: scrollController,
-                        child: FilterBottomSheetAllLawyer(
+                        child: OrderSummaryBottomSheet(
                           checkoutResponseModel: cart.checkoutResponseModel,
                         ),
                       );
@@ -327,19 +333,19 @@ class SummaryField extends StatelessWidget {
   }
 }
 
-class FilterBottomSheetAllLawyer extends StatefulWidget {
+class OrderSummaryBottomSheet extends StatefulWidget {
   final CheckoutResponseModel checkoutResponseModel;
 
-  const FilterBottomSheetAllLawyer(
+  const OrderSummaryBottomSheet(
       {super.key, required this.checkoutResponseModel});
 
   @override
-  State<FilterBottomSheetAllLawyer> createState() =>
-      _FilterBottomSheetAllLawyerState();
+  State<OrderSummaryBottomSheet> createState() =>
+      _OrderSummaryBottomSheetState();
 }
 
-class _FilterBottomSheetAllLawyerState
-    extends State<FilterBottomSheetAllLawyer> {
+class _OrderSummaryBottomSheetState
+    extends State<OrderSummaryBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(

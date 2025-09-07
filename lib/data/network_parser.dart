@@ -14,7 +14,6 @@ typedef CallClientMethod = Future<http.Response> Function();
 class NetworkParser {
   static const _className = 'RemoteDataSourceImpl';
 
-
   static Future<dynamic> callClientWithCatchException(
       CallClientMethod callClientMethod) async {
     try {
@@ -86,24 +85,47 @@ class NetworkParser {
     }
   }
 
+  // static parsingError(String body) {
+  //   final errorsMap = json.decode(body);
+  //   try {
+  //     if (errorsMap['errors'] != null) {
+  //       final errors = errorsMap['errors'] as Map;
+  //       return errors;
+  //       // final firstErrorMsg = errors.values.first;
+  //       // if (firstErrorMsg is List) return firstErrorMsg.first;
+  //       // return firstErrorMsg.toString();
+  //     }
+  //     if (errorsMap['message'] != null) {
+  //       return errorsMap['message'];
+  //     }
+  //   } catch (e) {
+  //     log(e.toString(), name: _className);
+  //   }
+  //
+  //   return 'Unknown error';
+  // }
+
   static parsingError(String body) {
     final errorsMap = json.decode(body);
+
     try {
+      // Laravel validation error usually comes under "data"
+      if (errorsMap['data'] != null) {
+        final errors = errorsMap['data'] as Map<String, dynamic>;
+        return errors; // this will be Map<String, dynamic>
+      }
       if (errorsMap['errors'] != null) {
-        final errors = errorsMap['errors'] as Map;
+        final errors = errorsMap['errors'] as Map<String, dynamic>;
         return errors;
-        // final firstErrorMsg = errors.values.first;
-        // if (firstErrorMsg is List) return firstErrorMsg.first;
-        // return firstErrorMsg.toString();
       }
       if (errorsMap['message'] != null) {
-        return errorsMap['message'];
+        return {"message": errorsMap['message']};
       }
     } catch (e) {
       log(e.toString(), name: _className);
     }
 
-    return 'Unknown error';
+    return {"message": "Unknown error"};
   }
 
   static String parsingDoseNotExist(String body) {

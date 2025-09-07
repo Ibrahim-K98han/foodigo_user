@@ -22,8 +22,12 @@ class ChangePasswordScreen extends StatefulWidget {
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
-    final fpCubit = context.read<ForgotPasswordCubit>();
-
+    // final fpCubit = context.read<ForgotPasswordCubit>();
+    // final rCubit = context.read<RegisterCubit>();
+    // final email =  fpCubit.state.email;
+    // final otp =  fpCubit.state.code;
+    // print('Email ====== $email');
+    // print('OTp ========= $otp');
     return Scaffold(
       appBar:
           const CustomAppBar(title: 'Password Change', visibleLeading: true),
