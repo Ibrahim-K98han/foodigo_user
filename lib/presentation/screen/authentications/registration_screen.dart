@@ -60,6 +60,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             builder: (context, state) {
               final validate = state.registerState;
               return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomFormWidget(
                     label: 'Full Name',
@@ -92,6 +93,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             builder: (context, state) {
               final validate = state.registerState;
               return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomFormWidget(
                     label: 'Email',
@@ -124,6 +126,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             builder: (context, state) {
               final validate = state.registerState;
               return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomFormWidget(
                     label: 'Password',
@@ -182,6 +185,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             builder: (context, state) {
               final validate = state.registerState;
               return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomFormWidget(
                     label: 'Confirm Password',

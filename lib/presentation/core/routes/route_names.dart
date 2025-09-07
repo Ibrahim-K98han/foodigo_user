@@ -14,6 +14,7 @@ import 'package:foodigo/presentation/screen/product_details/product_details_scre
 import 'package:foodigo/presentation/screen/profile/edit_profile_screen.dart';
 import 'package:foodigo/presentation/screen/profile/faq_screen.dart';
 import 'package:foodigo/presentation/screen/profile/language_screen.dart';
+import 'package:foodigo/presentation/screen/profile/profile_change_password_screen.dart';
 import 'package:foodigo/presentation/screen/profile/settings_screen.dart';
 import 'package:foodigo/presentation/screen/sms/sms_screen.dart';
 
@@ -21,7 +22,6 @@ import '../../screen/authentications/authentication_screen.dart';
 import '../../screen/authentications/create_new_password.dart';
 import '../../screen/authentications/forgot_password_screen.dart';
 import '../../screen/authentications/otp_screen.dart';
-import '../../screen/authentications/register_otp_screen.dart';
 import '../../screen/authentications/registration_screen.dart';
 import '../../screen/main_page/main_screen.dart';
 import '../../screen/my_cart/payment_method_screen.dart';
@@ -62,6 +62,8 @@ class RouteNames {
   static const String registerOTPScreen = '/registerOTPScreen';
   static const String forgotPasswordEmailPhoneScreen =
       '/forgotPasswordEmailPhoneScreen';
+  static const String profilePasswordChangeScreen =
+      '/profilePasswordChangeScreen';
 
   static Route<dynamic> generateRoutes(RouteSettings settings) {
     switch (settings.name) {
@@ -179,13 +181,14 @@ class RouteNames {
       case RouteNames.myOrderScreen:
         return MaterialPageRoute(
             settings: settings, builder: (_) => const MyOrderScreen());
-      case RouteNames.registerOTPScreen:
-        return MaterialPageRoute(
-            settings: settings, builder: (_) => const RegisterOtpScreen());
       case RouteNames.forgotPasswordEmailPhoneScreen:
         return MaterialPageRoute(
             settings: settings,
             builder: (_) => const ForgotPasswordEmailPhoneScreen());
+      case RouteNames.profilePasswordChangeScreen:
+        return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => const ProfileChangePasswordScreen());
 
       default:
         return MaterialPageRoute(

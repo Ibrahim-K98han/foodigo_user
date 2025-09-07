@@ -110,7 +110,7 @@ class Assets {
   static const String myOrderMyOrderScreen = 'lib/presentation/screen/my_order/my_order_screen.dart';
   static const String onboardingOnboardingScreen = 'lib/presentation/screen/onboarding/onboarding_screen.dart';
   static const String productDetailsProductDetailsScreen = 'lib/presentation/screen/product_details/product_details_screen.dart';
-  static const String profileChangePasswordScreen = 'lib/presentation/screen/profile/change_password_screen.dart';
+  static const String profileChangePasswordScreen = 'lib/presentation/screen/profile/profile_change_password_screen.dart';
   static const String profileEditProfileScreen = 'lib/presentation/screen/profile/edit_profile_screen.dart';
   static const String profileFaqScreen = 'lib/presentation/screen/profile/faq_screen.dart';
   static const String profileLanguageScreen = 'lib/presentation/screen/profile/language_screen.dart';

@@ -9,6 +9,7 @@ class RegisterStateModel extends Equatable {
   final int resendSeconds;
   final bool isResendActive;
   final String name;
+  final String currentPassword;
   final String password;
   final String confirmPassword;
   final String phone;
@@ -24,6 +25,7 @@ class RegisterStateModel extends Equatable {
     this.resendSeconds = 60,
     this.isResendActive = false,
     required this.name,
+    required this.currentPassword,
     required this.password,
     required this.confirmPassword,
     required this.phone,
@@ -41,6 +43,7 @@ class RegisterStateModel extends Equatable {
     bool? isResendActive,
     String? name,
     String? password,
+    String? currentPassword,
     String? confirmPassword,
     String? phone,
     String? otp,
@@ -56,6 +59,7 @@ class RegisterStateModel extends Equatable {
       isResendActive: isResendActive ?? this.isResendActive,
       name: name ?? this.name,
       password: password ?? this.password,
+      currentPassword: currentPassword ?? this.currentPassword,
       confirmPassword: confirmPassword ?? this.confirmPassword,
       phone: phone ?? this.phone,
       otp: otp ?? this.otp,
@@ -72,6 +76,7 @@ class RegisterStateModel extends Equatable {
       'email': email,
       'name': name,
       'password': password,
+      'current_password': currentPassword,
       'password_confirmation': confirmPassword,
       'phone': phone,
       'otp': otp,
@@ -83,6 +88,7 @@ class RegisterStateModel extends Equatable {
       email: map['email'] ?? '',
       name: map['name'] ?? '',
       password: map['password'] ?? '',
+      currentPassword: map['current_password'] ?? '',
       confirmPassword: map['password_confirmation'] ?? '',
       phone: map['phone'] ?? '',
       otp: map['otp'] ?? '',
@@ -94,6 +100,7 @@ class RegisterStateModel extends Equatable {
       email: '',
       name: '',
       password: '',
+      currentPassword: '',
       confirmPassword: '',
       phone: '',
       otp: '',
@@ -108,6 +115,7 @@ class RegisterStateModel extends Equatable {
       email: '',
       name: '',
       password: '',
+      currentPassword: '',
       confirmPassword: '',
       phone: '',
       otp: '',
@@ -132,6 +140,7 @@ class RegisterStateModel extends Equatable {
         isResendActive,
         name,
         password,
+        currentPassword,
         confirmPassword,
         phone,
         otp,
