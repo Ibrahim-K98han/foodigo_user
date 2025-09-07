@@ -1,27 +1,36 @@
-import 'package:foodigo/features/Cart/model/cart_model.dart';
-import 'package:foodigo/features/PaymentMethod/model/payment_method_response_model.dart';
+import 'package:equatable/equatable.dart';
+import '../model/payment_method_response_model.dart';
 
-abstract class PaymentMethodState {
-  const PaymentMethodState();
-}
+abstract class PaymentState extends Equatable {
+  const PaymentState();
 
-class PaymentMethodStateInitial extends PaymentMethodState {
-  const PaymentMethodStateInitial();
-
+  @override
   List<Object?> get props => [];
 }
 
-class PaymentMethodStateLoading extends PaymentMethodState {}
-
-class PaymentMethodStateLoaded extends PaymentMethodState {
-  final PaymentMethodResponseModel paymentMethodResponseModel;
-
-  PaymentMethodStateLoaded(this.paymentMethodResponseModel);
+class PaymentInitial extends PaymentState {
+  const PaymentInitial();
 }
 
-class PaymentMethodStateError extends PaymentMethodState {
+class PaymentLoading extends PaymentState {
+  const PaymentLoading();
+}
+
+class PaymentLoaded extends PaymentState {
+  final PaymentMethodModel payment;
+
+  const PaymentLoaded(this.payment);
+
+  @override
+  List<Object?> get props => [payment];
+}
+
+class PaymentError extends PaymentState {
   final String message;
   final int statusCode;
 
-  PaymentMethodStateError(this.message, this.statusCode);
+  PaymentError(this.message, this.statusCode);
+
+  @override
+  List<Object?> get props => [message, statusCode];
 }

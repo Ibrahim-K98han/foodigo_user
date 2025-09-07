@@ -2,8 +2,10 @@ import 'package:foodigo/data/network_parser.dart';
 import 'package:foodigo/data/remote_url.dart';
 import 'package:http/http.dart' as http;
 
+import '../model/payment_method_response_model.dart';
+
 abstract class PaymentMethodRemoteDataSource {
-  Future getPaymentMethod(String token);
+  Future<PaymentMethodModel> getPaymentMethod(String token);
 }
 
 class PaymentMethodRemoteDataSourceImpl
@@ -12,19 +14,20 @@ class PaymentMethodRemoteDataSourceImpl
 
   PaymentMethodRemoteDataSourceImpl({required this.client});
 
-  authHeader(String token) => {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-        // 'Accept': "x-www-form-urlencoded/application"
-      };
+  Map<String, String> authHeader(String token) => {
+    'Authorization': 'Bearer $token',
+    'Content-Type': 'application/json',
+  };
 
   @override
-  Future getPaymentMethod(String token) async {
+  Future<PaymentMethodModel> getPaymentMethod(String token) async {
     final uri = Uri.parse(RemoteUrls.getAllPaymentMethod);
-    print('Payment Method====$uri');
+    print('📡 Payment Method API Call => $uri');
     final clientMethod = client.get(uri, headers: authHeader(token));
     final responseJsonBody =
-        await NetworkParser.callClientWithCatchException(() => clientMethod);
-    return responseJsonBody;
+    await NetworkParser.callClientWithCatchException(() => clientMethod);
+    final data = responseJsonBody["data"]["payment_methods"];
+
+    return PaymentMethodModel.fromMap(data);
   }
 }

@@ -366,8 +366,8 @@ class DInjector {
         loginBloc: context.read(),
       ),
     ),
-    BlocProvider<PaymentMethodCubit>(
-      create: (context) => PaymentMethodCubit(
+    BlocProvider<PaymentCubit>(
+      create: (context) => PaymentCubit(
         repository: context.read(),
         loginBloc: context.read(),
       ),

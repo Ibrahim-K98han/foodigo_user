@@ -8,6 +8,7 @@ import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
 
 import '../../../features/PaymentMethod/cubit/payment_method_state.dart';
+import '../../../features/PaymentMethod/model/payment_method_response_model.dart';
 import '../../../utils/utils.dart';
 import '../../../widget/fetch_error_text.dart';
 import '../../../widget/loading_widget.dart';
@@ -20,13 +21,13 @@ class PaymentMethodScreen extends StatefulWidget {
 }
 
 class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
-  late PaymentMethodCubit pmCubit;
+  late PaymentCubit pmCubit;
 
   @override
   void initState() {
-    pmCubit = context.read<PaymentMethodCubit>();
-    pmCubit.getAllPaymentMethodData();
     super.initState();
+    pmCubit = context.read<PaymentCubit>();
+    pmCubit.fetchPaymentMethods();
   }
 
   @override
@@ -34,41 +35,39 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9FBFD),
       appBar: const CustomAppBar(title: 'Payment Method', visibleLeading: true),
-      body: BlocConsumer<PaymentMethodCubit, PaymentMethodState>(
-          listener: (context, state) {
-        final payment = state;
-        if (payment is PaymentMethodStateError) {
-          if (payment.statusCode == 503 ||
-              pmCubit.paymentMethodResponseModel == null) {
-            Utils.errorSnackBar(context, payment.message);
+      body: BlocConsumer<PaymentCubit, PaymentState>(
+        listener: (context, state) {
+          if (state is PaymentError) {
+            if (state.statusCode == 503 || pmCubit.paymentMethodModel == null) {
+              Utils.errorSnackBar(context, state.message);
+            }
           }
-        }
-      }, builder: (context, state) {
-        final payment = state;
-        if (payment is PaymentMethodStateLoading) {
-          return const LoadingWidget();
-        } else if (payment is PaymentMethodStateError) {
-          if (payment.statusCode == 503) {
-            if (pmCubit.paymentMethodResponseModel != null) {
+        },
+        builder: (context, state) {
+          if (state is PaymentLoading) {
+            return const LoadingWidget();
+          } else if (state is PaymentError) {
+            if (state.statusCode == 503 && pmCubit.paymentMethodModel != null) {
               return PaymentInfoLoadedWidget(
-                payment: pmCubit.paymentMethodResponseModel,
+                payment: pmCubit.paymentMethodModel,
               );
             }
-          } else {
-            return FetchErrorText(text: payment.message);
+            return FetchErrorText(text: state.message);
+          } else if (state is PaymentLoaded) {
+            return PaymentInfoLoadedWidget(
+              payment: pmCubit.paymentMethodModel,
+            );
           }
-        } else if (payment is PaymentMethodStateLoaded) {
-          return PaymentInfoLoadedWidget(
-            payment: pmCubit.paymentMethodResponseModel,
-          );
-        }
-        if (pmCubit.paymentMethodResponseModel != null) {
-          return PaymentInfoLoadedWidget(
-            payment: pmCubit.paymentMethodResponseModel,
-          );
-        }
-        return const FetchErrorText(text: 'Something went wrong');
-      }),
+
+          if (pmCubit.paymentMethodModel != null) {
+            return PaymentInfoLoadedWidget(
+              payment: pmCubit.paymentMethodModel,
+            );
+          }
+
+          return const FetchErrorText(text: 'Something went wrong');
+        },
+      ),
     );
   }
 }
@@ -76,17 +75,16 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 class PaymentInfoLoadedWidget extends StatelessWidget {
   const PaymentInfoLoadedWidget({super.key, required this.payment});
 
-  final PaymentMethodResponseModel? payment;
+  final PaymentMethodModel? payment;
 
   @override
   Widget build(BuildContext context) {
-    final methods = payment?.data?.paymentMethods;
+    final methods = payment;
 
     if (methods == null) {
       return const FetchErrorText(text: 'No payment methods available');
     }
 
-    // List of all payment methods with status and icon
     final methodsList = [
       {'status': methods.stripeStatus.trim(), 'icon': methods.stripeImage},
       {'status': methods.paypalStatus.trim(), 'icon': methods.paypalImage},
@@ -104,7 +102,6 @@ class PaymentInfoLoadedWidget extends StatelessWidget {
       {'status': methods.bankStatus.trim(), 'icon': methods.bankImage},
     ];
 
-    // Filter only enabled methods
     final enabledMethods = methodsList
         .where((e) => (e['status']?.toString().trim() ?? '') == '1')
         .toList();
@@ -126,19 +123,19 @@ class PaymentInfoLoadedWidget extends StatelessWidget {
           child: GridView.builder(
             padding: const EdgeInsets.all(10),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 1,
+              crossAxisCount: 1, // 2-column grid
               mainAxisSpacing: 10,
-              childAspectRatio: 4.0,
+              crossAxisSpacing: 10,
+              childAspectRatio: 3.5,
             ),
             itemCount: enabledMethods.length,
             itemBuilder: (context, index) {
               final method = enabledMethods[index];
-              return Container(
-                color: Colors.red,
-                child: SinglePaymentCard(
-                  onTap: () {},
-                  icon: RemoteUrls.imageUrl(method['icon']!),
-                ),
+              return SinglePaymentCard(
+                onTap: () {
+                  print('object');
+                },
+                icon: RemoteUrls.imageUrl(method['icon']!),
               );
             },
           ),
@@ -156,25 +153,29 @@ class SinglePaymentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 50,
         alignment: Alignment.center,
-        //padding: Utils.symmetric(v: 18.0, h: 0.0),
-        // margin: Utils.symmetric(v: 12.0, h: 0.0).copyWith(bottom: 0.0),
         decoration: BoxDecoration(
+          color: Colors.white,
           border: Border.all(color: const Color(0xFFDBDBDB)),
           borderRadius: Utils.borderRadius(),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10.0),
           child: CustomImage(
             path: icon,
-            fit: BoxFit.fill,
-            height: 30.0,
-            width: 130.0,
+            fit: BoxFit.contain,
+            height: 40.0,
+            width: 120.0,
           ),
         ),
       ),
