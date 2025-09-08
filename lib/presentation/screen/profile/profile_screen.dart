@@ -153,60 +153,79 @@ class _ProfileImageState extends State<ProfileImage> {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
+    return BlocBuilder<GetProfileCubit, GetProfileState>(
+      builder: (context, state) {
+        String image;
+        String name;
+        if (state is GetProfileLoaded) {
+          if (state.user.image.isNotEmpty) {
+            image = RemoteUrls.imageUrl(state.user.image);
+          } else {
+            image = KImages.profile;
+          }
+          name = state.user.name ?? "";
+        } else {
+          image = KImages.profile;
+          name = loginBloc.userInformation?.user?.name ?? "Guest";
+        }
+
+        return SliverToBoxAdapter(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                height: Utils.vSize(80.0),
-                width: Utils.vSize(80.0),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                ),
-                child: ClipRRect(
-                  borderRadius: Utils.borderRadius(r: 50.0),
-                  child: CustomImage(
-                    path: image,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, RouteNames.editProfileScreen);
-                  },
-                  child: Container(
-                    padding: Utils.all(value: 5.0),
-                    height: Utils.vSize(24),
-                    width: Utils.vSize(24),
+              Stack(
+                children: [
+                  Container(
+                    height: Utils.vSize(80.0),
+                    width: Utils.vSize(80.0),
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: primaryColor,
                     ),
-                    child: const Center(
+                    child: ClipRRect(
+                      borderRadius: Utils.borderRadius(r: 50.0),
                       child: CustomImage(
-                        path: KImages.editIcon,
+                        path: image,
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                ),
-              )
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          RouteNames.editProfileScreen,
+                        );
+                      },
+                      child: Container(
+                        padding: Utils.all(value: 5.0),
+                        height: Utils.vSize(24),
+                        width: Utils.vSize(24),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: primaryColor,
+                        ),
+                        child: const Center(
+                          child: CustomImage(path: KImages.editIcon),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Utils.verticalSpace(8.0),
+              CustomText(
+                text: name,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+              Utils.verticalSpace(16.0),
             ],
           ),
-          Utils.verticalSpace(8.0),
-          CustomText(
-            text: loginBloc.userInformation!.user!.name,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-          Utils.verticalSpace(16.0),
-        ],
-      ),
+        );
+      },
     );
   }
 }

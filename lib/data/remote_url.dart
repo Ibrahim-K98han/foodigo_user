@@ -15,6 +15,7 @@ class RemoteUrls {
 
   static const String login = '${baseUrl}auth/login';
   static const String getProfile = '${baseUrl}auth/profile';
+  static const String updateProfile = '${baseUrl}auth/profile';
   static const String addProduct = '${baseUrl}cart/add';
 
   static String deleteProduct(String id) => '${baseUrl}cart/remove/$id';
