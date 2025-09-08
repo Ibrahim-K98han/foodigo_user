@@ -10,7 +10,9 @@ import 'package:foodigo/widget/primary_button.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
+import '../../../../widget/custom_text_style.dart';
 import '../../../../widget/fetch_error_text.dart';
 import 'map_pcker_screen.dart';
 
@@ -23,6 +25,8 @@ class EditAddressScreen extends StatefulWidget {
 
 class _EditAddressScreenState extends State<EditAddressScreen> {
   late GetAddressCubit addAddressCubit;
+  String? selectDeliveryType;
+  final List<String> deliveryValue = ['home', 'office'];
 
   Future<void> pickLocation() async {
     bool serviceEnabled;
@@ -91,24 +95,41 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 builder: (context, state) {
                   final validate = state.addressState;
                   return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CustomFormWidget(
-                        label: 'Delivery Type',
-                        bottomSpace: 14.0,
-                        child: TextFormField(
-                          initialValue: state.type,
-                          onChanged: addAddressCubit.addressType,
-                          decoration: const InputDecoration(
-                            fillColor: Color(0xffF8FAFC),
-                            filled: true,
-                            hintText: 'delivery type',
+                      const CustomText(
+                        text: 'Delivery Type',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      Utils.verticalSpace(4),
+                      DropdownButtonFormField<String>(
+                        dropdownColor: whiteColor,
+                        value: selectDeliveryType,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          validator: FormBuilderValidators.compose([
-                            FormBuilderValidators.required(
-                              errorText: 'Enter Valid type',
-                            )
-                          ]),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 14,
+                          ),
                         ),
+                        hint: const CustomText(
+                            text: 'Delivery Type', color: lightGrayColor),
+                        items: deliveryValue.map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: CustomText(text: value, fontSize: 14),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            addAddressCubit.addressType(newValue!);
+                          });
+                        },
+                        validator: (value) =>
+                            value == null ? 'Please select an option' : null,
                       ),
                       if (validate is UpdateAddressFormValidate) ...[
                         if (validate.errors.addressType.isNotEmpty)
@@ -119,6 +140,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                   );
                 },
               ),
+              Utils.verticalSpace(14),
               BlocBuilder<GetAddressCubit, AddressStateModel>(
                 builder: (context, state) {
                   final validate = state.addressState;
@@ -224,8 +246,9 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                           children: [
                             Expanded(
                               child: TextFormField(
-                                controller:
-                                    TextEditingController(text: state.address),
+                                key: ValueKey(state.address),
+                                initialValue: state.address,
+                                onChanged: addAddressCubit.address,
                                 readOnly: true,
                                 decoration: const InputDecoration(
                                   fillColor: Color(0xffF8FAFC),
@@ -249,8 +272,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                         ),
                       ),
                       if (validate is UpdateAddressFormValidate) ...[
-                        if (validate.errors.phone.isNotEmpty)
-                          FetchErrorText(text: validate.errors.phone.first),
+                        if (validate.errors.address.isNotEmpty)
+                          FetchErrorText(text: validate.errors.address.first),
                       ]
                     ],
                   );
@@ -265,6 +288,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
           onPressed: () {
             addAddressCubit.addAddress();
             // addAddressCubit.updateAddress(addAddressCubit.addr!.id.toString());
+            addAddressCubit.clearForm();
             Navigator.pop(context);
           },
         ),

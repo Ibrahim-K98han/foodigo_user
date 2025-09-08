@@ -49,5 +49,8 @@ class RemoteUrls {
       '${baseUrl}checkout/payment-methods';
   static const String changeProfilePass = '${baseUrl}auth/change-password';
 
+  static const String payWithBank = '${baseUrl}payment/bank';
+  static const String payWithStripe = '${baseUrl}payment-api/pay-with-stripe';
+
   static imageUrl(String imageUrl) => rootUrl + imageUrl;
 }

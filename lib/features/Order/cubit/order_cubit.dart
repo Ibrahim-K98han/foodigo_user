@@ -19,6 +19,7 @@ class OrderCubit extends Cubit<OrderState> {
         super(OrderStateInitial());
 
   List<OrderModel> orders = [];
+  OrderModel? orderModel;
 
   Future<void> getOrderData() async {
     emit(const OrderStateLoading());

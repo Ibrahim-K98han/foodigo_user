@@ -34,6 +34,9 @@ import 'package:foodigo/features/Review/repository/review_repository.dart';
 import 'package:foodigo/features/SingleRestaurant/cubit/single_restaurant_cubit.dart';
 import 'package:foodigo/features/SingleRestaurant/remote/single_restaurant_remote_data_source.dart';
 import 'package:foodigo/features/SingleRestaurant/repository/single_restaurant_repository.dart';
+import 'package:foodigo/features/Subscription/cubit/subscription_cubit.dart';
+import 'package:foodigo/features/Subscription/remote/subscription_remote_data_source.dart';
+import 'package:foodigo/features/Subscription/repository/subscription_repository.dart';
 import 'package:foodigo/features/WishList/cubit/wish_list_cubit.dart';
 import 'package:foodigo/features/WishList/remote/wish_list_remote_data_source.dart';
 import 'package:foodigo/features/WishList/repository/wish_list_repository.dart';
@@ -270,6 +273,16 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<SubscriptionRemoteDataSource>(
+      create: (context) => SubscriptionRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<SubscriptionRepository>(
+      create: (context) => SubscriptionRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -375,6 +388,12 @@ class DInjector {
     BlocProvider<ChangeProfilePassCubit>(
       create: (context) => ChangeProfilePassCubit(
         registerRepository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<SubscriptionCubit>(
+      create: (context) => SubscriptionCubit(
+        repository: context.read(),
         loginBloc: context.read(),
       ),
     ),

@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foodigo/data/remote_url.dart';
-import 'package:foodigo/features/PaymentMethod/cubit/payment_method_cubit.dart';
-import 'package:foodigo/features/PaymentMethod/model/payment_method_response_model.dart';
-import 'package:foodigo/widget/custom_appbar.dart';
-import 'package:foodigo/widget/custom_image.dart';
-import 'package:foodigo/widget/custom_text_style.dart';
+import 'package:foodigo/presentation/core/routes/route_names.dart';
 
+import '../../../data/remote_url.dart';
+import '../../../features/PaymentMethod/cubit/payment_method_cubit.dart';
 import '../../../features/PaymentMethod/cubit/payment_method_state.dart';
 import '../../../features/PaymentMethod/model/payment_method_response_model.dart';
+import '../../../features/checkout/model/checkout_response_model.dart';
 import '../../../utils/utils.dart';
+import '../../../widget/custom_appbar.dart';
+import '../../../widget/custom_image.dart';
 import '../../../widget/fetch_error_text.dart';
 import '../../../widget/loading_widget.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
-  const PaymentMethodScreen({super.key});
+  const PaymentMethodScreen({super.key, this.checkoutResponseModel});
+
+  final CheckoutResponseModel? checkoutResponseModel;
 
   @override
   State<PaymentMethodScreen> createState() => _PaymentMethodScreenState();
@@ -32,6 +34,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final CheckoutResponseModel? checkoutResponseModel;
     return Scaffold(
       backgroundColor: const Color(0xFFF9FBFD),
       appBar: const CustomAppBar(title: 'Payment Method', visibleLeading: true),
@@ -50,18 +53,21 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             if (state.statusCode == 503 && pmCubit.paymentMethodModel != null) {
               return PaymentInfoLoadedWidget(
                 payment: pmCubit.paymentMethodModel,
+                checkoutResponseModel: widget.checkoutResponseModel, // no !
               );
             }
             return FetchErrorText(text: state.message);
           } else if (state is PaymentLoaded) {
             return PaymentInfoLoadedWidget(
               payment: pmCubit.paymentMethodModel,
+              checkoutResponseModel: widget.checkoutResponseModel, // no !
             );
           }
 
           if (pmCubit.paymentMethodModel != null) {
             return PaymentInfoLoadedWidget(
               payment: pmCubit.paymentMethodModel,
+              checkoutResponseModel: widget.checkoutResponseModel, // no !
             );
           }
 
@@ -73,9 +79,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 }
 
 class PaymentInfoLoadedWidget extends StatelessWidget {
-  const PaymentInfoLoadedWidget({super.key, required this.payment});
+  PaymentInfoLoadedWidget(
+      {super.key, required this.payment, required this.checkoutResponseModel});
 
-  final PaymentMethodModel? payment;
+  PaymentMethodModel? payment;
+
+  final CheckoutResponseModel? checkoutResponseModel;
 
   @override
   Widget build(BuildContext context) {
@@ -86,20 +95,46 @@ class PaymentInfoLoadedWidget extends StatelessWidget {
     }
 
     final methodsList = [
-      {'status': methods.stripeStatus.trim(), 'icon': methods.stripeImage},
-      {'status': methods.paypalStatus.trim(), 'icon': methods.paypalImage},
-      {'status': methods.razorpayStatus.trim(), 'icon': methods.razorpayImage},
       {
+        'name': 'stripe',
+        'status': methods.stripeStatus.trim(),
+        'icon': methods.stripeImage
+      },
+      {
+        'name': 'paypal',
+        'status': methods.paypalStatus.trim(),
+        'icon': methods.paypalImage
+      },
+      {
+        'name': 'razorpay',
+        'status': methods.razorpayStatus.trim(),
+        'icon': methods.razorpayImage
+      },
+      {
+        'name': 'flutterwave',
         'status': methods.flutterwaveStatus.trim(),
         'icon': methods.flutterwaveLogo
       },
-      {'status': methods.mollieStatus.trim(), 'icon': methods.mollieImage},
-      {'status': methods.paystackStatus.trim(), 'icon': methods.paystackImage},
       {
+        'name': 'mollie',
+        'status': methods.mollieStatus.trim(),
+        'icon': methods.mollieImage
+      },
+      {
+        'name': 'paystack',
+        'status': methods.paystackStatus.trim(),
+        'icon': methods.paystackImage
+      },
+      {
+        'name': 'instamojo',
         'status': methods.instamojoStatus.trim(),
         'icon': methods.instamojoImage
       },
-      {'status': methods.bankStatus.trim(), 'icon': methods.bankImage},
+      {
+        'name': 'bank',
+        'status': methods.bankStatus.trim(),
+        'icon': methods.bankImage
+      },
     ];
 
     final enabledMethods = methodsList
@@ -123,7 +158,7 @@ class PaymentInfoLoadedWidget extends StatelessWidget {
           child: GridView.builder(
             padding: const EdgeInsets.all(10),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 1, // 2-column grid
+              crossAxisCount: 1,
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
               childAspectRatio: 3.5,
@@ -132,8 +167,78 @@ class PaymentInfoLoadedWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               final method = enabledMethods[index];
               return SinglePaymentCard(
+                // onTap: () {
+                //   Navigator.pushNamed(
+                //     context,
+                //     RouteNames.bankTransferPaymentScreen,
+                //     arguments: checkoutResponseModel,
+                //   );
+                // },
                 onTap: () {
-                  print('object');
+                  final methodName = method['name'];
+
+                  switch (methodName) {
+                    case 'bank':
+                      Navigator.pushNamed(
+                        context,
+                        RouteNames.bankTransferPaymentScreen,
+                        arguments: checkoutResponseModel,
+                      );
+
+                    // case 'stripe':
+                    //   Navigator.pushNamed(
+                    //     context,
+                    //     RouteNames.stripePaymentScreen,
+                    //     arguments: checkoutResponseModel,
+                    //   );
+                    //   break;
+                    // case 'paypal':
+                    //   Navigator.pushNamed(
+                    //     context,
+                    //     RouteNames.paypalPaymentScreen,
+                    //     arguments: checkoutResponseModel,
+                    //   );
+                    //   break;
+                    // case 'razorpay':
+                    //   Navigator.pushNamed(
+                    //     context,
+                    //     RouteNames.razorpayPaymentScreen,
+                    //     arguments: checkoutResponseModel,
+                    //   );
+                    //   break;
+                    // case 'flutterwave':
+                    //   Navigator.pushNamed(
+                    //     context,
+                    //     RouteNames.flutterwavePaymentScreen,
+                    //     arguments: checkoutResponseModel,
+                    //   );
+                    //   break;
+                    // case 'mollie':
+                    //   Navigator.pushNamed(
+                    //     context,
+                    //     RouteNames.molliePaymentScreen,
+                    //     arguments: checkoutResponseModel,
+                    //   );
+                    //   break;
+                    // case 'paystack':
+                    //   Navigator.pushNamed(
+                    //     context,
+                    //     RouteNames.paystackPaymentScreen,
+                    //     arguments: checkoutResponseModel,
+                    //   );
+                    //   break;
+                    // case 'instamojo':
+                    //   Navigator.pushNamed(
+                    //     context,
+                    //     RouteNames.instamojoPaymentScreen,
+                    //     arguments: checkoutResponseModel,
+                    //   );
+                    //   break;
+
+                    default:
+                      Utils.errorSnackBar(
+                          context, "Payment method not supported yet!");
+                  }
                 },
                 icon: RemoteUrls.imageUrl(method['icon']!),
               );

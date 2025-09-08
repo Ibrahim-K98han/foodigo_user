@@ -1,6 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/GetProfile/cubit/get_profile_cubit.dart';
+import 'package:foodigo/features/GetProfile/cubit/get_profile_state.dart';
+import 'package:foodigo/features/Login/model/user_response_model.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/primary_button.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,6 +24,13 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  late GetProfileCubit pCubit;
+  @override
+  void initState() {
+    pCubit = context.read<GetProfileCubit>();
+    super.initState();
+  }
+
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
@@ -71,9 +82,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       },
     );
   }
-
-  String? selectedGenderValue;
-  final List<String> genderItems = ['Male', 'Female', 'Others'];
 
   @override
   Widget build(BuildContext context) {
@@ -136,16 +144,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ],
                 ),
                 Utils.verticalSpace(8.0),
-                CustomFormWidget(
-                  label: 'Full Name',
-                  bottomSpace: 14.0,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      fillColor: Color(0xffF8FAFC),
-                      filled: true,
-                      hintText: 'Full name',
-                    ),
-                  ),
+                BlocBuilder<GetProfileCubit, GetProfileState>(
+                  builder: (context, state) {
+                    return CustomFormWidget(
+                      label: 'Full Name',
+                      bottomSpace: 14.0,
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          fillColor: Color(0xffF8FAFC),
+                          filled: true,
+                          hintText: 'Full name',
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 CustomFormWidget(
                   label: 'Email',
@@ -176,50 +188,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       fontWeight: FontWeight.w500,
                       color: settingsIconBgColor,
                     )),
-                Utils.verticalSpace(6.0),
-                DropdownButtonFormField<String>(
-                  hint: const CustomText(
-                    text: "Gender",
-                    fontWeight: FontWeight.w500,
-                    color: settingsIconBgColor,
-                  ),
-                  isDense: true,
-                  isExpanded: true,
-                  dropdownColor: whiteColor,
-                  value: selectedGenderValue,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  decoration: InputDecoration(
-                    fillColor: const Color(0xffF8FAFC),
-                    filled: true,
-                    isDense: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(Utils.radius(10.0)),
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.fromLTRB(
-                      16.0,
-                      24.0,
-                      20.0,
-                      10.0,
-                    ),
-                  ),
-                  onTap: () => Utils.closeKeyBoard(context),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedGenderValue = value;
-                    });
-                  },
-                  items: genderItems.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: CustomText(text: value),
-                    );
-                  }).toList(),
-                ),
                 Utils.verticalSpace(16.0),
                 CustomFormWidget(
-                  label: 'Bio',
+                  label: 'Address',
                   bottomSpace: 14.0,
                   child: TextFormField(
                     maxLines: 4,

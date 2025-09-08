@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/GetProfile/cubit/get_profile_cubit.dart';
 import 'package:foodigo/features/Login/bloc/login_bloc.dart';
 import 'package:foodigo/features/Login/bloc/login_event.dart';
 import 'package:foodigo/features/Login/bloc/login_state.dart';
 import 'package:foodigo/features/Login/model/login_state_model.dart';
 import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
+import '../../../features/GetProfile/cubit/get_profile_state.dart';
+import '../../../features/Login/model/user_response_model.dart';
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
@@ -40,7 +43,8 @@ class ProfileScreen extends StatelessWidget {
               title: "Payment Method",
               icon: KImages.dollarBag,
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.paymentMethodScreen);
+                Navigator.pushNamed(context, RouteNames.paymentMethodScreen,
+                    arguments: '1');
               },
             ),
             DrawerItem(
@@ -65,7 +69,8 @@ class ProfileScreen extends StatelessWidget {
                 title: "Change Password",
                 icon: KImages.unlock,
                 onTap: () {
-                  Navigator.pushNamed(context, RouteNames.profilePasswordChangeScreen);
+                  Navigator.pushNamed(
+                      context, RouteNames.profilePasswordChangeScreen);
                 }),
             Utils.verticalSpace(40.0),
             SwitchWidget(
@@ -122,60 +127,74 @@ class ProfileImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
+    final pCubit = context.read<GetProfileCubit>();
+    print('name ${pCubit.user!.name}');
+    return BlocBuilder<GetProfileCubit, GetProfileState>(
+      builder: (context, state) {
+        User? user;
+        if (state is GetProfileLoaded) {
+          user = state.user;
+        }
+
+        return SliverToBoxAdapter(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                height: Utils.vSize(80.0),
-                width: Utils.vSize(80.0),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                ),
-                child: ClipRRect(
-                  borderRadius: Utils.borderRadius(r: 50.0),
-                  child: const CustomImage(
-                    path: KImages.userImage,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, RouteNames.editProfileScreen);
-                  },
-                  child: Container(
-                    padding: Utils.all(value: 5.0),
-                    height: Utils.vSize(24),
-                    width: Utils.vSize(24),
+              Stack(
+                children: [
+                  Container(
+                    height: Utils.vSize(80.0),
+                    width: Utils.vSize(80.0),
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: primaryColor,
                     ),
-                    child: const Center(
-                      child: CustomImage(
-                        path: KImages.editIcon,
-                      ),
+                    child: ClipRRect(
+                      borderRadius: Utils.borderRadius(r: 50.0),
+                      child: (user != null && user.image.isNotEmpty)
+                          ? Image.network(user.image, fit: BoxFit.cover)
+                          : const CustomImage(
+                              path: KImages.userImage,
+                              fit: BoxFit.cover,
+                            ),
                     ),
                   ),
-                ),
-              )
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, RouteNames.editProfileScreen);
+                      },
+                      child: Container(
+                        padding: Utils.all(value: 5.0),
+                        height: Utils.vSize(24),
+                        width: Utils.vSize(24),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: primaryColor,
+                        ),
+                        child: const Center(
+                          child: CustomImage(
+                            path: KImages.editIcon,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Utils.verticalSpace(8.0),
+              CustomText(
+                text: user?.name ?? 'Guest',
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+              Utils.verticalSpace(16.0),
             ],
           ),
-          Utils.verticalSpace(8.0),
-          const CustomText(
-            text: 'Onam Sarker',
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-          Utils.verticalSpace(16.0),
-        ],
-      ),
+        );
+      },
     );
   }
 }
