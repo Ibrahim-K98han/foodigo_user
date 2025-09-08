@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/GetProfile/cubit/get_profile_cubit.dart';
 import 'package:foodigo/features/Login/bloc/login_bloc.dart';
 import 'package:foodigo/features/Login/bloc/login_event.dart';
 import 'package:foodigo/features/Login/bloc/login_state.dart';
 import 'package:foodigo/features/Login/model/login_state_model.dart';
 import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
+import '../../../data/remote_url.dart';
+import '../../../features/GetProfile/cubit/get_profile_state.dart';
+import '../../../features/Login/model/user_response_model.dart';
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
@@ -40,7 +44,8 @@ class ProfileScreen extends StatelessWidget {
               title: "Payment Method",
               icon: KImages.dollarBag,
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.paymentMethodScreen);
+                Navigator.pushNamed(context, RouteNames.paymentMethodScreen,
+                    arguments: '1');
               },
             ),
             DrawerItem(
@@ -65,7 +70,8 @@ class ProfileScreen extends StatelessWidget {
                 title: "Change Password",
                 icon: KImages.unlock,
                 onTap: () {
-                  Navigator.pushNamed(context, RouteNames.profilePasswordChangeScreen);
+                  Navigator.pushNamed(
+                      context, RouteNames.profilePasswordChangeScreen);
                 }),
             Utils.verticalSpace(40.0),
             SwitchWidget(
@@ -117,8 +123,33 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class ProfileImage extends StatelessWidget {
+class ProfileImage extends StatefulWidget {
   const ProfileImage({super.key});
+
+  @override
+  State<ProfileImage> createState() => _ProfileImageState();
+}
+
+class _ProfileImageState extends State<ProfileImage> {
+  late LoginBloc loginBloc;
+  late GetProfileCubit pCubit;
+  late String image;
+
+  @override
+  void initState() {
+    super.initState();
+    _initState();
+  }
+
+  _initState() {
+    pCubit = context.read<GetProfileCubit>();
+    loginBloc = context.read<LoginBloc>();
+    if (pCubit.user?.image.isNotEmpty ?? false) {
+      image = RemoteUrls.imageUrl(pCubit.user!.image);
+    } else {
+      image = KImages.profile;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,8 +167,8 @@ class ProfileImage extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: Utils.borderRadius(r: 50.0),
-                  child: const CustomImage(
-                    path: KImages.userImage,
+                  child: CustomImage(
+                    path: image,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -168,8 +199,8 @@ class ProfileImage extends StatelessWidget {
             ],
           ),
           Utils.verticalSpace(8.0),
-          const CustomText(
-            text: 'Onam Sarker',
+          CustomText(
+            text: loginBloc.userInformation!.user!.name,
             fontSize: 16,
             fontWeight: FontWeight.w500,
           ),

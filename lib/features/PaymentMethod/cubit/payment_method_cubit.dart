@@ -6,17 +6,6 @@ import '../../Login/bloc/login_bloc.dart';
 import '../model/payment_method_response_model.dart';
 import '../repository/payment_method_repository.dart';
 
-// OrderCubit
-// (
-// {
-// required
-// OrderRepository
-// _repository,
-// required LoginBloc loginBloc,
-// }) : _repository = repository,
-// _loginBloc = loginBloc,
-// super(OrderStateInitial());
-
 class PaymentCubit extends Cubit<PaymentState> {
   final PaymentMethodRepository _repository;
   final LoginBloc _loginBloc;

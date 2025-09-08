@@ -123,7 +123,7 @@ class LoadOrderData extends StatelessWidget {
             controller: tabController,
             children: statusMap.keys.map((status) {
               final filteredOrders = orders.where((order) {
-                final statusValue = int.tryParse(order.orderStatus ?? "");
+                final statusValue = int.tryParse(order.orderStatus);
                 return statusValue == status;
               }).toList();
               if (filteredOrders.isEmpty) {

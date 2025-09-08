@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:foodigo/data/errors/exception.dart';
 import 'package:foodigo/data/errors/failure.dart';
-import 'package:foodigo/features/Cart/model/cart_model.dart';
 import 'package:foodigo/features/add_to_cart/model/add_cart_response_model.dart';
 import 'package:foodigo/features/add_to_cart/model/add_cart_state_model.dart';
 

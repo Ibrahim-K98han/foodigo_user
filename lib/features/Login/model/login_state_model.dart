@@ -17,7 +17,7 @@ class LoginStateModel extends Equatable {
 
   const LoginStateModel({
     this.email = 'karami7306@colimarl.com',
-    this.password = 'newpassword123',
+    this.password = '123456',
     // this.email = '',
     // this.password = '',
     this.languageCode = 'en',

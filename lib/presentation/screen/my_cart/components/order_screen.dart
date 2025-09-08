@@ -43,7 +43,6 @@ class _OrderScreenState extends State<OrderScreen> {
     super.initState();
     checkoutCubit = context.read<CheckoutCubit>();
     applyCouponCubit = context.read<ApplyCouponCubit>();
-
   }
 
   @override
@@ -344,8 +343,7 @@ class OrderSummaryBottomSheet extends StatefulWidget {
       _OrderSummaryBottomSheetState();
 }
 
-class _OrderSummaryBottomSheetState
-    extends State<OrderSummaryBottomSheet> {
+class _OrderSummaryBottomSheetState extends State<OrderSummaryBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -421,10 +419,12 @@ class _OrderSummaryBottomSheetState
           ),
           Utils.verticalSpace(16),
           PrimaryButton(
-              text: 'Pay Now',
-              onPressed: () {
-                Navigator.pushNamed(context, RouteNames.paymentMethodScreen);
-              })
+            text: 'Pay Now',
+            onPressed: () {
+              Navigator.pushNamed(context, RouteNames.paymentMethodScreen,
+                  arguments: widget.checkoutResponseModel);
+            },
+          )
         ],
       ),
     );

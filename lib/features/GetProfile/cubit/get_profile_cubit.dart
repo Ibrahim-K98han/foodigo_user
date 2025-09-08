@@ -29,7 +29,8 @@ class GetProfileCubit extends Cubit<GetProfileState> {
     );
     print('Profile=============$uri');
     print('User Token: ${_loginBloc.userInformation?.token}');
-    final result = await _repository.getProfileData(_loginBloc.userInformation!.token);
+    final result =
+        await _repository.getProfileData(_loginBloc.userInformation!.token);
     result.fold(
       (l) => emit(GetProfileError(l.message, l.statusCode)),
       (success) {

@@ -24,6 +24,7 @@ import '../../screen/authentications/forgot_password_screen.dart';
 import '../../screen/authentications/otp_screen.dart';
 import '../../screen/authentications/registration_screen.dart';
 import '../../screen/main_page/main_screen.dart';
+import '../../screen/my_cart/components/bank_payment_screen.dart';
 import '../../screen/my_cart/payment_method_screen.dart';
 import '../../screen/my_order/my_order_screen.dart';
 import '../../screen/onboarding/onboarding_screen.dart';
@@ -64,6 +65,7 @@ class RouteNames {
       '/forgotPasswordEmailPhoneScreen';
   static const String profilePasswordChangeScreen =
       '/profilePasswordChangeScreen';
+  static const String bankTransferPaymentScreen = '/bankTransferPaymentScreen';
 
   static Route<dynamic> generateRoutes(RouteSettings settings) {
     switch (settings.name) {
@@ -154,7 +156,7 @@ class RouteNames {
 
       case RouteNames.paymentMethodScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const PaymentMethodScreen());
+            settings: settings, builder: (_) => PaymentMethodScreen());
 
       case RouteNames.trackOrderScreen:
         return MaterialPageRoute(
@@ -189,6 +191,10 @@ class RouteNames {
         return MaterialPageRoute(
             settings: settings,
             builder: (_) => const ProfileChangePasswordScreen());
+
+      case RouteNames.bankTransferPaymentScreen:
+        return MaterialPageRoute(
+            settings: settings, builder: (_) => BankPaymentScreen());
 
       default:
         return MaterialPageRoute(
