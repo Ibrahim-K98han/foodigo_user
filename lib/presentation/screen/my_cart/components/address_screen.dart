@@ -56,31 +56,33 @@ class _ChangeAddressScreenState extends State<ChangeAddressScreen> {
         child: BlocBuilder<GetAddressCubit, AddressStateModel>(
           builder: (context, state) {
             final addressState = state.addressState;
-
+            List<Address> addresses = [];
             if (addressState is AllAddressLoading) {
               return const LoadingWidget();
             } else if (addressState is AAllAddressError) {
               return FetchErrorText(text: addressState.message);
-            }
-
-            List<Address> addresses = [];
-            if (addressState is AllAddressLoaded) {
+            } else if (addressState is AllAddressLoaded) {
               addresses = addressState.getAddress;
+              if (addresses.isEmpty) {
+                return const Center(
+                    child: Text("No Address Found Please Add Address"));
+              }
             }
-
             return SingleChildScrollView(
               child: Padding(
                 padding: Utils.symmetric(),
                 child: Column(
                   children: [
                     ...addresses.map(
-                      (address) => AddressItem(
-                        address: address,
-                        onTap: () {
-                          Navigator.pushNamed(context, RouteNames.orderScreen,
-                              arguments: address);
-                        },
-                      ),
+                          (address) =>
+                          AddressItem(
+                            address: address,
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, RouteNames.orderScreen,
+                                  arguments: address);
+                            },
+                          ),
                     ),
                   ],
                 ),

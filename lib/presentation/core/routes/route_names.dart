@@ -9,6 +9,7 @@ import 'package:foodigo/presentation/screen/home/components/wishlist_screen.dart
 import 'package:foodigo/presentation/screen/my_cart/components/address_screen.dart';
 import 'package:foodigo/presentation/screen/my_cart/components/edit_address_screen.dart';
 import 'package:foodigo/presentation/screen/my_cart/components/order_screen.dart';
+import 'package:foodigo/presentation/screen/my_cart/components/strip_payment_screen.dart';
 import 'package:foodigo/presentation/screen/my_cart/track_order_screen.dart';
 import 'package:foodigo/presentation/screen/product_details/product_details_screen.dart';
 import 'package:foodigo/presentation/screen/profile/edit_profile_screen.dart';
@@ -66,6 +67,8 @@ class RouteNames {
   static const String profilePasswordChangeScreen =
       '/profilePasswordChangeScreen';
   static const String bankTransferPaymentScreen = '/bankTransferPaymentScreen';
+  static const String stripTransferPaymentScreen =
+      '/stripTransferPaymentScreen';
 
   static Route<dynamic> generateRoutes(RouteSettings settings) {
     switch (settings.name) {
@@ -194,7 +197,11 @@ class RouteNames {
 
       case RouteNames.bankTransferPaymentScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => BankPaymentScreen());
+            settings: settings, builder: (_) => const BankPaymentScreen());
+      case RouteNames.stripTransferPaymentScreen:
+        final url = settings.arguments as String;
+        return MaterialPageRoute(
+            settings: settings, builder: (_) => StripPaymentScreen(url: url));
 
       default:
         return MaterialPageRoute(

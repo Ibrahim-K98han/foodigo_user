@@ -77,6 +77,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
   @override
   void initState() {
     addAddressCubit = context.read<GetAddressCubit>();
+    addAddressCubit.getAllAddressData();
     super.initState();
   }
 

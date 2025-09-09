@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/Order/model/order_model.dart';
 import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/utils/k_images.dart';
 import 'package:foodigo/widget/custom_image.dart';
-import 'package:foodigo/widget/primary_button.dart';
 
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
@@ -55,7 +57,7 @@ class OrderCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(6.r),
                 child: CustomImage(
-                  path: KImages.foodImage1,
+                  path: RemoteUrls.imageUrl(orderModel.restaurant!.logo!),
                   width: 92.w,
                   height: 72.h,
                   fit: BoxFit.cover,
@@ -66,14 +68,112 @@ class OrderCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomText(
-                      text: Utils.formatPrice(context, orderModel.total),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFFE94222),
+                    SizedBox(
+                      width: size.width * 0.5.w,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CustomText(
+                            text: Utils.formatPrice(context, orderModel.total),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFFE94222),
+                          ),
+                          GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: true,
+                                  // close dialog when tapping outside
+                                  builder: (BuildContext context) {
+                                    return Dialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(6.r),
+                                      ),
+                                      elevation: 5,
+                                      backgroundColor: Colors.white,
+                                      child: Container(
+                                        padding: EdgeInsets.all(10.r),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            SizedBox(
+                                              height: 200.h,
+                                              child: ListView.builder(
+                                                shrinkWrap: true,
+                                                // important
+                                                physics:
+                                                    const AlwaysScrollableScrollPhysics(),
+                                                // optional
+                                                itemCount:
+                                                    orderModel.items!.length,
+                                                itemBuilder: (context, index) {
+                                                  final item =
+                                                      orderModel.items![index];
+                                                  final sizeMap = jsonDecode(
+                                                          item.size)
+                                                      as Map<String, dynamic>;
+                                                  final sizeName =
+                                                      sizeMap.keys.first;
+                                                  final sizePrice =
+                                                      sizeMap.values.first;
+
+                                                  return ListTile(
+                                                    leading: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        CustomText(
+                                                            text: sizeName,
+                                                            fontSize: 16),
+                                                        const SizedBox(
+                                                            width: 5),
+                                                        CustomText(
+                                                            text: sizePrice
+                                                                .toString(),
+                                                            fontSize: 16),
+                                                      ],
+                                                    ),
+                                                    trailing: CustomText(
+                                                      text: item.total,
+                                                      fontSize: 16,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            SizedBox(height: 20.h),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pop(); // Close dialog
+                                                  },
+                                                  child: const CustomText(
+                                                    text: 'Close',
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              child: const Icon(Icons.visibility)),
+                        ],
+                      ),
                     ),
-                    const CustomText(
-                      text: 'Food Name',
+                    CustomText(
+                      text: orderModel.restaurant!.restaurantName!,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                       maxLine: 2,

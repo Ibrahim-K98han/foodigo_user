@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:foodigo/features/Subscription/model/payment_to_map_model.dart';
 
 import '../../../data/errors/errors_model.dart';
 import '../model/bank_payment_response_model.dart';
@@ -63,40 +64,40 @@ class SubscriptionListStateLoading extends SubscriptionListState {}
 
 ///Stripe payment
 
-// final class StripePaymentStateLoading extends SubscriptionListState {
-//   const StripePaymentStateLoading();
-// }
-//
-// final class StripePaymentStateError extends SubscriptionListState {
-//   final String message;
-//   final int statusCode;
-//
-//   const StripePaymentStateError(this.message, this.statusCode);
-//
-//   @override
-//   List<Object> get props => [message, statusCode];
-// }
-//
-// final class StripePaymentFormError extends SubscriptionListState {
-//   final Errors errors;
-//
-//   const StripePaymentFormError(this.errors);
-//
-//   @override
-//   List<Object> get props => [errors];
-// }
-//
-// final class StripePaymentStateLoaded extends SubscriptionListState {
-//   final String message;
-//
-//   const StripePaymentStateLoaded(this.message);
-//
-//   @override
-//   List<Object> get props => [message];
-// }
+final class StripePaymentStateLoading extends SubscriptionListState {
+  const StripePaymentStateLoading();
+}
+
+final class StripePaymentStateError extends SubscriptionListState {
+  final String message;
+  final int statusCode;
+
+  const StripePaymentStateError(this.message, this.statusCode);
+
+  @override
+  List<Object> get props => [message, statusCode];
+}
+
+final class StripePaymentFormError extends SubscriptionListState {
+  final Errors errors;
+
+  const StripePaymentFormError(this.errors);
+
+  @override
+  List<Object> get props => [errors];
+}
+
+final class StripePaymentStateLoaded extends SubscriptionListState {
+  final String message;
+
+  const StripePaymentStateLoaded(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
 
 /// Bank Payment
-///
+
 final class BankPaymentStateLoading extends SubscriptionListState {
   const BankPaymentStateLoading();
 }
@@ -128,8 +129,6 @@ final class BankPaymentStateLoaded extends SubscriptionListState {
   @override
   List<Object> get props => [message];
 }
-
-
 
 /// Free plan Enroll
 // final class FreePlanStateLoading extends SubscriptionListState {
