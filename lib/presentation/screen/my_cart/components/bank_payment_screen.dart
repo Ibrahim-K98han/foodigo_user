@@ -1,23 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/features/Order/cubit/order_cubit.dart';
 import 'package:foodigo/features/address/cubit/get_address_cubit.dart';
 import 'package:foodigo/features/checkout/cubit/checkout_cubit.dart';
-import 'package:foodigo/utils/k_images.dart';
-import 'package:foodigo/widget/custom_image.dart';
-import 'package:foodigo/widget/custom_text_style.dart';
+import 'package:foodigo/presentation/screen/main_page/component/main_controller.dart';
 
 import '../../../../features/Subscription/cubit/subscription_cubit.dart';
 import '../../../../features/Subscription/cubit/subscription_state.dart';
-import '../../../../utils/utils.dart';
+import '../../../../features/Subscription/model/payment_to_map_model.dart';
 import '../../../../widget/primary_button.dart';
 import '../../../core/routes/route_names.dart';
 
 class BankPaymentScreen extends StatefulWidget {
-  const BankPaymentScreen({
-    super.key,
-  });
+  const BankPaymentScreen({super.key});
 
   @override
   State<BankPaymentScreen> createState() => _BankPaymentScreenState();
@@ -31,6 +26,8 @@ class _BankPaymentScreenState extends State<BankPaymentScreen> {
 
   TextEditingController tnxInfoController = TextEditingController();
 
+  late MainController mainController;
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +35,7 @@ class _BankPaymentScreenState extends State<BankPaymentScreen> {
     adCubit = context.read<GetAddressCubit>();
     orCubit = context.read<OrderCubit>();
     chCubit = context.read<CheckoutCubit>();
+    mainController = MainController();
   }
 
   @override
@@ -51,7 +49,7 @@ class _BankPaymentScreenState extends State<BankPaymentScreen> {
         child: Column(
           children: [
             const SizedBox(height: 25),
-            BlocBuilder<SubscriptionCubit, SubscriptionListState>(
+            BlocBuilder<SubscriptionCubit, PaymentToMapModel>(
               builder: (context, state) {
                 return TextFormField(
                   controller: tnxInfoController,
@@ -64,10 +62,10 @@ class _BankPaymentScreenState extends State<BankPaymentScreen> {
               },
             ),
             const SizedBox(height: 20),
-            BlocConsumer<SubscriptionCubit, SubscriptionListState>(
+            BlocConsumer<SubscriptionCubit, PaymentToMapModel>(
               listener: (context, state) {
-                if (state is BankPaymentStateLoading) {
-                  // Show loading dialog
+                final currentState = state.subscriptionListState;
+                if (currentState is BankPaymentStateLoading) {
                   showDialog(
                     context: context,
                     barrierDismissible: false,
@@ -79,57 +77,38 @@ class _BankPaymentScreenState extends State<BankPaymentScreen> {
                       ),
                     ),
                   );
-                } else {
-                  // Close previous dialog if any
-                  if (Navigator.canPop(context)) Navigator.pop(context);
-
-                  if (state is BankPaymentStateLoaded) {
-                    // Show success in a dialog
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (_) => AlertDialog(
-                        title: const Text('Payment Successful'),
-                        content: Text(state.message),
-                      ),
-                    );
-
-                    // Automatically navigate after 2 seconds
-                    Future.delayed(const Duration(seconds: 2), () {
-                      if (Navigator.canPop(context))
-                        Navigator.pop(context); // close dialog
-                      Navigator.pushReplacementNamed(
-                          context, RouteNames.paymentMethodScreen);
-                    });
-                  } else if (state is BankPaymentStateError) {
-                    showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6.r)),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const CustomImage(path: KImages.orderSuccess),
-                            const CustomText(
-                              textAlign: TextAlign.center,
-                              text: 'Thank you! for\nOrder Successfully',
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            Utils.verticalSpace(10),
-                            PrimaryButton(
-                              text: 'Tack Your Order',
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                    context, RouteNames.trackOrderScreen);
-                              },
-                            )
-                          ],
+                } else if (currentState is BankPaymentStateLoaded) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Payment Successful'),
+                      content: Text(currentState.message),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              RouteNames.mainScreen,
+                              (route) => false,
+                            );
+                            Future.delayed(Duration(milliseconds: 100), () {
+                              MainController().changeTab(2);
+                            });
+                          },
+                          child: const Text('Go to My Orders'),
                         ),
-                      ),
-                    );
-                  }
+                      ],
+                    ),
+                  );
+                } else if (currentState is BankPaymentStateError) {
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Payment Failed'),
+                      content: Text(currentState.message),
+                    ),
+                  );
                 }
               },
               builder: (context, state) {
@@ -140,7 +119,8 @@ class _BankPaymentScreenState extends State<BankPaymentScreen> {
                     sCubit.payWithBank(
                       transactionInfo: tnxInfoController.text.trim(),
                       addressId: chCubit
-                          .checkoutResponseModel!.checkoutData!.addressInfo.id,
+                          .checkoutResponseModel!.checkoutData!.addressInfo.id
+                          .toString(),
                       orderType: order?.orderType ?? 'delivery',
                     );
                   },

@@ -39,4 +39,21 @@ class GetProfileCubit extends Cubit<GetProfileState> {
       },
     );
   }
+
+  Future<void> updateProfile(Map<String, dynamic> body) async {
+    emit(UpdateProfileLoading());
+
+    final result = await _repository.updateProfile(
+      _loginBloc.userInformation!.token,
+      body,
+    );
+
+    result.fold(
+      (failure) =>
+          emit(UpdateProfileError(failure.message, failure.statusCode)),
+      (user) {
+        emit(UpdateProfileSuccess(user));
+      },
+    );
+  }
 }

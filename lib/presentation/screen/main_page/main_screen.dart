@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foodigo/features/Cart/cubit/cart_cubit.dart';
 import 'package:foodigo/features/GetProfile/cubit/get_profile_cubit.dart';
-import 'package:http/http.dart';
-
-import '../../../features/HomeData/cubit/home_data_cubit.dart';
 import '../home/home_screen.dart';
 import '../my_cart/my_cart_screen.dart';
 import '../my_order/my_order_screen.dart';

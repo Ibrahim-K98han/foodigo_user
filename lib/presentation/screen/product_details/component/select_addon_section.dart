@@ -1,7 +1,9 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../../features/ProductDetails/cubit/product_details_cubit.dart';
 import '../../../../features/add_to_cart/cubit/add_cart_cubit.dart';
 import '../../../../features/add_to_cart/model/add_cart_state_model.dart';

@@ -73,7 +73,7 @@ class CartCubit extends Cubit<CartStateModel> {
 
   /// Increment product quantity
   Future<void> incrementProduct(String productId) async {
-    emit(state.copyWith(cartState: CartIncrementLoading()));
+    // emit(state.copyWith(cartState: CartIncrementLoading()));
 
     final result = await _repository.incrementProduct(
       productId,
@@ -100,7 +100,7 @@ class CartCubit extends Cubit<CartStateModel> {
         : null;
 
     if (currentItem != null && currentItem.qty > 1) {
-      emit(state.copyWith(cartState: CartDecrementLoading()));
+      // emit(state.copyWith(cartState: CartDecrementLoading()));
 
       final result = await _repository.decrementProduct(
         productId,

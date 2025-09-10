@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/Login/bloc/login_bloc.dart';
 import 'package:foodigo/features/Review/model/review_model.dart';
-import 'package:foodigo/features/WishList/model/wish_list_model.dart';
 
 import '../repository/review_repository.dart';
 import 'review_state.dart';
@@ -30,7 +29,7 @@ class ReviewCubit extends Cubit<ReviewState> {
       (l) => emit(ReviewError(l.message, l.statusCode)),
       (success) {
         reviewModel = success;
-        emit(ReviewSuccess(success));
+        emit(ReviewLoaded(success));
       },
     );
   }

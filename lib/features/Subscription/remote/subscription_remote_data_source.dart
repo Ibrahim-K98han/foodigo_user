@@ -5,10 +5,11 @@ import 'package:http/http.dart' as http;
 import '../../../data/network_parser.dart';
 import '../../../data/remote_url.dart';
 import '../model/bank_payment_request_model.dart';
-import '../model/bank_payment_response_model.dart';
 
 abstract class SubscriptionRemoteDataSource {
   Future payWithBank(BankPaymentRequestModel body, String token);
+
+  // Future payWithStripe(Uri url);
 }
 
 class SubscriptionRemoteDataSourceImpl implements SubscriptionRemoteDataSource {
@@ -41,4 +42,13 @@ class SubscriptionRemoteDataSourceImpl implements SubscriptionRemoteDataSource {
         await NetworkParser.callClientWithCatchException(() => clientMethod);
     return responseJsonBody;
   }
+  //
+  // @override
+  // Future payWithStripe(Uri url) async {
+  //   final clientMethod =
+  //   client.get(url, headers: postDeleteHeader, );
+  //   final responseJsonBody =
+  //   await NetworkParser.callClientWithCatchException(() => clientMethod);
+  //   return responseJsonBody['message'] as String;
+  // }
 }

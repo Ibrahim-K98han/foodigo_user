@@ -1,6 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/HomeData/home_data_model.dart';
 import 'package:foodigo/features/Login/model/user_response_model.dart';
 import 'package:foodigo/widget/page_refresh.dart';
@@ -122,11 +124,26 @@ class LoadedHomeData extends StatelessWidget {
                     featuredProducts: homeModel.featuredProducts!,
                     restaurant: homeModel.restaurants!,
                   ),
-                  Utils.verticalSpace(20.0),
+                  // Utils.verticalSpace(20.0),
 
-                  ///============= Banner Slider =============///
-                  BannerSlider(),
-                  Utils.verticalSpace(20.0),
+                  ///============= Banner  =============///
+                  Padding(
+                    padding: Utils.symmetric(),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10.r),
+                      child: CustomImage(
+                        path: homeModel.promotionalBannerOne.isNotEmpty
+                            ? RemoteUrls.imageUrl(
+                                homeModel.promotionalBannerOne)
+                            : KImages.banner, // fallback image
+                        height: 100.h,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+
+                  // Utils.verticalSpace(20.0),
                   TopRestaurant(
                     restaurants: homeModel.restaurants!,
                   ),

@@ -7,9 +7,9 @@ import 'package:foodigo/features/Login/bloc/login_state.dart';
 import 'package:foodigo/features/Login/model/login_state_model.dart';
 import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
+
 import '../../../data/remote_url.dart';
 import '../../../features/GetProfile/cubit/get_profile_state.dart';
-import '../../../features/Login/model/user_response_model.dart';
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
@@ -48,12 +48,12 @@ class ProfileScreen extends StatelessWidget {
                     arguments: '1');
               },
             ),
-            DrawerItem(
-                title: "Settings",
-                icon: KImages.settingIcon,
-                onTap: () {
-                  Navigator.pushNamed(context, RouteNames.settingScreen);
-                }),
+            // DrawerItem(
+            //     title: "Settings",
+            //     icon: KImages.settingIcon,
+            //     onTap: () {
+            //       Navigator.pushNamed(context, RouteNames.settingScreen);
+            //     }),
             DrawerItem(
                 title: "Address",
                 icon: KImages.location,
@@ -61,10 +61,28 @@ class ProfileScreen extends StatelessWidget {
                   Navigator.pushNamed(context, RouteNames.addressScreen);
                 }),
             DrawerItem(
-                title: "Help Center",
+                title: "Privacy Policy",
                 icon: KImages.help,
                 onTap: () {
-                  Navigator.pushNamed(context, RouteNames.faqScreen);
+                  // Navigator.pushNamed(context, RouteNames.faqScreen);
+                }),
+            // DrawerItem(
+            // title: "Order Status",
+            // icon: KImages.time_square,
+            // onTap: () {
+            //   // Navigator.pushNamed(context, RouteNames.faqScreen);
+            // }),
+            DrawerItem(
+                title: "Language",
+                icon: KImages.language,
+                onTap: () {
+                  Navigator.pushNamed(context, RouteNames.languageScreen);
+                }),
+            DrawerItem(
+                title: "Offers & Rewards",
+                icon: KImages.offers,
+                onTap: () {
+                  // Navigator.pushNamed(context, RouteNames.languageScreen);
                 }),
             DrawerItem(
                 title: "Change Password",
@@ -153,60 +171,79 @@ class _ProfileImageState extends State<ProfileImage> {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
+    return BlocBuilder<GetProfileCubit, GetProfileState>(
+      builder: (context, state) {
+        String image;
+        String name;
+        if (state is GetProfileLoaded) {
+          if (state.user.image.isNotEmpty) {
+            image = RemoteUrls.imageUrl(state.user.image);
+          } else {
+            image = KImages.profile;
+          }
+          name = state.user.name ?? "";
+        } else {
+          image = KImages.profile;
+          name = loginBloc.userInformation?.user?.name ?? "Guest";
+        }
+
+        return SliverToBoxAdapter(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                height: Utils.vSize(80.0),
-                width: Utils.vSize(80.0),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                ),
-                child: ClipRRect(
-                  borderRadius: Utils.borderRadius(r: 50.0),
-                  child: CustomImage(
-                    path: image,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, RouteNames.editProfileScreen);
-                  },
-                  child: Container(
-                    padding: Utils.all(value: 5.0),
-                    height: Utils.vSize(24),
-                    width: Utils.vSize(24),
+              Stack(
+                children: [
+                  Container(
+                    height: Utils.vSize(80.0),
+                    width: Utils.vSize(80.0),
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: primaryColor,
                     ),
-                    child: const Center(
+                    child: ClipRRect(
+                      borderRadius: Utils.borderRadius(r: 50.0),
                       child: CustomImage(
-                        path: KImages.editIcon,
+                        path: image,
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                ),
-              )
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          RouteNames.editProfileScreen,
+                        );
+                      },
+                      child: Container(
+                        padding: Utils.all(value: 5.0),
+                        height: Utils.vSize(24),
+                        width: Utils.vSize(24),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: primaryColor,
+                        ),
+                        child: const Center(
+                          child: CustomImage(path: KImages.editIcon),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Utils.verticalSpace(8.0),
+              CustomText(
+                text: name,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+              Utils.verticalSpace(16.0),
             ],
           ),
-          Utils.verticalSpace(8.0),
-          CustomText(
-            text: loginBloc.userInformation!.user!.name,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-          Utils.verticalSpace(16.0),
-        ],
-      ),
+        );
+      },
     );
   }
 }

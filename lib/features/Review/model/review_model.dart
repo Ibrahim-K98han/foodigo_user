@@ -26,13 +26,12 @@ class ReviewModel extends Equatable {
 
   factory ReviewModel.fromMap(Map<String, dynamic> map) {
     return ReviewModel(
-      review: map['review'] != null
+      review: map['data'] != null
           ? List<Review>.from(
-              (map['review'] as List<int>).map<Review?>(
-                (x) => Review.fromMap(x as Map<String, dynamic>),
-              ),
+              (map['data'] as List)
+                  .map((x) => Review.fromMap(x as Map<String, dynamic>)),
             )
-          : null,
+          : [],
     );
   }
 
@@ -259,17 +258,17 @@ class Product extends Equatable {
       id: map['id'] ?? 0,
       slug: map['slug'] ?? '',
       image: map['image'] ?? '',
-      categoryId: map['categoryId'] ?? '',
-      restaurantId: map['restaurantId'] ?? '',
+      categoryId: map['category_id'] ?? '',
+      restaurantId: map['restaurant_id'] ?? '',
       price: map['price'] ?? '',
-      offerPrice: map['offerPrice'] ?? '',
+      offerPrice: map['offer_price'] ?? '',
       status: map['status'] ?? '',
-      addonItems: map['addonItems'] ?? '',
-      createdAt: map['createdAt'] ?? '',
-      updatedAt: map['updatedAt'] ?? '',
-      isFeatured: map['isFeatured'] ?? '',
+      addonItems: map['addon_items'] ?? '',
+      createdAt: map['created_at'] ?? '',
+      updatedAt: map['updated_at'] ?? '',
+      isFeatured: map['is_featured'] ?? '',
       name: map['name'] ?? '',
-      shortDescription: map['shortDescription'] ?? '',
+      shortDescription: map['short_description'] ?? '',
       size: map['size'] ?? '',
     );
   }

@@ -142,8 +142,12 @@ class Coupon extends Equatable {
       code: map['code'] ?? '',
       discountType: map['discount_type'] ?? '',
       discountValue: map['discount_value'] ?? '',
-      discountAmount: map['discount_amount'] ?? '',
-      newTotal: map['new_total'] ?? '',
+      discountAmount: map['discount_amount'] != null
+          ? double.tryParse(map['discount_amount'].toString()) ?? 0.0
+          : 0.0,
+      newTotal: map['new_total'] != null
+          ? double.tryParse(map['new_total'].toString()) ?? 0.0
+          : 0.0,
     );
   }
 

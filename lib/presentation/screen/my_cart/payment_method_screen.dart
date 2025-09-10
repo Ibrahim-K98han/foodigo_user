@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/Order/cubit/order_cubit.dart';
+import 'package:foodigo/features/checkout/cubit/checkout_cubit.dart';
 import 'package:foodigo/presentation/core/routes/route_names.dart';
 
 import '../../../data/remote_url.dart';
 import '../../../features/PaymentMethod/cubit/payment_method_cubit.dart';
 import '../../../features/PaymentMethod/cubit/payment_method_state.dart';
 import '../../../features/PaymentMethod/model/payment_method_response_model.dart';
+import '../../../features/Subscription/cubit/subscription_cubit.dart';
 import '../../../features/checkout/model/checkout_response_model.dart';
 import '../../../utils/utils.dart';
 import '../../../widget/custom_appbar.dart';
@@ -88,6 +91,9 @@ class PaymentInfoLoadedWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final chCubit = context.read<CheckoutCubit>();
+    final orCubit = context.read<OrderCubit>();
+    final sCubit = context.read<SubscriptionCubit>();
     final methods = payment;
 
     if (methods == null) {
@@ -184,56 +190,14 @@ class PaymentInfoLoadedWidget extends StatelessWidget {
                         RouteNames.bankTransferPaymentScreen,
                         arguments: checkoutResponseModel,
                       );
-
-                    // case 'stripe':
-                    //   Navigator.pushNamed(
-                    //     context,
-                    //     RouteNames.stripePaymentScreen,
-                    //     arguments: checkoutResponseModel,
-                    //   );
-                    //   break;
-                    // case 'paypal':
-                    //   Navigator.pushNamed(
-                    //     context,
-                    //     RouteNames.paypalPaymentScreen,
-                    //     arguments: checkoutResponseModel,
-                    //   );
-                    //   break;
-                    // case 'razorpay':
-                    //   Navigator.pushNamed(
-                    //     context,
-                    //     RouteNames.razorpayPaymentScreen,
-                    //     arguments: checkoutResponseModel,
-                    //   );
-                    //   break;
-                    // case 'flutterwave':
-                    //   Navigator.pushNamed(
-                    //     context,
-                    //     RouteNames.flutterwavePaymentScreen,
-                    //     arguments: checkoutResponseModel,
-                    //   );
-                    //   break;
-                    // case 'mollie':
-                    //   Navigator.pushNamed(
-                    //     context,
-                    //     RouteNames.molliePaymentScreen,
-                    //     arguments: checkoutResponseModel,
-                    //   );
-                    //   break;
-                    // case 'paystack':
-                    //   Navigator.pushNamed(
-                    //     context,
-                    //     RouteNames.paystackPaymentScreen,
-                    //     arguments: checkoutResponseModel,
-                    //   );
-                    //   break;
-                    // case 'instamojo':
-                    //   Navigator.pushNamed(
-                    //     context,
-                    //     RouteNames.instamojoPaymentScreen,
-                    //     arguments: checkoutResponseModel,
-                    //   );
-                    //   break;
+                      break;
+                    case 'stripe':
+                      final url =
+                          chCubit.webPaymentInfo(RemoteUrls.payWithStripe);
+                      print('Strip Payment $url');
+                      Navigator.pushNamed(
+                          context, RouteNames.stripTransferPaymentScreen,
+                          arguments: url.toString());
 
                     default:
                       Utils.errorSnackBar(

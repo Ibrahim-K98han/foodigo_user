@@ -1,14 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:foodigo/data/errors/exception.dart';
 import 'package:foodigo/data/errors/failure.dart';
-import 'package:foodigo/features/HomeData/feature_product_model.dart';
 import 'package:foodigo/features/HomeData/home_data_model.dart';
 
 import '../remote/home_data_remote_data_source.dart';
 
 abstract class HomeDataRepository {
   Future<Either<Failure, HomeModel>> getHomeDataData();
-
 }
 
 class HomeDataRepositoryImpl implements HomeDataRepository {
@@ -29,5 +27,4 @@ class HomeDataRepositoryImpl implements HomeDataRepository {
       return Left(ServerFailure(e.message, e.statusCode));
     }
   }
-
 }

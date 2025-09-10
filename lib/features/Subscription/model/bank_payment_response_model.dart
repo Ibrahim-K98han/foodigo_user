@@ -171,30 +171,37 @@ class OrderData extends Equatable {
 
   factory OrderData.fromMap(Map<String, dynamic> map) {
     return OrderData(
-      id: map['id'] ?? 0,
-      userId: map['user_id'] ?? 0,
+      id: map['id'] is String ? int.tryParse(map['id']) ?? 0 : (map['id'] ?? 0),
+      userId: map['user_id'] is String
+          ? int.tryParse(map['user_id']) ?? 0
+          : (map['user_id'] ?? 0),
       restaurantId: map['restaurant_id']?.toString() ?? '',
-      orderType: map['order_type'] ?? '',
-      addressId: map['address_id'] ?? 0,
-      deliveryDay: map['delivery_day'] ?? '',
-      timeSlotId: map['time_slot_id'] ?? '',
-      coupon: map['coupon'] ?? '',
-      discountAmount: map['discount_amount'] ?? '',
-      deliveryCharge: map['delivery_charge'] ?? '',
-      vat: map['vat'] ?? '',
+      orderType: map['order_type']?.toString() ?? '',
+      addressId: map['address_id'] is String
+          ? int.tryParse(map['address_id']) ?? 0
+          : (map['address_id'] ?? 0),
+      deliveryDay: map['delivery_day']?.toString() ?? '',
+      timeSlotId: map['time_slot_id']?.toString() ?? '',
+      coupon: map['coupon']?.toString() ?? '',
+      discountAmount: map['discount_amount']?.toString() ?? '',
+      deliveryCharge: map['delivery_charge']?.toString() ?? '',
+      vat: map['vat']?.toString() ?? '',
       total: (map['total'] is num) ? (map['total'] as num).toDouble() : 0.0,
       grandTotal: (map['grand_total'] is num)
           ? (map['grand_total'] as num).toDouble()
           : 0.0,
-      paymentMethod: map['payment_method'] ?? '',
-      paymentStatus: map['payment_status'] ?? '',
-      tnxInfo: map['tnx_info'] ?? '',
-      isGuest: map['is_guest'] ?? 0,
-      deliveryAddress: map['delivery_address'] ?? '',
-      createdAt: map['created_at'] ?? '',
-      updatedAt: map['updated_at'] ?? '',
+      paymentMethod: map['payment_method']?.toString() ?? '',
+      paymentStatus: map['payment_status']?.toString() ?? '',
+      tnxInfo: map['tnx_info']?.toString() ?? '',
+      isGuest: map['is_guest'] is String
+          ? int.tryParse(map['is_guest']) ?? 0
+          : (map['is_guest'] ?? 0),
+      deliveryAddress: map['delivery_address']?.toString() ?? '',
+      createdAt: map['created_at']?.toString() ?? '',
+      updatedAt: map['updated_at']?.toString() ?? '',
     );
   }
+
 
   String toJson() => json.encode(toMap());
 

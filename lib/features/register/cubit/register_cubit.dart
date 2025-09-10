@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/register/cubit/register_state.dart';
 import 'package:foodigo/features/register/model/register_state_model.dart';
 import 'package:foodigo/features/register/repository/register_repository.dart';
 
 import '../../../data/errors/failure.dart';
-import '../../../presentation/core/routes/route_names.dart';
 
 class RegisterCubit extends Cubit<RegisterStateModel> {
   final RegisterRepository _repository;

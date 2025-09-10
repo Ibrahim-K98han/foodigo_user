@@ -1,8 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:equatable/equatable.dart';
 import 'package:foodigo/features/AllFood/cubit/all_food_state.dart';
 import 'package:foodigo/features/HomeData/category_model.dart';
-import 'package:foodigo/features/HomeData/cubit/home_data_state.dart';
 import 'package:foodigo/features/HomeData/cuisines_model.dart';
 
 class AllFoodSearchStateModel {

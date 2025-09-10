@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,12 +9,12 @@ import 'package:foodigo/utils/constraints.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 
+import '../../../features/ForgotPassword/cubit/forgot_password_cubit.dart';
 import '../../../utils/k_images.dart';
-import '../../../widget/custom_image.dart';
-import '../../core/routes/route_names.dart';
 import '../../../utils/utils.dart';
+import '../../../widget/custom_image.dart';
 import '../../../widget/custom_text_style.dart';
-import '../../../widget/primary_button.dart';
+import '../../core/routes/route_names.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
@@ -27,6 +25,7 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   late RegisterCubit rCubit;
+  late ForgotPasswordCubit fpCubit;
 
   bool finishTime = true;
 
@@ -34,6 +33,7 @@ class _OtpScreenState extends State<OtpScreen> {
   void initState() {
     super.initState();
     rCubit = context.read<RegisterCubit>();
+    fpCubit = context.read<ForgotPasswordCubit>();
   }
 
   @override
@@ -41,7 +41,9 @@ class _OtpScreenState extends State<OtpScreen> {
     final args = ModalRoute.of(context)!.settings.arguments as Map?;
     final isChangePassword = args?["isChangePassword"] ?? false;
     final email = rCubit.state.email;
+    final fEmail = fpCubit.state.email;
     print('=============$email');
+    print('=============$fEmail');
     return Scaffold(
       appBar: AppBar(
         title: const CustomImage(
@@ -116,7 +118,9 @@ class _OtpScreenState extends State<OtpScreen> {
                           rCubit.otpChange(code);
                         },
                         onCompleted: (String code) {
-                          if (code.length == 6) {
+                          if (isChangePassword) {
+                            rCubit.verifyRegOtp(fEmail);
+                          } else if (code.length == 6) {
                             rCubit.verifyRegOtp(email);
                           } else {
                             Utils.errorSnackBar(context, 'Enter 6 digit');

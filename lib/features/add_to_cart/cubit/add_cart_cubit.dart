@@ -1,11 +1,11 @@
 import 'dart:developer';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/add_to_cart/cubit/add_cart_state.dart';
 import 'package:foodigo/features/add_to_cart/model/add_cart_response_model.dart';
 import 'package:foodigo/features/add_to_cart/model/add_cart_state_model.dart';
 import 'package:foodigo/features/add_to_cart/repository/add_cart_repository.dart';
 import '../../../data/errors/failure.dart';
-import '../../../data/remote_url.dart';
 import '../../../utils/utils.dart';
 import '../../Login/bloc/login_bloc.dart';
 
@@ -74,19 +74,61 @@ class AddCartCubit extends Cubit<AddCartStateModel> {
   }
 
   // Add to cart
-  Future<void> addCart(int productId) async {
-    // Ensure productId is in state
+  // Future<void> addCart(BuildContext context, int productId) async {
+  //   if (state.size.isEmpty) {
+  //     Utils.showSnackBar(context, "Please select a size before adding to cart");
+  //     return;
+  //   }
+  //   emit(state.copyWith(
+  //       productId: productId, addCartState: AddCartStateLoading()));
+  //   log("cart body: ${state.toMap()}");
+  //
+  //   final uri = Utils.tokenWithCode(
+  //     RemoteUrls.addProduct,
+  //     _loginBloc.userInformation!.token,
+  //     _loginBloc.state.languageCode,
+  //   );
+  //   emit(state.copyWith(
+  //       productId: productId, addCartState: AddCartStateLoading()));
+  //
+  //   print('$uri');
+  //
+  //   final result =
+  //       await _repository.addCart(state, _loginBloc.userInformation!.token);
+  //
+  //   result.fold(
+  //     (failure) {
+  //       if (failure is InvalidAuthData) {
+  //         emit(state.copyWith(
+  //             addCartState: AddCartStateFormValidate(failure.errors)));
+  //       } else {
+  //         emit(state.copyWith(
+  //             addCartState:
+  //                 AddCartStateError(failure.message, failure.statusCode)));
+  //       }
+  //     },
+  //     (success) {
+  //       addCartResponseModel = success;
+  //       emit(state.copyWith(addCartState: AddCartStateSuccess(success)));
+  //       clear();
+  //     },
+  //   );
+  // }
+
+  Future<void> addCart(BuildContext context, int productId) async {
+    // Check if a size is selected
+    if (state.size.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please select a size before adding to cart"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
     emit(state.copyWith(
         productId: productId, addCartState: AddCartStateLoading()));
-    log("cart body: ${state.toMap()}");
-
-    final uri = Utils.tokenWithCode(
-      RemoteUrls.addProduct,
-      _loginBloc.userInformation!.token,
-      _loginBloc.state.languageCode,
-    );
-
-    print('$uri');
 
     final result =
         await _repository.addCart(state, _loginBloc.userInformation!.token);
@@ -105,7 +147,19 @@ class AddCartCubit extends Cubit<AddCartStateModel> {
       (success) {
         addCartResponseModel = success;
         emit(state.copyWith(addCartState: AddCartStateSuccess(success)));
+        clear();
       },
     );
+  }
+
+  void clear() {
+    // Emit a fresh state so that size, addons, and qty are reset
+    emit(state.copyWith(
+      size: '',
+      qty: 1,
+      addons: [],
+      addonsQty: {},
+      addCartState: const AddCartInitial(),
+    ));
   }
 }

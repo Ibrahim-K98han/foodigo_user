@@ -20,7 +20,7 @@ class BankPaymentRequestModel {
 }
 
 class OrderDataRequest {
-  final int addressId;
+  final String addressId;
   final String orderType;
   final String? deliveryInstructions;
   final String? couponCode;

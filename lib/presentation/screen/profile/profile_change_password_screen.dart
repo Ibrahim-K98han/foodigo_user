@@ -14,7 +14,6 @@ import '../../../widget/custom_form.dart';
 import '../../../widget/custom_image.dart';
 import '../../../widget/fetch_error_text.dart';
 import '../../../widget/primary_button.dart';
-import '../../core/routes/route_names.dart';
 
 class ProfileChangePasswordScreen extends StatefulWidget {
   const ProfileChangePasswordScreen({super.key});

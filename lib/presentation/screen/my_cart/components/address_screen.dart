@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/address/cubit/get_address_cubit.dart';
@@ -7,7 +6,9 @@ import 'package:foodigo/features/address/model/address_state_model.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/page_refresh.dart';
 import 'package:foodigo/widget/primary_button.dart';
+
 import '../../../../features/address/model/address_model.dart';
+import '../../../../features/checkout/cubit/checkout_cubit.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
@@ -56,18 +57,18 @@ class _ChangeAddressScreenState extends State<ChangeAddressScreen> {
         child: BlocBuilder<GetAddressCubit, AddressStateModel>(
           builder: (context, state) {
             final addressState = state.addressState;
-
+            List<Address> addresses = [];
             if (addressState is AllAddressLoading) {
               return const LoadingWidget();
             } else if (addressState is AAllAddressError) {
               return FetchErrorText(text: addressState.message);
-            }
-
-            List<Address> addresses = [];
-            if (addressState is AllAddressLoaded) {
+            } else if (addressState is AllAddressLoaded) {
               addresses = addressState.getAddress;
+              if (addresses.isEmpty) {
+                return const Center(
+                    child: Text("No Address Found Please Add Address"));
+              }
             }
-
             return SingleChildScrollView(
               child: Padding(
                 padding: Utils.symmetric(),
@@ -79,6 +80,9 @@ class _ChangeAddressScreenState extends State<ChangeAddressScreen> {
                         onTap: () {
                           Navigator.pushNamed(context, RouteNames.orderScreen,
                               arguments: address);
+                          context
+                              .read<CheckoutCubit>()
+                              .addressId(address.id.toString());
                         },
                       ),
                     ),
@@ -130,7 +134,7 @@ class AddressItem extends StatelessWidget {
                           Navigator.pushNamed(
                               context, RouteNames.editAddressScreen,
                               arguments: {
-                                'id': address.id,
+                                'address': address,
                               });
                         },
                         child: const CustomImage(

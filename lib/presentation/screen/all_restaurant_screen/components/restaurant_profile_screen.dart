@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/data/remote_url.dart';
+import 'package:foodigo/features/Login/bloc/login_bloc.dart';
 import 'package:foodigo/features/Review/cubit/review_cubit.dart';
 import 'package:foodigo/features/Review/cubit/review_state.dart';
 import 'package:foodigo/features/Review/model/review_model.dart';
@@ -19,7 +20,6 @@ import 'package:foodigo/widget/primary_button.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
-import '../../../../widget/page_refresh.dart';
 
 class RestaurantProfileScreen extends StatefulWidget {
   const RestaurantProfileScreen({super.key, required this.slug});
@@ -214,48 +214,54 @@ class _RestaurantProfileScreenState extends State<RestaurantProfileScreen> {
 
 void _showReviewDialog(BuildContext context) {
   final reviewCubit = context.read<ReviewCubit>();
+
+  // Call getReview before opening dialog
   reviewCubit.getReview();
+
   showDialog(
     context: context,
     builder: (context) {
-      return PageRefresh(
-        onRefresh: () async {
-          reviewCubit.getReview();
-        },
-        child: BlocConsumer<ReviewCubit, ReviewState>(
-          listener: (context, state) {
-            final review = state;
-            if (review is ReviewError) {
-              if (review.statusCode == 503) {
-                FetchErrorText(text: review.message);
-              }
-            }
-          },
-          builder: (context, state) {
-            final review = state;
-            if (review is ReviewLoading) {
-              return const LoadingWidget();
-            } else if (state is ReviewLoaded) {
-              if (state.reviewModel.review == null ||
-                  state.reviewModel.review!.isEmpty) {
-                return const Center(child: Text("No reviews yet"));
-              }
-              return LoadReviewDialog(reviewModel: state.reviewModel);
-            } else if (review is ReviewLoaded) {
-              return LoadReviewDialog(
-                reviewModel: reviewCubit.reviewModel!,
-              );
-            }
-            if (reviewCubit.reviewModel != null) {
-              return LoadReviewDialog(
-                reviewModel: reviewCubit.reviewModel!,
-              );
-            } else {
-              return const FetchErrorText(text: 'Something Went Wrong');
-            }
-          },
-        ),
-      );
+      return BlocConsumer<ReviewCubit, ReviewState>(listener: (context, state) {
+        if (state is ReviewError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
+      }, builder: (context, state) {
+        if (state is ReviewLoading || state is ReviewInitial) {
+          return const Dialog(
+            child: SizedBox(
+              height: 120,
+              child: Center(child: CircularProgressIndicator()),
+            ),
+          );
+        } else if (state is ReviewLoaded) {
+          final reviews = state.reviewModel.review ?? [];
+          if (reviews.isEmpty) {
+            return const Dialog(
+              child: SizedBox(
+                height: 120,
+                child: Center(child: Text("No reviews yet")),
+              ),
+            );
+          }
+          return LoadReviewDialog(reviewModel: state.reviewModel);
+        } else if (state is ReviewError) {
+          return Dialog(
+            child: SizedBox(
+              height: 120,
+              child: Center(child: Text(state.message)),
+            ),
+          );
+        } else {
+          return const Dialog(
+            child: SizedBox(
+              height: 120,
+              child: Center(child: Text("Something went wrong")),
+            ),
+          );
+        }
+      });
     },
   );
 }
@@ -277,6 +283,7 @@ class LoadReviewDialog extends StatelessWidget {
         width: 400.w,
         height: 600.h,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             _dialogHeader(context, 'Reviews'),
             Expanded(
@@ -284,19 +291,17 @@ class LoadReviewDialog extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: ListView(
                   children: [
-                    _ratingSummary(),
+                    _ratingSummary(context),
                     const SizedBox(height: 16),
                     _filterChips(),
                     const SizedBox(height: 16),
-                    ListView(
-                      padding: const EdgeInsets.all(16),
-                      children: [
-                        ...List.generate(
-                          reviewModel.review!.length,
-                          (index) =>
-                              ReviewCard(review: reviewModel.review![index]),
-                        ),
-                      ],
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: reviewModel.review!.length,
+                      itemBuilder: (context, index) {
+                        return ReviewCard(review: reviewModel.review![index]);
+                      },
                     ),
                     const SizedBox(height: 12),
                     Center(
@@ -321,6 +326,7 @@ class LoadReviewDialog extends StatelessWidget {
 }
 
 Widget _dialogHeader(BuildContext context, String? text) {
+  final singleRestaurantCubit = context.read<SingleRestaurantCubit>();
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
     child: Column(
@@ -352,8 +358,9 @@ Widget _dialogHeader(BuildContext context, String? text) {
               fit: BoxFit.cover,
             ),
             const SizedBox(width: 8),
-            const CustomText(
-              text: 'Chef’s Place',
+            CustomText(
+              text:
+                  singleRestaurantCubit.restaurantDetailsModel!.restaurant.name,
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
@@ -364,10 +371,11 @@ Widget _dialogHeader(BuildContext context, String? text) {
               onTap: () {
                 _showMapDialog(context);
               },
-              child: const CustomText(
-                text: 'San Jose, Spain',
+              child: CustomText(
+                text: singleRestaurantCubit
+                    .restaurantDetailsModel!.restaurant.address,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF475569),
+                color: const Color(0xFF475569),
               ),
             )
           ],
@@ -459,7 +467,8 @@ void _showMapDialog(BuildContext context) {
   );
 }
 
-Widget _ratingSummary() {
+Widget _ratingSummary(BuildContext context) {
+  final singleRestaurantCubit = context.read<SingleRestaurantCubit>();
   return Container(
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
@@ -469,8 +478,10 @@ Widget _ratingSummary() {
       children: [
         Row(
           children: [
-            const CustomText(
-              text: '4.9',
+            CustomText(
+              text: singleRestaurantCubit
+                  .restaurantDetailsModel!.restaurant.reviewsCount
+                  .toString(),
               fontSize: 20,
               fontWeight: FontWeight.w600,
             ),
@@ -493,8 +504,10 @@ Widget _ratingSummary() {
                     print(rating);
                   },
                 ),
-                const CustomText(
-                  text: '5000+ ratings',
+                CustomText(
+                  text: singleRestaurantCubit
+                      .restaurantDetailsModel!.restaurant.reviewsCount
+                      .toString(),
                   fontSize: 12,
                   color: Colors.grey,
                 ),
@@ -575,6 +588,7 @@ class ReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final login = context.read<LoginBloc>();
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
@@ -594,11 +608,12 @@ class ReviewCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 child: CustomImage(
-                    path: RemoteUrls.imageUrl(review.product!.image)),
+                  path: RemoteUrls.imageUrl(login.userInformation!.user!.image),
+                ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               CustomText(
-                text: 'Rkdfkdkf',
+                text: login.userInformation!.user!.name,
                 fontWeight: FontWeight.w500,
               ),
             ],

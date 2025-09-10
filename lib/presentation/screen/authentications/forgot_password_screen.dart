@@ -5,9 +5,6 @@ import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_state.dart
 import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_state_model.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
-import '../../../features/register/cubit/register_cubit.dart';
-import '../../../features/register/cubit/register_state.dart';
-import '../../../features/register/model/register_state_model.dart';
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
