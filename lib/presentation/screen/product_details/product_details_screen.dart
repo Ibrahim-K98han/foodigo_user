@@ -89,21 +89,54 @@ class ProductDetailData extends StatelessWidget {
               const SelectAddonSection(),
 
               ///=============== Add To Cart Button ========================///
+              // BlocBuilder<AddCartCubit, AddCartStateModel>(
+              //   builder: (context, state) {
+              //     return AddToCartButton(
+              //       text: state.qty.toString(),
+              //       decrementBtn: () => addCart.decrementQty(),
+              //       incrementBtn: () => addCart.incrementQty(),
+              //       addToCartBtn: () {
+              //         addCart.addCart(context, featuredProducts.id);
+              //         if (addCart.addCartResponseModel != null) {
+              //           Navigator.pop(context);
+              //         }
+              //       },
+              //     );
+              //   },
+              // ),
+
               BlocBuilder<AddCartCubit, AddCartStateModel>(
                 builder: (context, state) {
+                  final addCartCubit = context.read<AddCartCubit>();
                   return AddToCartButton(
                     text: state.qty.toString(),
-                    decrementBtn: () => addCart.decrementQty(),
-                    incrementBtn: () => addCart.incrementQty(),
-                    addToCartBtn: () {
-                      addCart.addCart(context, featuredProducts.id);
-                      if (addCart.addCartResponseModel != null) {
+                    decrementBtn: () => addCartCubit.decrementQty(),
+                    incrementBtn: () => addCartCubit.incrementQty(),
+                    addToCartBtn: () async {
+                      // 1️⃣ Check if size is selected
+                      if (state.size.isEmpty) {
                         Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Please select size first"),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                        return; // Stop here, don't pop
+                      }
+
+                      // 2️⃣ Add to cart
+                      await addCartCubit.addCart(context, featuredProducts.id);
+
+                      // 3️⃣ Only pop if addCartResponseModel is not null
+                      if (addCartCubit.addCartResponseModel != null) {
+                        Navigator.pop(context); // pop only on successful add
                       }
                     },
                   );
                 },
               ),
+
             ],
           ),
         ),

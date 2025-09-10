@@ -22,8 +22,6 @@ class AddCartCubit extends Cubit<AddCartStateModel> {
 
   AddCartResponseModel? addCartResponseModel;
 
-  String? size;
-
   // Select product size
   void selectSize(String size) {
     emit(state.copyWith(size: size));
@@ -119,30 +117,34 @@ class AddCartCubit extends Cubit<AddCartStateModel> {
 
   Future<void> addCart(BuildContext context, int productId) async {
     // Check if a size is selected
-    if (state.size == null || state.size!.isEmpty) {
-      Utils.showSnackBar(context, "Please select a size before adding to cart");
-      return; // Stop execution immediately
+    if (state.size.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please select a size before adding to cart"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
     }
 
-    // Emit loading state
     emit(state.copyWith(
         productId: productId, addCartState: AddCartStateLoading()));
-    log("cart body: ${state.toMap()}");
 
     final result =
-    await _repository.addCart(state, _loginBloc.userInformation!.token);
+        await _repository.addCart(state, _loginBloc.userInformation!.token);
 
     result.fold(
-          (failure) {
+      (failure) {
         if (failure is InvalidAuthData) {
           emit(state.copyWith(
               addCartState: AddCartStateFormValidate(failure.errors)));
         } else {
           emit(state.copyWith(
-              addCartState: AddCartStateError(failure.message, failure.statusCode)));
+              addCartState:
+                  AddCartStateError(failure.message, failure.statusCode)));
         }
       },
-          (success) {
+      (success) {
         addCartResponseModel = success;
         emit(state.copyWith(addCartState: AddCartStateSuccess(success)));
         clear();
