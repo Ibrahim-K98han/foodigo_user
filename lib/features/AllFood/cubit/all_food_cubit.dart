@@ -1,11 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/AllFood/cubit/all_food_state.dart';
-import 'package:foodigo/features/AllFood/cubit/all_food_state_model.dart';
 import 'package:foodigo/features/AllFood/model/all_food_model.dart';
 import 'package:foodigo/features/AllFood/repository/all_food_repository.dart';
 import 'package:foodigo/features/HomeData/category_model.dart';
 import 'package:foodigo/features/HomeData/cuisines_model.dart';
-import 'package:foodigo/features/HomeData/feature_product_model.dart';
 
 import '../../Login/bloc/login_bloc.dart';
 

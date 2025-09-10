@@ -1,16 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/ChangeProfilePass/cubit/change_profile_pass_state.dart';
 import 'package:foodigo/features/ChangeProfilePass/model/change_profile_pass_state_model.dart';
 import 'package:foodigo/features/ChangeProfilePass/repository/change_profile_pass_repository.dart';
-import 'package:foodigo/features/register/cubit/register_state.dart';
-import 'package:foodigo/features/register/model/register_state_model.dart';
-import 'package:foodigo/features/register/repository/register_repository.dart';
 
 import '../../../data/errors/failure.dart';
-import '../../../presentation/core/routes/route_names.dart';
 import '../../Login/bloc/login_bloc.dart';
 
 class ChangeProfilePassCubit extends Cubit<ChangeProfilePassStateModel> {

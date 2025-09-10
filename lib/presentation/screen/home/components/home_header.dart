@@ -1,5 +1,3 @@
-import 'package:badges/badges.dart' as badges;
-import 'package:dartz/dartz.dart' as product;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/GetProfile/cubit/get_profile_cubit.dart';
@@ -7,7 +5,6 @@ import 'package:foodigo/features/GetProfile/cubit/get_profile_state.dart';
 import 'package:foodigo/features/Login/bloc/login_bloc.dart';
 
 import '../../../../data/remote_url.dart';
-import '../../../../features/WishList/cubit/wish_list_cubit.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
@@ -61,8 +58,8 @@ class _HomeHeaderState extends State<HomeHeader> {
           } else {
             image = KImages.profile;
           }
-          name = state.user.name ?? "";
-          address = state.user.address ?? "";
+          name = state.user.name;
+          address = state.user.address;
         } else {
           image = KImages.profile;
           name = loginBloc.userInformation?.user?.name ?? "Guest";
@@ -153,25 +150,25 @@ class _HomeHeaderState extends State<HomeHeader> {
                           ),
                         ),
                         Utils.horizontalSpace(8.0),
-                        Container(
-                          height: 50.0,
-                          width: 50.0,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: whiteColor, width: 1.5),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: badges.Badge(
-                              position: badges.BadgePosition.topEnd(
-                                  top: -10, end: -0),
-                              badgeContent: const Text(''),
-                              child: const CustomImage(
-                                path: KImages.notificationIcon,
-                                height: 25,
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Container(
+                        //   height: 50.0,
+                        //   width: 50.0,
+                        //   decoration: BoxDecoration(
+                        //     border: Border.all(color: whiteColor, width: 1.5),
+                        //     shape: BoxShape.circle,
+                        //   ),
+                        //   child: Center(
+                        //     child: badges.Badge(
+                        //       position: badges.BadgePosition.topEnd(
+                        //           top: -10, end: -0),
+                        //       badgeContent: const Text(''),
+                        //       child: const CustomImage(
+                        //         path: KImages.notificationIcon,
+                        //         height: 25,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ],

@@ -11,6 +11,7 @@ class CheckoutStateModel extends Equatable {
   final String discountAmount;
   final String deliveryCharge;
   final String vat;
+  final String token;
   final CheckoutState checkoutState;
 
   const CheckoutStateModel(
@@ -21,6 +22,7 @@ class CheckoutStateModel extends Equatable {
       this.discountAmount = '0',
       this.deliveryCharge = '0',
       this.vat = '0',
+        this.token = '',
       this.checkoutState = const CheckoutStateInitial()});
 
   CheckoutStateModel copyWith({
@@ -31,6 +33,7 @@ class CheckoutStateModel extends Equatable {
     String? discountAmount,
     String? deliveryCharge,
     String? vat,
+    String? token,
     CheckoutState? checkoutState,
   }) {
     return CheckoutStateModel(
@@ -41,6 +44,7 @@ class CheckoutStateModel extends Equatable {
       discountAmount: discountAmount ?? this.discountAmount,
       deliveryCharge: deliveryCharge ?? this.deliveryCharge,
       vat: vat ?? this.vat,
+      token: token ?? this.token,
       checkoutState: checkoutState ?? this.checkoutState,
     );
   }
@@ -54,6 +58,7 @@ class CheckoutStateModel extends Equatable {
       'discount_amount': discountAmount,
       'delivery_charge': deliveryCharge,
       'vat': vat,
+      'Authorization': token,
     };
   }
 
@@ -66,6 +71,7 @@ class CheckoutStateModel extends Equatable {
       discountAmount: map['discount_amount'] ?? '0',
       deliveryCharge: map['delivery_charge'] ?? '0',
       vat: map['vat'] ?? '0',
+      token: map['token'] ?? '',
     );
   }
 
@@ -83,6 +89,7 @@ class CheckoutStateModel extends Equatable {
         discountAmount,
         deliveryCharge,
         vat,
+    token,
         checkoutState
       ];
 }

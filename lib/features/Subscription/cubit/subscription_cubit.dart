@@ -54,12 +54,42 @@ class SubscriptionCubit extends Cubit<PaymentToMapModel> {
         // 'Accept': "x-www-form-urlencoded/application"
       };
 
-  Uri webPaymentInfo(String url) {
-    final body = state.copyWith(
-      token: 'Bearer ${_loginBloc.userInformation!.token}',
-    );
-    print('Token ${body.token}');
-    final uri = Uri.parse(url).replace(queryParameters: body.toMap());
-    return uri;
-  }
+  //
+  // Uri webPaymentInfo(String url) {
+  //   final body = state.copyWith(
+  //     token: 'Bearer ${_loginBloc.userInformation!.token}',
+  //   );
+  //   print('Token ${body.token}');
+  //   final uri = Uri.parse(url).replace(queryParameters: body.toMap());
+  //   return uri;
+  // }
+
+//   Uri webPaymentInfo(String url) {
+//     // Build query parameters without token
+//     final queryParams = state
+//         .copyWith(
+//             token: _loginBloc.userInformation!.token)
+//         .toMap()
+//    ..remove('token'); // make sure token is not added as query param
+//
+//     final uri = Uri.parse(url).replace(queryParameters: queryParams);
+//     return uri;
+//   }
+//
+// // Then when calling API:
+//   Future<void> payWithStripe(String url) async {
+//     final uri = webPaymentInfo(url);
+//
+//     final response = await http.get(
+//       uri,
+//       headers: {
+//         'Authorization': 'Bearer ${_loginBloc.userInformation!.token}',
+//         'Content-Type': 'application/json',
+//         'Accept': 'application/json',
+//       },
+//     );
+//
+//     print('Response: ${response.statusCode}');
+//     print('Body: ${response.body}');
+//   }
 }

@@ -12,6 +12,14 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
 
   FeaturedProducts? featuredProducts;
 
+  int? selectedAddonId; // <-- track selected addon
+
+  // call this when user selects an addon
+  void selectAddon(int addonId) {
+    selectedAddonId = addonId;
+    emit(ProductDetailsLoaded(featuredProducts!));
+  }
+
   Future<void> getProductDetailsData(int id) async {
     emit(ProductDetailsLoading());
 

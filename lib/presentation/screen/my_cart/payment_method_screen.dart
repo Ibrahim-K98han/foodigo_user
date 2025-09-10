@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/Order/cubit/order_cubit.dart';
@@ -93,6 +91,8 @@ class PaymentInfoLoadedWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final chCubit = context.read<CheckoutCubit>();
+    final orCubit = context.read<OrderCubit>();
     final sCubit = context.read<SubscriptionCubit>();
     final methods = payment;
 
@@ -193,7 +193,7 @@ class PaymentInfoLoadedWidget extends StatelessWidget {
                       break;
                     case 'stripe':
                       final url =
-                          sCubit.webPaymentInfo(RemoteUrls.payWithStripe);
+                          chCubit.webPaymentInfo(RemoteUrls.payWithStripe);
                       print('Strip Payment $url');
                       Navigator.pushNamed(
                           context, RouteNames.stripTransferPaymentScreen,

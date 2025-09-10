@@ -1,8 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:foodigo/features/Subscription/model/payment_to_map_model.dart';
 
 import '../../../data/errors/errors_model.dart';
-import '../model/bank_payment_response_model.dart';
 
 class SubscriptionListState extends Equatable {
   const SubscriptionListState();

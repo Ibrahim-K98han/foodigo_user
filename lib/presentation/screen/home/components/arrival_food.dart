@@ -5,13 +5,12 @@ import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/utils/constraints.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
+
 import '../../../../features/HomeData/feature_product_model.dart';
 import '../../../../features/HomeData/restaurant_model.dart';
 import '../../../../features/WishList/cubit/wish_list_cubit.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
-import '../../../../widget/title_and_navigator.dart';
-import '../../../core/routes/route_names.dart';
 import '../../product_details/product_details_screen.dart';
 
 class ArrivalFood extends StatelessWidget {
@@ -63,7 +62,8 @@ class ArrivalFood extends StatelessWidget {
 }
 
 class FoodCart extends StatefulWidget {
-  const FoodCart({super.key, required this.newArrivalProducts, required this.restaurants});
+  const FoodCart(
+      {super.key, required this.newArrivalProducts, required this.restaurants});
 
   final FeaturedProducts newArrivalProducts;
   final Restaurants restaurants;
@@ -253,7 +253,10 @@ class _FoodCartState extends State<FoodCart> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                           CustomImage(path: RemoteUrls.imageUrl(widget.restaurants.logo), height: 20),
+                          CustomImage(
+                              path:
+                                  RemoteUrls.imageUrl(widget.restaurants.logo),
+                              height: 20),
                           Utils.horizontalSpace(6.0),
                           CustomText(
                             text: widget.restaurants.restaurantName,

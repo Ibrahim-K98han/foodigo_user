@@ -3,18 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/address/cubit/get_address_cubit.dart';
 import 'package:foodigo/features/address/cubit/get_address_state.dart';
 import 'package:foodigo/features/address/model/address_state_model.dart';
-import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_form.dart';
 import 'package:foodigo/widget/primary_button.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:foodigo/features/address/model/address_model.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
 import '../../../../widget/fetch_error_text.dart';
 import 'map_pcker_screen.dart';
+
 
 class EditAddressScreen extends StatefulWidget {
   const EditAddressScreen({super.key});
@@ -61,9 +62,10 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => MapPickerScreen(
-          initialPosition: LatLng(position.latitude, position.longitude),
-        ),
+        builder: (_) =>
+            MapPickerScreen(
+              initialPosition: LatLng(position.latitude, position.longitude),
+            ),
       ),
     );
     if (result != null) {
@@ -84,8 +86,22 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
   @override
   Widget build(BuildContext context) {
     final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+    ModalRoute
+        .of(context)!
+        .settings
+        .arguments as Map<String, dynamic>?;
     final isEdit = args?["isEdit"] ?? true;
+    final Address? editAddress = args?["address"];
+    if (isEdit && editAddress != null) {
+      addAddressCubit.addressType(editAddress.deliveryType);
+      addAddressCubit.fullName(editAddress.name);
+      addAddressCubit.email(editAddress.email);
+      addAddressCubit.phone(editAddress.phone);
+      addAddressCubit.address(editAddress.address);
+      addAddressCubit.latitude(editAddress.lat);
+      addAddressCubit.longitude(editAddress.lon);
+
+    }
     return Scaffold(
       appBar: CustomAppBar(title: isEdit ? 'Edit Address' : 'Add Address'),
       body: Padding(
@@ -125,12 +141,10 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                           );
                         }).toList(),
                         onChanged: (newValue) {
-                          setState(() {
-                            addAddressCubit.addressType(newValue!);
-                          });
+                          addAddressCubit.addressType(newValue!);
                         },
                         validator: (value) =>
-                            value == null ? 'Please select an option' : null,
+                        value == null ? 'Please select an option' : null,
                       ),
                       if (validate is UpdateAddressFormValidate) ...[
                         if (validate.errors.addressType.isNotEmpty)
@@ -213,6 +227,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                         label: 'Phone',
                         bottomSpace: 14.0,
                         child: TextFormField(
+                          keyboardType: TextInputType.phone,
                           initialValue: state.phone,
                           onChanged: addAddressCubit.phone,
                           decoration: const InputDecoration(
@@ -287,8 +302,11 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
         child: PrimaryButton(
           text: isEdit ? 'Update Now' : 'Save',
           onPressed: () {
-            addAddressCubit.addAddress();
-            // addAddressCubit.updateAddress(addAddressCubit.addr!.id.toString());
+            if (isEdit && editAddress != null) {
+              addAddressCubit.updateAddress(editAddress.id.toString());
+            } else {
+              addAddressCubit.addAddress();
+            }
             addAddressCubit.clearForm();
             Navigator.pop(context);
           },
@@ -297,3 +315,4 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     );
   }
 }
+

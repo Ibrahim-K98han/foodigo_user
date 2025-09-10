@@ -96,8 +96,10 @@ class ProductDetailData extends StatelessWidget {
                     decrementBtn: () => addCart.decrementQty(),
                     incrementBtn: () => addCart.incrementQty(),
                     addToCartBtn: () {
-                      addCart.addCart(featuredProducts.id);
-                      Navigator.pop(context);
+                      addCart.addCart(context, featuredProducts.id);
+                      if (addCart.addCartResponseModel != null) {
+                        Navigator.pop(context);
+                      }
                     },
                   );
                 },

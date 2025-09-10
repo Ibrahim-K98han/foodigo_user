@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:foodigo/features/ApplyCoupon/model/apply_coupon_response_model.dart';
-import 'package:foodigo/features/add_to_cart/model/add_cart_response_model.dart';
-import 'package:foodigo/features/checkout/model/checkout_response_model.dart';
 
 import '../../../data/errors/errors_model.dart';
 

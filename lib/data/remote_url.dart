@@ -1,6 +1,7 @@
 class RemoteUrls {
   // static const String rootUrl = "https://foodigo.alenterprisebd.com/";
   static const String rootUrl = "https://minionionbd.com/foodigo/";
+  static const String paymentUrl = " https://minionionbd.com/foodigo/payment-api";
   static const String baseUrl = '${rootUrl}api/v1/';
 
   static const String homeData = '${baseUrl}home';

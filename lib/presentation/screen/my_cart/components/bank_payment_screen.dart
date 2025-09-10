@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/features/Order/cubit/order_cubit.dart';
 import 'package:foodigo/features/address/cubit/get_address_cubit.dart';
 import 'package:foodigo/features/checkout/cubit/checkout_cubit.dart';
 import 'package:foodigo/presentation/screen/main_page/component/main_controller.dart';
-import 'package:foodigo/widget/custom_text_style.dart';
 
 import '../../../../features/Subscription/cubit/subscription_cubit.dart';
 import '../../../../features/Subscription/cubit/subscription_state.dart';
@@ -67,8 +65,6 @@ class _BankPaymentScreenState extends State<BankPaymentScreen> {
             BlocConsumer<SubscriptionCubit, PaymentToMapModel>(
               listener: (context, state) {
                 final currentState = state.subscriptionListState;
-                debugPrint("👉 Current Subscription State: $currentState");
-
                 if (currentState is BankPaymentStateLoading) {
                   showDialog(
                     context: context,
@@ -91,12 +87,14 @@ class _BankPaymentScreenState extends State<BankPaymentScreen> {
                       actions: [
                         TextButton(
                           onPressed: () {
-
-                            Navigator.pushNamed(
+                            Navigator.pushNamedAndRemoveUntil(
                               context,
                               RouteNames.mainScreen,
+                              (route) => false,
                             );
-                            mainController.changeTab(2);
+                            Future.delayed(Duration(milliseconds: 100), () {
+                              MainController().changeTab(2);
+                            });
                           },
                           child: const Text('Go to My Orders'),
                         ),
@@ -108,7 +106,7 @@ class _BankPaymentScreenState extends State<BankPaymentScreen> {
                     context: context,
                     builder: (_) => AlertDialog(
                       title: const Text('Payment Failed'),
-                      content: Text('${currentState.message}'),
+                      content: Text(currentState.message),
                     ),
                   );
                 }

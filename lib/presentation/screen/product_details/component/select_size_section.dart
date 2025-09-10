@@ -1,11 +1,11 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/features/add_to_cart/cubit/add_cart_cubit.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
-import 'package:mason/mason.dart';
-import '../../../../features/HomeData/feature_product_model.dart';
+
 import '../../../../features/ProductDetails/cubit/product_details_cubit.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
@@ -18,15 +18,12 @@ class SelectSizeSection extends StatefulWidget {
 }
 
 class _SelectSizeSectionState extends State<SelectSizeSection> {
-  String? selectedSize;
-
   @override
   Widget build(BuildContext context) {
     final detailsCubit = context.read<ProductDetailsCubit>();
-    final addCubit = context.read<AddCartCubit>();
+    final addCubit = context.watch<AddCartCubit>();
 
     Map<String, dynamic> sizeData = {};
-
     if (detailsCubit.featuredProducts?.size != null) {
       try {
         sizeData = json.decode(detailsCubit.featuredProducts!.size)
@@ -35,7 +32,6 @@ class _SelectSizeSectionState extends State<SelectSizeSection> {
         print("Error decoding size JSON: $e");
       }
     }
-
     if (sizeData.isEmpty) {
       return const Text("No sizes available");
     }
@@ -77,20 +73,18 @@ class _SelectSizeSectionState extends State<SelectSizeSection> {
               children: sizeData.entries.map((entry) {
                 final sizeName = entry.key.toString();
                 final price = entry.value.toString();
+                final isChecked = addCubit.state.size == '$sizeName,$price';
+
                 return SelectSizeWidget(
                   size: sizeName,
                   amount: '\$$price',
-                  isChecked: selectedSize == '$sizeName,$price',
+                  isChecked: isChecked,
                   onTap: (value) {
-                    setState(() {
-                      if (value == true) {
-                        selectedSize = '$sizeName,$price';
-                        addCubit.selectSize('$sizeName,$price');
-                      } else {
-                        selectedSize = null;
-                        addCubit.selectSize("");
-                      }
-                    });
+                    if (value == true) {
+                      addCubit.selectSize('$sizeName,$price');
+                    } else {
+                      addCubit.selectSize('');
+                    }
                   },
                 );
               }).toList(),

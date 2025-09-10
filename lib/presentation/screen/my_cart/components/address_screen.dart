@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/address/cubit/get_address_cubit.dart';
@@ -7,7 +6,9 @@ import 'package:foodigo/features/address/model/address_state_model.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/page_refresh.dart';
 import 'package:foodigo/widget/primary_button.dart';
+
 import '../../../../features/address/model/address_model.dart';
+import '../../../../features/checkout/cubit/checkout_cubit.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
@@ -74,15 +75,16 @@ class _ChangeAddressScreenState extends State<ChangeAddressScreen> {
                 child: Column(
                   children: [
                     ...addresses.map(
-                          (address) =>
-                          AddressItem(
-                            address: address,
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, RouteNames.orderScreen,
-                                  arguments: address);
-                            },
-                          ),
+                      (address) => AddressItem(
+                        address: address,
+                        onTap: () {
+                          Navigator.pushNamed(context, RouteNames.orderScreen,
+                              arguments: address);
+                          context
+                              .read<CheckoutCubit>()
+                              .addressId(address.id.toString());
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -132,7 +134,7 @@ class AddressItem extends StatelessWidget {
                           Navigator.pushNamed(
                               context, RouteNames.editAddressScreen,
                               arguments: {
-                                'id': address.id,
+                                'address': address,
                               });
                         },
                         child: const CustomImage(

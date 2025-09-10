@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/address/model/address_model.dart';
 import 'package:foodigo/features/address/model/address_state_model.dart';
 import '../../../data/errors/failure.dart';
-import '../../../data/remote_url.dart';
-import '../../../utils/utils.dart';
 import '../../Login/bloc/login_bloc.dart';
 import '../repository/get_address_repository.dart';
 import 'get_address_state.dart';
@@ -141,9 +139,10 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
                   UpdateAddressError(failure.message, failure.statusCode)));
         }
       },
-      (success) {
+      (success) async{
         addr = success;
         emit(state.copyWith(addressState: UpdateAddressSuccess(success)));
+        await getAllAddressData();
       },
     );
   }

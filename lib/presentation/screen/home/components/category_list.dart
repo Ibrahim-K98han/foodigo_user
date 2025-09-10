@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/widget/custom_image.dart';
@@ -7,7 +6,6 @@ import 'package:foodigo/widget/custom_text_style.dart';
 import '../../../../data/remote_url.dart';
 import '../../../../features/HomeData/category_model.dart';
 import '../../../../utils/constraints.dart';
-import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/title_and_navigator.dart';
 import '../../../core/routes/route_names.dart';

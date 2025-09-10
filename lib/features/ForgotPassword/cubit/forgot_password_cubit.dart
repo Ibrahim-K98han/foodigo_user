@@ -7,7 +7,6 @@ import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_state_mode
 import 'package:foodigo/features/ForgotPassword/repository/forgot_password_repository.dart';
 
 import '../../../data/errors/failure.dart';
-import '../../../presentation/core/routes/route_names.dart';
 
 class ForgotPasswordCubit extends Cubit<ForgotPasswordStateModel> {
   final ForgotPasswordRepository _repository;

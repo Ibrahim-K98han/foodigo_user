@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../utils/constraints.dart';
 import '../utils/utils.dart';
@@ -47,7 +46,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 color: Color(0xFF040415),
               ),
             ),
-         // Utils.horizontalSpace(horSpace),
+          // Utils.horizontalSpace(horSpace),
           const Spacer(),
           CustomText(
             text: title,

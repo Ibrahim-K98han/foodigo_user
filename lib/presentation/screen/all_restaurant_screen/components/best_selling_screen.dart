@@ -1,5 +1,3 @@
-import 'package:dartz/dartz.dart' as featureProduct;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/data/remote_url.dart';

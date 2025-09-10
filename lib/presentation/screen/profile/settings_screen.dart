@@ -27,14 +27,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
         padding: Utils.symmetric(h: 24.0),
         child: ListView(
           children: [
-            SwitchWidget(
-              text: 'Notification',
-              initialValue: true,
-              onToggle: (bool value) {},
-            ),
+            // SwitchWidget(
+            //   text: 'Notification',
+            //   initialValue: true,
+            //   onToggle: (bool value) {},
+            // ),
             SettingsWidget(
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.myOrderScreen);
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  RouteNames.mainScreen,
+                  (route) => false,
+                );
               },
               text: 'Order Status',
               icon: KImages.time_square,
@@ -52,13 +56,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: KImages.language,
               languageText: 'English',
             ),
-            SettingsWidget(
-              onTap: () {
-                // Navigator.pushNamed(context, RouteNames.faqScreen);
-              },
-              text: 'FAQ',
-              icon: KImages.faq,
-            ),
+            // SettingsWidget(
+            //   onTap: () {
+            //     // Navigator.pushNamed(context, RouteNames.faqScreen);
+            //   },
+            //   text: 'FAQ',
+            //   icon: KImages.faq,
+            // ),
             Utils.verticalSpace(60),
             PrimaryButton(text: 'Update Profile', onPressed: () {})
           ],

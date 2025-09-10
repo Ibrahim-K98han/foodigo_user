@@ -7,9 +7,9 @@ import 'package:foodigo/features/Login/bloc/login_state.dart';
 import 'package:foodigo/features/Login/model/login_state_model.dart';
 import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
+
 import '../../../data/remote_url.dart';
 import '../../../features/GetProfile/cubit/get_profile_state.dart';
-import '../../../features/Login/model/user_response_model.dart';
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
@@ -48,12 +48,12 @@ class ProfileScreen extends StatelessWidget {
                     arguments: '1');
               },
             ),
-            DrawerItem(
-                title: "Settings",
-                icon: KImages.settingIcon,
-                onTap: () {
-                  Navigator.pushNamed(context, RouteNames.settingScreen);
-                }),
+            // DrawerItem(
+            //     title: "Settings",
+            //     icon: KImages.settingIcon,
+            //     onTap: () {
+            //       Navigator.pushNamed(context, RouteNames.settingScreen);
+            //     }),
             DrawerItem(
                 title: "Address",
                 icon: KImages.location,
@@ -61,10 +61,28 @@ class ProfileScreen extends StatelessWidget {
                   Navigator.pushNamed(context, RouteNames.addressScreen);
                 }),
             DrawerItem(
-                title: "Help Center",
+                title: "Privacy Policy",
                 icon: KImages.help,
                 onTap: () {
-                  Navigator.pushNamed(context, RouteNames.faqScreen);
+                  // Navigator.pushNamed(context, RouteNames.faqScreen);
+                }),
+            // DrawerItem(
+            // title: "Order Status",
+            // icon: KImages.time_square,
+            // onTap: () {
+            //   // Navigator.pushNamed(context, RouteNames.faqScreen);
+            // }),
+            DrawerItem(
+                title: "Language",
+                icon: KImages.language,
+                onTap: () {
+                  Navigator.pushNamed(context, RouteNames.languageScreen);
+                }),
+            DrawerItem(
+                title: "Offers & Rewards",
+                icon: KImages.offers,
+                onTap: () {
+                  // Navigator.pushNamed(context, RouteNames.languageScreen);
                 }),
             DrawerItem(
                 title: "Change Password",

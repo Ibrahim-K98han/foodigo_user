@@ -2,13 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/Login/bloc/login_bloc.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../../data/remote_url.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
+import '../../../core/routes/route_names.dart';
 
 class StripPaymentScreen extends StatefulWidget {
   const StripPaymentScreen({super.key, required this.url});
@@ -28,13 +32,23 @@ class _StripPaymentScreenState extends State<StripPaymentScreen> {
 
   late WebViewController controllerGlobal;
 
+  late LoginBloc loginBloc;
+
   @override
   void initState() {
+    loginBloc = context.read<LoginBloc>();
     controllerGlobal = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..enableZoom(true)
       ..setBackgroundColor(scaffoldBgColor)
-      ..loadRequest(Uri.parse(widget.url))
+      ..loadRequest(
+        Uri.parse(widget.url),
+        headers: {
+          'Authorization': 'Bearer ${loginBloc.userInformation!.token}',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      )
       ..setNavigationDelegate(NavigationDelegate(
         onProgress: (int progress) {
           setState(() {
@@ -106,8 +120,8 @@ class _StripPaymentScreenState extends State<StripPaymentScreen> {
   void _redirect(String url) {
     print("Url: $url");
     if (_canRedirect) {
-      bool isSuccess = url.contains('/webview-success-payment') &&
-          url.contains(RemoteUrls.rootUrl);
+      bool isSuccess = url.contains('/webview-stripe-success') &&
+          url.contains(RemoteUrls.paymentUrl);
       bool isFailed = url.contains('webview-payment-faild') &&
           url.contains(RemoteUrls.rootUrl);
       bool isCancel = url.contains('/webview-schedule-not-available') &&
@@ -144,22 +158,22 @@ class _StripPaymentScreenState extends State<StripPaymentScreen> {
         }
 
         var responseJSON = jsonDecode(decodedJSON);
-        log(decodedJSON, name: 'MolliePaymentScreen');
-        if (responseJSON["result"] == false) {
-          Utils.errorSnackBar(context, responseJSON["message"]);
-        } else if (responseJSON["result"] == true) {
-          Utils.showSnackBar(context, responseJSON["message"]);
-        }
+        // log(decodedJSON, name: 'MolliePaymentScreen');
+        // if (responseJSON["result"] == false) {
+        //   Utils.errorSnackBar(context, responseJSON["message"]);
+        // } else if (responseJSON["result"] == true) {
+        //   Utils.showSnackBar(context, responseJSON["message"]);
+        // }
         // context.read<DashBoardProfileCubit>().clearDashBoard();
         // context.read<DashBoardProfileCubit>().getDashBoard();
-        // Navigator.pushNamedAndRemoveUntil(context, RouteNames.mainScreen,
-        //     arguments: 'success', (route) {
-        //       if (route.settings.name == RouteNames.mainScreen) {
-        //         return true;
-        //       }
-        //       return false;
-        //     });
-        // PaymenSuccessDialog.dialog(context, responseJSON["message"]);
+        Navigator.pushNamedAndRemoveUntil(context, RouteNames.mainScreen,
+            arguments: 'success', (route) {
+          if (route.settings.name == RouteNames.mainScreen) {
+            return true;
+          }
+          return false;
+        });
+        Utils.showSnackBar(context, responseJSON["message"]);
       },
     );
   }

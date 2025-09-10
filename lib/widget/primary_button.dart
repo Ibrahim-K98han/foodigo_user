@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../utils/constraints.dart';
-import '../utils/utils.dart';
 import 'custom_text_style.dart';
 
 class PrimaryButton extends StatelessWidget {

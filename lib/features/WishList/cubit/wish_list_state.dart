@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:foodigo/features/Order/model/order_model.dart';
 import 'package:foodigo/features/WishList/model/wish_list_model.dart';
 
 abstract class WishListState extends Equatable {

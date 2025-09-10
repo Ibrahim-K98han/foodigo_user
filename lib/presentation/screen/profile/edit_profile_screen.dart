@@ -1,16 +1,16 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foodigo/widget/loading_widget.dart';
-import 'package:image_picker/image_picker.dart';
-
 import 'package:foodigo/features/GetProfile/cubit/get_profile_cubit.dart';
 import 'package:foodigo/features/GetProfile/cubit/get_profile_state.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
-import 'package:foodigo/widget/primary_button.dart';
 import 'package:foodigo/widget/custom_form.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
+import 'package:foodigo/widget/loading_widget.dart';
+import 'package:foodigo/widget/primary_button.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
@@ -101,10 +101,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               context.read<GetProfileCubit>().getProfileData();
             } else if (state is GetProfileLoaded) {
               final user = state.user;
-              nameController.text = user.name ?? "";
-              emailController.text = user.email ?? "";
-              phoneController.text = user.phone ?? "";
-              addressController.text = user.address ?? "";
+              nameController.text = user.name;
+              emailController.text = user.email;
+              phoneController.text = user.phone;
+              addressController.text = user.address;
 
               return ListView(
                 children: [

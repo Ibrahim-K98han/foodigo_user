@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/HomeData/cubit/home_data_cubit.dart';
 import 'package:foodigo/features/Order/cubit/order_cubit.dart';
 import 'package:foodigo/features/Order/cubit/order_state.dart';
 import 'package:foodigo/features/Order/model/order_model.dart';
@@ -25,6 +26,7 @@ class MyOrderScreen extends StatefulWidget {
 class _MyOrderScreenState extends State<MyOrderScreen>
     with TickerProviderStateMixin {
   late OrderCubit orderCubit;
+
   late TabController tabController;
 
   @override
@@ -38,6 +40,7 @@ class _MyOrderScreenState extends State<MyOrderScreen>
 
   @override
   Widget build(BuildContext context) {
+    final hCubit = context.read<HomeDataCubit>();
     return Scaffold(
       backgroundColor: const Color(0xFFF6F8FA),
       appBar: const CustomAppBar(
