@@ -68,11 +68,13 @@ class ProductDetailData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final addCart = context.read<AddCartCubit>();
     return Column(
       children: [
         ///=================== Product Details ====================///
-        ImageSection(image: RemoteUrls.imageUrl(featuredProducts.image)),
+        ImageSection(
+          image: RemoteUrls.imageUrl(featuredProducts.image),
+          featuredProducts: featuredProducts,
+        ),
         Padding(
           padding: Utils.symmetric(v: 10.0),
           child: Column(
@@ -89,22 +91,6 @@ class ProductDetailData extends StatelessWidget {
               const SelectAddonSection(),
 
               ///=============== Add To Cart Button ========================///
-              // BlocBuilder<AddCartCubit, AddCartStateModel>(
-              //   builder: (context, state) {
-              //     return AddToCartButton(
-              //       text: state.qty.toString(),
-              //       decrementBtn: () => addCart.decrementQty(),
-              //       incrementBtn: () => addCart.incrementQty(),
-              //       addToCartBtn: () {
-              //         addCart.addCart(context, featuredProducts.id);
-              //         if (addCart.addCartResponseModel != null) {
-              //           Navigator.pop(context);
-              //         }
-              //       },
-              //     );
-              //   },
-              // ),
-
               BlocBuilder<AddCartCubit, AddCartStateModel>(
                 builder: (context, state) {
                   final addCartCubit = context.read<AddCartCubit>();
@@ -113,30 +99,27 @@ class ProductDetailData extends StatelessWidget {
                     decrementBtn: () => addCartCubit.decrementQty(),
                     incrementBtn: () => addCartCubit.incrementQty(),
                     addToCartBtn: () async {
-                      // 1️⃣ Check if size is selected
+                      /// Check if size is selected
                       if (state.size.isEmpty) {
                         Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Please select size first"),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                        return; // Stop here, don't pop
+                        Utils.failureSnackBar(
+                            context, 'Please Select Item Size First');
+                        return;
                       }
 
-                      // 2️⃣ Add to cart
+                      /// Add to cart
                       await addCartCubit.addCart(context, featuredProducts.id);
 
-                      // 3️⃣ Only pop if addCartResponseModel is not null
+                      /// Only pop if addCartResponseModel is not null
                       if (addCartCubit.addCartResponseModel != null) {
-                        Navigator.pop(context); // pop only on successful add
+                        Navigator.pop(context);
+                        Utils.successSnackBar(
+                            context, 'Successfully added to cart');
                       }
                     },
                   );
                 },
               ),
-
             ],
           ),
         ),

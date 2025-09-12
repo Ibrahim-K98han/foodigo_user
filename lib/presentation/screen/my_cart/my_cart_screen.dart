@@ -138,7 +138,13 @@ class _MyCartScreenState extends State<MyCartScreen> {
               child: PrimaryButton(
                 text: 'Checkout',
                 onPressed: () {
-                  Navigator.pushNamed(context, RouteNames.addressScreen);
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.addressScreen,
+                    arguments: {
+                      'isSelected': true,
+                    },
+                  );
                 },
               ),
             );
@@ -182,7 +188,7 @@ class CartDataLoaded extends StatelessWidget {
 }
 
 class CheckoutCart extends StatelessWidget {
-  CheckoutCart({
+  const CheckoutCart({
     super.key,
     required this.cartItem,
     required this.onDelete,
@@ -286,7 +292,7 @@ class CheckoutCart extends StatelessWidget {
                   children: [
                     Flexible(
                       child: CustomText(
-                        text: product?.name ?? 'Unknown Product',
+                        text: product?.name ?? 'Product name not available',
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                         maxLine: 2,
@@ -296,10 +302,8 @@ class CheckoutCart extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CustomText(
-                          text: Utils.formatPrice(context, cartItem.sizePrice),
+                          text: '${cartItem.size} (\$${cartItem.sizePrice})',
                           fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFFE94222),
                         ),
                         Row(
                           children: [
@@ -319,7 +323,7 @@ class CheckoutCart extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Utils.horizontalSpace(8.0),
+                            Utils.horizontalSpace(6.0),
                             CustomText(
                               text: cartItem.qty.toString(),
                               fontSize: 16,

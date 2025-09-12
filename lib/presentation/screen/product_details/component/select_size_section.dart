@@ -204,9 +204,8 @@ class _SelectSizeSectionState extends State<SelectSizeSection> {
               children: sizeData.entries.map((entry) {
                 final sizeName = entry.key.toString();
                 final price = entry.value.toString();
-                final isSelected = addCubit.state.size == '$sizeName,$price';
-
                 return RadioListTile<String>(
+                  activeColor: primaryColor,
                   value: '$sizeName,$price',
                   groupValue: addCubit.state.size,
                   title: CustomText(

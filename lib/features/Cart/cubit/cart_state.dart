@@ -57,6 +57,12 @@ class CartIncrementError extends CartState {
   CartIncrementError(this.message, this.statusCode);
 }
 
+class CartIncrementLoaded extends CartState {
+  final CartModel cartModel;
+
+  CartIncrementLoaded(this.cartModel);
+}
+
 /// Decrement product State
 class CartDecrementLoading extends CartState {}
 
@@ -71,4 +77,10 @@ class CartDecrementError extends CartState {
   final int statusCode;
 
   CartDecrementError(this.message, this.statusCode);
+}
+
+class CartDecrementLoaded extends CartState {
+  final CartModel cartModel;
+
+  CartDecrementLoaded(this.cartModel);
 }

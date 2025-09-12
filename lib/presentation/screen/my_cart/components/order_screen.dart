@@ -110,7 +110,12 @@ class _OrderScreenState extends State<OrderScreen> {
                               GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, RouteNames.addressScreen);
+                                    context,
+                                    RouteNames.addressScreen,
+                                    arguments: {
+                                      'isSelected': true,
+                                    },
+                                  );
                                 },
                                 child: const CustomText(
                                   text: "Change Address",

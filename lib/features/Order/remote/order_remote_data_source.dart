@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 
 abstract class OrderRemoteDataSource {
   Future getOrderData(String token);
+
+  Future getOrderDetails(int id, String token);
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -21,6 +23,16 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   Future getOrderData(String token) async {
     final uri = Uri.parse(RemoteUrls.getOrder);
     print('Order====$uri');
+    final clientMethod = client.get(uri, headers: authHeader(token));
+    final responseJsonBody =
+        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    return responseJsonBody;
+  }
+
+  @override
+  Future getOrderDetails(int id, String token) async {
+    final uri = Uri.parse(RemoteUrls.orderDetails(id.toString()));
+    print('Order Details====$uri');
     final clientMethod = client.get(uri, headers: authHeader(token));
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
