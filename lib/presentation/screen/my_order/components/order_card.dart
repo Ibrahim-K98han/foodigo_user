@@ -50,11 +50,19 @@ class OrderCard extends StatelessWidget {
     return Container(
       padding: Utils.symmetric(h: 10.0, v: 6.0),
       height: orderStatusMap[orderModel.orderStatus] == 'Pending'
-          ? size.height / 5.1.h
+          ? size.height / 5.3.h
           : size.height / 8.1.h,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6.r),
         color: whiteColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -80,7 +88,8 @@ class OrderCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           CustomText(
-                            text: Utils.formatPrice(context, orderModel.grandTotal),
+                            text: Utils.formatPrice(
+                                context, orderModel.grandTotal),
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                             color: const Color(0xFFE94222),
@@ -124,6 +133,7 @@ class OrderCard extends StatelessWidget {
                                             return Padding(
                                               padding: EdgeInsets.all(10.r),
                                               child: Column(
+                                                mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Expanded(
                                                     child: ListView.builder(
@@ -184,6 +194,7 @@ class OrderCard extends StatelessWidget {
                                                               crossAxisAlignment:
                                                                   CrossAxisAlignment
                                                                       .start,
+                                                              mainAxisSize: MainAxisSize.min,
                                                               children: [
                                                                 CustomText(
                                                                     text:
@@ -199,7 +210,7 @@ class OrderCard extends StatelessWidget {
                                                                         "Delivery Charge: ${orderModel.deliveryCharge}"),
                                                                 CustomText(
                                                                     text:
-                                                                        "Delivery Charge: ${orderModel.vat}"),
+                                                                        "Vat: ${orderModel.vat}"),
                                                               ],
                                                             ),
                                                           ),

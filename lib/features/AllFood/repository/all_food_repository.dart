@@ -5,7 +5,7 @@ import 'package:foodigo/features/AllFood/model/all_food_model.dart';
 import 'package:foodigo/features/AllFood/remote/all_food_remote_data.dart';
 
 abstract class AllFoodRepository {
-  Future<Either<Failure, List<Foods>>> getAllFood();
+  Future<Either<Failure, List<Foods>>> getAllFood(Uri uri);
 }
 
 class AllFoodRepositoryImpl implements AllFoodRepository {
@@ -14,10 +14,10 @@ class AllFoodRepositoryImpl implements AllFoodRepository {
   const AllFoodRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<Foods>>> getAllFood() async {
+  Future<Either<Failure, List<Foods>>> getAllFood(Uri uri) async {
     try {
-      final result = await remoteDataSource.getAllFood();
-      print('AllFood=========$result');
+      final result = await remoteDataSource.getAllFood(uri);
+
       final res = result['data']['foods'] as List<dynamic>;
       final data = res
           .map<Foods>((e) => Foods.fromMap(e as Map<String, dynamic>))

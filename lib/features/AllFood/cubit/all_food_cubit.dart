@@ -1,13 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/AllFood/cubit/all_food_state.dart';
 import 'package:foodigo/features/AllFood/model/all_food_model.dart';
 import 'package:foodigo/features/AllFood/repository/all_food_repository.dart';
-import 'package:foodigo/features/HomeData/category_model.dart';
-import 'package:foodigo/features/HomeData/cuisines_model.dart';
-
+import 'package:foodigo/utils/utils.dart';
 import '../../Login/bloc/login_bloc.dart';
+import 'all_food_state_model.dart';
 
-class AllFoodCubit extends Cubit<AllFoodState> {
+class AllFoodCubit extends Cubit<AllFoodSearchStateModel> {
   final AllFoodRepository _repository;
   final LoginBloc _loginBloc;
 
@@ -16,127 +16,89 @@ class AllFoodCubit extends Cubit<AllFoodState> {
     required LoginBloc loginBloc,
   })  : _repository = repository,
         _loginBloc = loginBloc,
-        super(const AllFoodInitial());
+        super(AllFoodSearchStateModel.init());
 
-  List<Foods> food = []; // all foods from API
-  List<Foods> filteredFood = []; // filtered foods
+  List<Foods> food = [];
 
-  // filters
-  String search = '';
-  List<Categories> selectedCategories = [];
-  List<Cuisines> selectedCuisines = [];
-  String? minPrice;
-  String? maxPrice;
-  String sort = '';
-
-  Future<void> getAllFood() async {
-    emit(AllFoodLoading());
-    final result = await _repository.getAllFood();
-    result.fold(
-      (l) => emit(AllFoodError(l.message, l.statusCode)),
-      (success) {
-        food = success;
-        filteredFood = success;
-        emit(AllFoodLoaded(filteredFood));
-      },
-    );
+  void categories(List<String> cats) {
+    emit(state.copyWith(category: cats));
   }
 
-  // 🔹 Filter methods
-  void updateSearch(String text) {
-    search = text;
-    applyFilters();
-    emit(AllFoodLoaded(filteredFood));
-  }
-
-  void categories(List<Categories> cats) {
-    selectedCategories = cats;
-    applyFilters();
-  }
-
-  void cuisine(List<Cuisines> cuis) {
-    selectedCuisines = cuis;
-    applyFilters();
+  void cuisine(List<String> cuis) {
+    emit(state.copyWith(cuisine: cuis));
   }
 
   void minPriceFilter(String value) {
-    minPrice = value;
-    applyFilters();
+    emit(state.copyWith(minPrice: value));
   }
 
   void maxPriceFilter(String value) {
-    maxPrice = value;
-    applyFilters();
+    emit(state.copyWith(maxPrice: value));
   }
 
-  void updateSort(String s) {
-    sort = s;
-    applyFilters();
+  void updateSearch(String query) {
+    emit(state.copyWith(search: query));
+  }
+
+  void updateSort(String sort) {
+    emit(state.copyWith(sort: sort));
+  }
+
+  Future<void> getAllFood() async {
+    emit(state.copyWith(allFoodState: AllFoodLoading()));
+    final uri = Utils.tokenWithCodeSearch(
+        RemoteUrls.getSearch,
+        state.initialPage.toString(),
+        state.search,
+        state.sort,
+        state.category,
+        state.cuisine,
+        state.minPrice,
+        state.maxPrice,
+        state.languageCode);
+    print('Search Url $uri');
+    final result = await _repository.getAllFood(uri);
+    result.fold((failure) {
+      final errorState = AllFoodError(failure.message, failure.statusCode);
+      emit(state.copyWith(allFoodState: errorState));
+    }, (success) {
+      if (state.initialPage == 1) {
+        food = success;
+        final loaded = AllFoodLoaded(food);
+        emit(state.copyWith(allFoodState: loaded));
+      } else {
+        food.addAll(success);
+        final loaded = AllFoodMoreLoaded(food);
+        emit(state.copyWith(allFoodState: loaded));
+      }
+      state.initialPage++;
+      if (success.isEmpty && state.initialPage != 1) {
+        emit(state.copyWith(isListEmpty: true));
+      }
+    });
+  }
+
+  Future<void> applyFilters() async {
+    state.initialPage = 1;
+    food = [];
+    getAllFood();
   }
 
   void clearFilters() {
-    search = '';
-    selectedCategories.clear();
-    selectedCuisines.clear();
-    minPrice = null;
-    maxPrice = null;
-    sort = '';
-    filteredFood = food;
-    emit(AllFoodLoaded(filteredFood));
+    emit(
+      state.copyWith(
+        search: '',
+        category: [],
+        minPrice: '',
+        maxPrice: '',
+        cuisine: [],
+        sort: '',
+        initialPage: 1,
+      ),
+    );
   }
 
-  void applyFilters() {
-    List<Foods> result = List.from(food);
-
-    // 🔹 search filter
-    if (search.isNotEmpty) {
-      result = result
-          .where((f) =>
-              f.name.toLowerCase().contains(search.toLowerCase()) ||
-              (f.shortDescription ?? '')
-                  .toLowerCase()
-                  .contains(search.toLowerCase()))
-          .toList();
-    }
-
-    // 🔹 category filter
-    if (selectedCategories.isNotEmpty) {
-      final ids = selectedCategories.map((c) => c.id.toString()).toList();
-      result =
-          result.where((f) => ids.contains(f.categoryId.toString())).toList();
-    }
-
-    // 🔹 cuisine filter
-    if (selectedCuisines.isNotEmpty) {
-      final ids = selectedCuisines.map((c) => c.id.toString()).toList();
-      result =
-          result.where((f) => ids.contains(f.restaurantId.toString())).toList();
-    }
-
-    // 🔹 price filter
-    if (minPrice != null) {
-      result = result
-          .where((f) => int.parse(f.price) >= int.parse(minPrice!))
-          .toList();
-    }
-    if (maxPrice != null) {
-      result = result
-          .where((f) => int.parse(f.price) <= int.parse(maxPrice!))
-          .toList();
-    }
-
-    // 🔹 sort filter
-    if (sort.isNotEmpty) {
-      if (sort == 'price_min') {
-        result.sort((a, b) => int.parse(a.price).compareTo(int.parse(b.price)));
-      } else if (sort == 'price_max') {
-        result.sort((a, b) => int.parse(b.price).compareTo(int.parse(a.price)));
-      } else if (sort == 'most_recent') {
-        result.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      }
-    }
-
-    filteredFood = result;
-    emit(AllFoodLoaded(filteredFood));
+  void initPage() {
+    emit(state.copyWith(initialPage: 1, isListEmpty: false));
   }
 }

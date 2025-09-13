@@ -31,7 +31,7 @@ class _SelectAddonSectionState extends State<SelectAddonSection> {
                 as List<dynamic>)
             .map((e) => int.parse(e.toString()))
             .toList()
-        : <int>[];
+        : <dynamic>[];
     return Column(
       children: [
         Container(

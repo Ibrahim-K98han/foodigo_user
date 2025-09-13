@@ -26,8 +26,9 @@ class AllFoodLoaded extends AllFoodState {
   List<Object> get props => [allFood];
 }
 
+
 class AllFoodMoreLoaded extends AllFoodState {
-  final AllFoodModel allFood;
+  final List<Foods> allFood;
 
   const AllFoodMoreLoaded(this.allFood);
 

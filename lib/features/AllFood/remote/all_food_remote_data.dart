@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import '../../../data/remote_url.dart';
 
 abstract class AllFoodRemoteDataSource {
-  Future getAllFood();
+  Future getAllFood(Uri uri);
 }
 
 class AllFoodRemoteDataSourceImpl implements AllFoodRemoteDataSource {
@@ -19,9 +19,8 @@ class AllFoodRemoteDataSourceImpl implements AllFoodRemoteDataSource {
   };
 
   @override
-  Future getAllFood() async {
-    final uri = Uri.parse(RemoteUrls.getSearch);
-    print('AllFood$uri');
+  Future getAllFood(Uri uri) async {
+
     final clientMethod = client.get(uri, headers: contentHeader);
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);

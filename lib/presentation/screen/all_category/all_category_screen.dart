@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/presentation/screen/home/components/category_list.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 
+import '../../../features/AllFood/cubit/all_food_cubit.dart';
 import '../../../features/HomeData/cubit/home_data_cubit.dart';
 import '../../../utils/utils.dart';
 import '../../core/routes/route_names.dart';
@@ -16,6 +17,14 @@ class AllCategoryScreen extends StatefulWidget {
 
 class _AllCategoryScreenState extends State<AllCategoryScreen> {
   int selectedIndex = 0;
+  late AllFoodCubit allFoodCubit;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    allFoodCubit = context.read<AllFoodCubit>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +54,7 @@ class _AllCategoryScreenState extends State<AllCategoryScreen> {
             itemCount: homeCubit.homeModel!.categories!.length,
             itemBuilder: (BuildContext context, index) {
               final category = homeCubit.homeModel!.categories![index];
+              final categories = homeCubit.homeModel!.categories!;
               return CategoryCard(
                 categories: category,
                 isSelected: selectedIndex == index,
@@ -52,10 +62,11 @@ class _AllCategoryScreenState extends State<AllCategoryScreen> {
                   setState(() {
                     selectedIndex = index;
                   });
+                  allFoodCubit.clearFilters();
+                  allFoodCubit.categories([categories[index].id.toString()]);
                   Navigator.pushNamed(
                     context,
                     RouteNames.allFoodScreen,
-                    arguments: category,
                   );
                 },
               );

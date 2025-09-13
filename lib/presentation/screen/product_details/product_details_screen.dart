@@ -99,23 +99,7 @@ class ProductDetailData extends StatelessWidget {
                     decrementBtn: () => addCartCubit.decrementQty(),
                     incrementBtn: () => addCartCubit.incrementQty(),
                     addToCartBtn: () async {
-                      /// Check if size is selected
-                      if (state.size.isEmpty) {
-                        Navigator.pop(context);
-                        Utils.failureSnackBar(
-                            context, 'Please Select Item Size First');
-                        return;
-                      }
-
-                      /// Add to cart
                       await addCartCubit.addCart(context, featuredProducts.id);
-
-                      /// Only pop if addCartResponseModel is not null
-                      if (addCartCubit.addCartResponseModel != null) {
-                        Navigator.pop(context);
-                        Utils.successSnackBar(
-                            context, 'Successfully added to cart');
-                      }
                     },
                   );
                 },

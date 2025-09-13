@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
 
 import '../../../../data/remote_url.dart';
+import '../../../../features/AllFood/cubit/all_food_cubit.dart';
 import '../../../../features/HomeData/category_model.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
@@ -21,6 +23,13 @@ class CategoryList extends StatefulWidget {
 
 class _CategoryListState extends State<CategoryList> {
   int selectedIndex = 0;
+  late AllFoodCubit searchCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    searchCubit = context.read<AllFoodCubit>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +49,6 @@ class _CategoryListState extends State<CategoryList> {
           child: Row(
             children: [
               ...List.generate(widget.categories.length, (index) {
-                // final service = DummyData.influencerList[index];
                 return Padding(
                   padding: const EdgeInsets.only(right: 10),
                   child: CategoryCard(
@@ -52,7 +60,8 @@ class _CategoryListState extends State<CategoryList> {
                       Navigator.pushNamed(
                         context,
                         RouteNames.allFoodScreen,
-                        arguments: widget.categories[index],
+                        // arguments: widget.categories[index],
+                        // searchCubit.categories(selected);
                       );
                     },
                     categories: widget.categories[index],
@@ -85,37 +94,38 @@ class CategoryCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(50.0),
       onTap: onTap,
       child: Container(
-          padding: Utils.symmetric(h: 12.0, v: 10.0),
-          decoration: BoxDecoration(
-            color: whiteColor, // always white background
-            borderRadius: BorderRadius.circular(50.0),
-            border: Border.all(
-              color: isSelected ? primaryColor : Colors.transparent,
-              width: 2,
-            ),
+        padding: Utils.symmetric(h: 12.0, v: 10.0),
+        decoration: BoxDecoration(
+          color: whiteColor, // always white background
+          borderRadius: BorderRadius.circular(50.0),
+          border: Border.all(
+            color: isSelected ? primaryColor : Colors.transparent,
+            width: 2,
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CustomImage(
-                path: RemoteUrls.imageUrl(categories.icon),
-                height: 20,
-                width: 20,
-                fit: BoxFit.cover,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CustomImage(
+              path: RemoteUrls.imageUrl(categories.icon),
+              height: 20,
+              width: 20,
+              fit: BoxFit.cover,
+            ),
+            Utils.horizontalSpace(4.0),
+            Flexible(
+              child: CustomText(
+                text: categories.name,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                overflow: TextOverflow.ellipsis,
+                maxLine: 1,
+                textAlign: TextAlign.center,
               ),
-              Utils.horizontalSpace(4.0),
-              Flexible(
-                child: CustomText(
-                  text: categories.name,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  overflow: TextOverflow.ellipsis,
-                  maxLine: 1,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          )),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
