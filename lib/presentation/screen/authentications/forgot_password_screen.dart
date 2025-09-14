@@ -5,6 +5,7 @@ import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_state.dart
 import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_state_model.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
+import '../../../features/register/cubit/register_cubit.dart';
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
@@ -24,12 +25,14 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  late RegisterCubit rCubit;
   late ForgotPasswordCubit fpCubit;
 
   @override
   void initState() {
     super.initState();
     fpCubit = context.read<ForgotPasswordCubit>();
+    rCubit = context.read<RegisterCubit>();
   }
 
   @override
@@ -122,10 +125,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         Utils.showSnackBar(context, password.message);
                         Navigator.pushNamed(
                           context,
-                          RouteNames.otpScreen,
-                          arguments: {
-                            "isChangePassword": true,
-                          },
+                          RouteNames.forgotOtpScreen,
                         );
                       }
                     },

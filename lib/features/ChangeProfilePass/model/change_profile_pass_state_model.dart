@@ -36,8 +36,8 @@ class ChangeProfilePassStateModel extends Equatable {
       currentPassword: currentPassword ?? this.currentPassword,
       password: password ?? this.password,
       confirmPassword: confirmPassword ?? this.confirmPassword,
-      showPassword: showPassword ?? this.showPassword,
       showCurrentPassword: showCurrentPassword ?? this.showCurrentPassword,
+      showPassword: showPassword ?? this.showPassword,
       showConPassword: showConPassword ?? this.showConPassword,
       changeProfilePassState:
           changeProfilePassState ?? this.changeProfilePassState,
@@ -98,7 +98,7 @@ class ChangeProfilePassStateModel extends Equatable {
         password,
         currentPassword,
         confirmPassword,
-        showConPassword,
+        showCurrentPassword,
         showPassword,
         showConPassword,
         changeProfilePassState,

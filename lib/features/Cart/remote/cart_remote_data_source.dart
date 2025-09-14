@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:foodigo/data/network_parser.dart';
 import 'package:foodigo/data/remote_url.dart';
+import 'package:foodigo/features/Cart/model/cart_model.dart';
 import 'package:http/http.dart' as http;
 
 abstract class CartRemoteDataSource {
@@ -7,9 +10,9 @@ abstract class CartRemoteDataSource {
 
   Future deleteProduct(String token, String id);
 
-  Future incrementProduct(String id, String token);
+  Future incrementProduct(CartModel body, String id, String token);
 
-  Future decrementProduct(String id, String productId);
+  Future decrementProduct(CartModel body, String id, String productId);
 
   Future clearCart(String token);
 }
@@ -49,10 +52,14 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
   ///Decrement Product
 
   @override
-  Future decrementProduct(String id, String token) async {
+  Future decrementProduct(CartModel body, String id, String token) async {
     final uri = Uri.parse(RemoteUrls.decrementProduct(id));
     print('Product Decrement=====$uri');
-    final clientMethod = client.post(uri, headers: authHeader(token));
+    final clientMethod = client.post(uri,
+        headers: authHeader(token),
+        body: jsonEncode(
+          body.toMap(),
+        ));
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
     return responseJsonBody;
@@ -60,10 +67,14 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
 
   ///Increment Product
   @override
-  Future incrementProduct(String id, String token) async {
+  Future incrementProduct(CartModel body, String id, String token) async {
     final uri = Uri.parse(RemoteUrls.incrementProduct(id));
     print('Product Increment=====$uri');
-    final clientMethod = client.post(uri, headers: authHeader(token));
+    final clientMethod = client.post(uri,
+        headers: authHeader(token),
+        body: jsonEncode(
+          body.toMap(),
+        ));
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
     return responseJsonBody;

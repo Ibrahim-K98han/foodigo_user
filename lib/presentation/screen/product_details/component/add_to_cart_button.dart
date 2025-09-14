@@ -13,12 +13,13 @@ class AddToCartButton extends StatefulWidget {
       this.incrementBtn,
       this.decrementBtn,
       this.addToCartBtn,
-      this.text});
+      this.text, this.btnName});
 
   final VoidCallback? incrementBtn;
   final VoidCallback? decrementBtn;
   final VoidCallback? addToCartBtn;
   final String? text;
+  final String? btnName;
 
   @override
   State<AddToCartButton> createState() => _AddToCartButtonState();
@@ -71,8 +72,8 @@ class _AddToCartButtonState extends State<AddToCartButton> {
                       height: 25,
                     ),
                     Utils.horizontalSpace(6.0),
-                    const CustomText(
-                      text: 'Add to Cart',
+                    CustomText(
+                      text: widget.btnName!,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     )

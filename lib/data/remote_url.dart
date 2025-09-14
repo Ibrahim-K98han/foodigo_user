@@ -1,7 +1,8 @@
 class RemoteUrls {
   // static const String rootUrl = "https://foodigo.alenterprisebd.com/";
   static const String rootUrl = "https://minionionbd.com/foodigo/";
-  static const String paymentUrl = " https://minionionbd.com/foodigo/payment-api";
+  static const String paymentUrl =
+      " https://minionionbd.com/foodigo/payment-api";
   static const String baseUrl = '${rootUrl}api/v1/';
 
   static const String homeData = '${baseUrl}home';
@@ -19,6 +20,8 @@ class RemoteUrls {
   static const String updateProfile = '${baseUrl}auth/profile';
   static const String addProduct = '${baseUrl}cart/add';
 
+  static String updateProduct(int id) => '${baseUrl}cart/update/$id';
+
   static String deleteProduct(String id) => '${baseUrl}cart/remove/$id';
 
   static String incrementProduct(String id) => '${baseUrl}cart/increment/$id';
@@ -33,6 +36,8 @@ class RemoteUrls {
   static String deleteAddress(String id) => '${baseUrl}dashboard/addresses/$id';
   static const String checkOut = '${baseUrl}checkout/validate';
   static const String getOrder = '${baseUrl}dashboard/orders';
+
+  static String orderDetails(String id) => '${baseUrl}dashboard/orders/$id';
   static const String getWishList = '${baseUrl}wishlist';
   static const String addWishList = '${baseUrl}wishlist/add';
 

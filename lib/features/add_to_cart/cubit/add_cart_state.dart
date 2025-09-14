@@ -55,3 +55,37 @@ class AddCartStateFormValidate extends AddCartState {
   @override
   List<Object?> get props => [errors];
 }
+
+///Update Cart
+class UpdateCartStateLoading extends AddCartState {
+  @override
+  List<Object?> get props => [];
+}
+
+class UpdateCartStateFormValidate extends AddCartState {
+  final Errors errors;
+
+  const UpdateCartStateFormValidate(this.errors);
+
+  @override
+  List<Object?> get props => [errors];
+}
+
+class UpdateCartStateError extends AddCartState {
+  final String message;
+  final int statusCode;
+
+  const UpdateCartStateError(this.message, this.statusCode);
+
+  @override
+  List<Object?> get props => [message, statusCode];
+}
+
+class UpdateCartStateSuccess extends AddCartState {
+  final AddCartResponseModel responseModel;
+
+  const UpdateCartStateSuccess(this.responseModel);
+
+  @override
+  List<Object> get props => [responseModel];
+}

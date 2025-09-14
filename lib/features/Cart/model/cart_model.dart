@@ -51,9 +51,9 @@ class CartModel extends Equatable {
           ? List<CartItems>.from(
               (map['cart_items'] ?? []).map((x) => CartItems.fromMap(x)))
           : null,
-      subtotal: map['subtotal'] ?? 0,
-      cartCount: map['cart_count'] ?? 0,
-      totalItems: map['total_items'] ?? 0,
+      subtotal: (map['subtotal'] ?? 0).toDouble().toInt(),
+      cartCount: (map['cart_count'] ?? 0).toDouble().toInt(),
+      totalItems: (map['total_items'] ?? 0).toDouble().toInt(),
       appliedCoupon: map['applied_coupon'] ?? '',
     );
   }
@@ -107,6 +107,36 @@ class CartItems extends Equatable {
     required this.updatedAt,
   });
 
+  CartItems copyWith({
+    int? cartId,
+    int? productId,
+    String? size,
+    String? sizePrice,
+    int? qty,
+    Map<String, dynamic>? addons,
+    String? addonPrice,
+    String? totalPrice,
+    Product? product,
+    Restaurants? restaurant,
+    String? createdAt,
+    String? updatedAt,
+  }) {
+    return CartItems(
+      cartId: cartId ?? this.cartId,
+      productId: productId ?? this.productId,
+      size: size ?? this.size,
+      sizePrice: sizePrice ?? this.sizePrice,
+      qty: qty ?? this.qty,
+      addons: addons ?? this.addons,
+      addonPrice: addonPrice ?? this.addonPrice,
+      totalPrice: totalPrice ?? this.totalPrice,
+      product: product ?? this.product,
+      restaurant: restaurant ?? this.restaurant,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
   factory CartItems.fromMap(Map<String, dynamic> map) {
     return CartItems(
       cartId: map['id'] ?? map['cart_id'] ?? 0,
@@ -149,21 +179,20 @@ class CartItems extends Equatable {
 
   @override
   List<Object?> get props => [
-    cartId,
-    productId,
-    size,
-    sizePrice,
-    qty,
-    addons,
-    addonPrice,
-    totalPrice,
-    product,
-    restaurant,
-    createdAt,
-    updatedAt,
-  ];
+        cartId,
+        productId,
+        size,
+        sizePrice,
+        qty,
+        addons,
+        addonPrice,
+        totalPrice,
+        product,
+        restaurant,
+        createdAt,
+        updatedAt,
+      ];
 }
-
 
 class Addons extends Equatable {
   final int i1;

@@ -1,13 +1,18 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/data/remote_url.dart';
+import 'package:foodigo/features/Order/cubit/order_cubit.dart';
+import 'package:foodigo/features/Order/model/order_details_model.dart';
 import 'package:foodigo/features/Order/model/order_model.dart';
 import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/utils/k_images.dart';
 import 'package:foodigo/widget/custom_image.dart';
+import 'package:foodigo/widget/loading_widget.dart';
 
+import '../../../../features/Order/cubit/order_state.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
@@ -41,14 +46,23 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
+    final orderDetails = context.read<OrderCubit>();
     return Container(
       padding: Utils.symmetric(h: 10.0, v: 6.0),
       height: orderStatusMap[orderModel.orderStatus] == 'Pending'
-          ? size.height / 5.1.h
+          ? size.height / 5.8.h
           : size.height / 8.1.h,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6.r),
         color: whiteColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -74,101 +88,193 @@ class OrderCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           CustomText(
-                            text: Utils.formatPrice(context, orderModel.total),
+                            text: Utils.formatPrice(
+                                context, orderModel.grandTotal),
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                             color: const Color(0xFFE94222),
                           ),
                           GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: true,
-                                  // close dialog when tapping outside
-                                  builder: (BuildContext context) {
-                                    return Dialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(6.r),
-                                      ),
-                                      elevation: 5,
-                                      backgroundColor: Colors.white,
-                                      child: Container(
-                                        padding: EdgeInsets.all(10.r),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            SizedBox(
-                                              height: 200.h,
-                                              child: ListView.builder(
-                                                shrinkWrap: true,
-                                                // important
-                                                physics:
-                                                    const AlwaysScrollableScrollPhysics(),
-                                                // optional
-                                                itemCount:
-                                                    orderModel.items!.length,
-                                                itemBuilder: (context, index) {
-                                                  final item =
-                                                      orderModel.items![index];
-                                                  final sizeMap = jsonDecode(
-                                                          item.size)
-                                                      as Map<String, dynamic>;
-                                                  final sizeName =
-                                                      sizeMap.keys.first;
-                                                  final sizePrice =
-                                                      sizeMap.values.first;
+                            onTap: () {
+                              context
+                                  .read<OrderCubit>()
+                                  .getOrderDetails(orderModel.id);
+                              showDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                builder: (BuildContext context) {
+                                  return Dialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6.r),
+                                    ),
+                                    elevation: 5,
+                                    backgroundColor: Colors.white,
+                                    child: SizedBox(
+                                      height: 400.h,
+                                      child:
+                                          BlocBuilder<OrderCubit, OrderState>(
+                                        builder: (context, state) {
+                                          if (state
+                                              is OrderDetailsStateLoading) {
+                                            return const Center(
+                                                child: LoadingWidget());
+                                          } else if (state
+                                              is OrderDetailsStateError) {
+                                            return Padding(
+                                              padding: const EdgeInsets.all(20),
+                                              child: Text(
+                                                  "Error: ${state.message}"),
+                                            );
+                                          } else if (state
+                                              is OrderDetailsStateSuccess) {
+                                            final orderDetails =
+                                                state.orderDetails;
+                                            return Padding(
+                                              padding: EdgeInsets.all(10.r),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Expanded(
+                                                    child: ListView.builder(
+                                                      shrinkWrap: true,
+                                                      itemCount: orderDetails
+                                                              .items?.length ??
+                                                          0,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        final item =
+                                                            orderDetails
+                                                                .items![index];
+                                                        final product =
+                                                            item.products!;
+                                                        final sizeMap =
+                                                            jsonDecode(
+                                                                    item.size)
+                                                                as Map<String,
+                                                                    dynamic>;
+                                                        final sizeName =
+                                                            sizeMap.keys.first;
+                                                        final sizePrice =
+                                                            sizeMap
+                                                                .values.first;
 
-                                                  return ListTile(
-                                                    leading: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        CustomText(
-                                                            text: sizeName,
-                                                            fontSize: 16),
-                                                        const SizedBox(
-                                                            width: 5),
-                                                        CustomText(
-                                                            text: sizePrice
-                                                                .toString(),
-                                                            fontSize: 16),
-                                                      ],
+                                                        final decodedAddons =
+                                                            jsonDecode(
+                                                                item.addons);
+
+                                                        Map<String, dynamic>
+                                                            addonMap = {};
+                                                        if (decodedAddons
+                                                            is Map<String,
+                                                                dynamic>) {
+                                                          addonMap =
+                                                              decodedAddons;
+                                                        } else if (decodedAddons
+                                                            is List) {
+                                                          addonMap = {
+                                                            for (var e
+                                                                in decodedAddons)
+                                                              e.toString(): 1
+                                                          };
+                                                        }
+
+                                                        return Card(
+                                                          margin: EdgeInsets
+                                                              .symmetric(
+                                                                  vertical:
+                                                                      5.h),
+                                                          child: ListTile(
+                                                            leading: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          6.r),
+                                                              child:
+                                                                  CustomImage(
+                                                                path: RemoteUrls
+                                                                    .imageUrl(
+                                                                        product
+                                                                            .image),
+                                                                width: 50.w,
+                                                                height: 50.h,
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                            ),
+                                                            title: CustomText(
+                                                              text:
+                                                                  product.name,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                            subtitle: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
+                                                                CustomText(
+                                                                    text:
+                                                                        "Size: $sizeName"),
+                                                                CustomText(
+                                                                    text:
+                                                                        "Price: $sizePrice"),
+                                                                CustomText(
+                                                                    text:
+                                                                        "Quantity: ${item.qty}"),
+                                                                CustomText(
+                                                                    text:
+                                                                        "Delivery Charge: ${orderModel.deliveryCharge}"),
+                                                                CustomText(
+                                                                    text:
+                                                                        "Vat: ${orderModel.vat}"),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
                                                     ),
-                                                    trailing: CustomText(
-                                                      text: item.total,
-                                                      fontSize: 16,
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                            SizedBox(height: 20.h),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context)
-                                                        .pop(); // Close dialog
-                                                  },
-                                                  child: const CustomText(
-                                                    text: 'Close',
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w500,
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
+                                                  SizedBox(height: 20.h),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child: const CustomText(
+                                                          text: 'Close',
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }
+                                          return const SizedBox.shrink();
+                                        },
                                       ),
-                                    );
-                                  },
-                                );
-                              },
-                              child: const Icon(Icons.visibility)),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            child: const Icon(
+                              Icons.visibility,
+                              color: greyColor,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -211,7 +317,7 @@ class OrderCard extends StatelessWidget {
                     Navigator.pushNamed(context, RouteNames.smsScreen);
                   },
                   child: Padding(
-                    padding: Utils.only(top: 10.h),
+                    padding: Utils.only(top: 20.h),
                     child: Container(
                       padding: Utils.symmetric(v: 8.w),
                       decoration: BoxDecoration(

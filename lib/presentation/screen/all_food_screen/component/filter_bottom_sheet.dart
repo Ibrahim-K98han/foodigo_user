@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:another_stepper/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/features/AllFood/model/all_food_model.dart';
 import 'package:foodigo/features/HomeData/cubit/home_data_cubit.dart';
 import 'package:foodigo/utils/constraints.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
@@ -24,8 +26,6 @@ class FilterBottomSheet extends StatefulWidget {
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
   late AllFoodCubit searchCubit;
   late HomeDataCubit homeCubit;
-
-  final TextEditingController _searchController = TextEditingController();
   Timer? _debounce;
 
   Set<String> selectedCategoryIds = {};
@@ -39,26 +39,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     super.initState();
     searchCubit = context.read<AllFoodCubit>();
     homeCubit = context.read<HomeDataCubit>();
-
-    _searchController.text = searchCubit.search;
-
-    _searchController.addListener(() {
-      _onSearchChanged(_searchController.text);
-    });
   }
 
   @override
   void dispose() {
     _debounce?.cancel();
-    _searchController.dispose();
     super.dispose();
-  }
-
-  void _onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      searchCubit.updateSearch(query);
-    });
   }
 
   void _onCategoryChanged(bool? value, Categories cat) {
@@ -70,11 +56,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       }
     });
 
-    final selected = homeCubit.homeModel?.categories
-            ?.where((c) => selectedCategoryIds.contains(c.id.toString()))
-            .toList() ??
-        [];
-    searchCubit.categories(selected);
+    searchCubit.categories(selectedCategoryIds.toList());
   }
 
   void _onCuisineChanged(bool? value, Cuisines cuisine) {
@@ -86,11 +68,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       }
     });
 
-    final selected = homeCubit.homeModel?.cuisines
-            ?.where((c) => selectedCuisineIds.contains(c.id.toString()))
-            .toList() ??
-        [];
-    searchCubit.cuisine(selected);
+    searchCubit.cuisine(selectedCuisineIds.toList());
   }
 
   void _onPriceChanged(RangeValues values) {
@@ -110,18 +88,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     searchCubit.updateSort(sort);
   }
 
-  void _clearAll() {
-    setState(() {
-      selectedCategoryIds.clear();
-      selectedCuisineIds.clear();
-      selectedSort = '';
-      _minPrice = null;
-      _maxPrice = null;
-      _searchController.clear();
-    });
-    searchCubit.clearFilters();
-  }
-
   @override
   Widget build(BuildContext context) {
     final categories = homeCubit.homeModel?.categories ?? [];
@@ -135,18 +101,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: TextFormField(
-                controller: _searchController,
-                decoration: const InputDecoration(
-                  hintText: "Search food...",
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    size: 25,
-                  ),
-                ),
+            const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: CustomText(
+                text: 'Filter Food',
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
               ),
             ),
             Column(
@@ -263,7 +223,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton(
-                      onPressed: _clearAll,
+                      onPressed: () {
+                        searchCubit.clearFilters();
+                      },
                       child: const CustomText(
                         text: "Clear All",
                         fontSize: 18,
@@ -276,6 +238,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       fontSize: 16,
                       onPressed: () {
                         searchCubit.applyFilters();
+                        searchCubit.clearFilters();
                         Navigator.pop(context);
                       },
                     )
@@ -287,24 +250,5 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         ),
       ),
     );
-  }
-}
-
-class FullWidthTrackShape extends RoundedRectSliderTrackShape {
-  @override
-  Rect getPreferredRect({
-    required RenderBox parentBox,
-    Offset offset = Offset.zero,
-    required SliderThemeData sliderTheme,
-    bool isEnabled = false,
-    bool isDiscrete = false,
-  }) {
-    final double trackHeight = sliderTheme.trackHeight ?? 4.0;
-    final double trackLeft = 0; // Remove extra left padding
-    final double trackTop =
-        offset.dy + (parentBox.size.height - trackHeight) / 2;
-    final double trackWidth = parentBox.size.width; // Make full width
-
-    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
   }
 }

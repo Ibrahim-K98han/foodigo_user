@@ -27,6 +27,7 @@ class ChangeAddressScreen extends StatefulWidget {
 
 class _ChangeAddressScreenState extends State<ChangeAddressScreen> {
   late GetAddressCubit addressCubit;
+  bool isAddress = false;
 
   @override
   void initState() {
@@ -37,6 +38,9 @@ class _ChangeAddressScreenState extends State<ChangeAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+    final bool isSelected = args?['isSelected'] ?? false;
     return Scaffold(
       appBar: const CustomAppBar(title: 'Select Address'),
       bottomNavigationBar: Padding(
@@ -78,8 +82,12 @@ class _ChangeAddressScreenState extends State<ChangeAddressScreen> {
                       (address) => AddressItem(
                         address: address,
                         onTap: () {
-                          Navigator.pushNamed(context, RouteNames.orderScreen,
-                              arguments: address);
+                          isSelected == true
+                              ? Navigator.pushNamed(
+                                  context, RouteNames.orderScreen,
+                                  arguments: address)
+                              : null;
+
                           context
                               .read<CheckoutCubit>()
                               .addressId(address.id.toString());
@@ -132,10 +140,12 @@ class AddressItem extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           Navigator.pushNamed(
-                              context, RouteNames.editAddressScreen,
-                              arguments: {
-                                'address': address,
-                              });
+                            context,
+                            RouteNames.editAddressScreen,
+                            arguments: {
+                              'address': address,
+                            },
+                          );
                         },
                         child: const CustomImage(
                             path: KImages.editIcon, height: 25),

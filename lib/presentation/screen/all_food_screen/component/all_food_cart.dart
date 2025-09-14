@@ -17,11 +17,9 @@ class AllFoodCart extends StatefulWidget {
   const AllFoodCart({
     super.key,
     required this.foods,
-    required this.restaurants,
   });
 
   final Foods foods;
-  final Restaurants restaurants;
 
   @override
   State<AllFoodCart> createState() => _AllFoodCartState();
@@ -84,6 +82,14 @@ class _AllFoodCartState extends State<AllFoodCart> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
           color: whiteColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,47 +205,47 @@ class _AllFoodCartState extends State<AllFoodCart> {
                     maxLine: 1,
                   ),
                   Utils.verticalSpace(6.0),
-                  Row(
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomImage(
-                              path:
-                                  RemoteUrls.imageUrl(widget.restaurants.logo),
-                              height: 20),
-                          Utils.horizontalSpace(6.0),
-                          CustomText(
-                            text: widget.restaurants.name,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12.sp,
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Container(
-                          width: 4.w,
-                          height: 4.h,
-                          decoration: const BoxDecoration(
-                              color: smallContainerColor,
-                              shape: BoxShape.circle),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          const CustomImage(path: KImages.location, height: 20),
-                          Utils.horizontalSpace(6.0),
-                          CustomText(
-                            text: widget.restaurants.address,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12.sp,
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
+                  // Row(
+                  //   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     Row(
+                  //       crossAxisAlignment: CrossAxisAlignment.start,
+                  //       children: [
+                  //         CustomImage(
+                  //             path: RemoteUrls.imageUrl(
+                  //                 widget.foods.restaurants.logo),
+                  //             height: 20),
+                  //         Utils.horizontalSpace(6.0),
+                  //         CustomText(
+                  //           text: widget.foods.restaurants.name,
+                  //           fontWeight: FontWeight.w500,
+                  //           fontSize: 12.sp,
+                  //         ),
+                  //       ],
+                  //     ),
+                  //     Padding(
+                  //       padding: const EdgeInsets.symmetric(horizontal: 5),
+                  //       child: Container(
+                  //         width: 4.w,
+                  //         height: 4.h,
+                  //         decoration: const BoxDecoration(
+                  //             color: smallContainerColor,
+                  //             shape: BoxShape.circle),
+                  //       ),
+                  //     ),
+                  //     Row(
+                  //       children: [
+                  //         const CustomImage(path: KImages.location, height: 20),
+                  //         Utils.horizontalSpace(6.0),
+                  //         CustomText(
+                  //           text: widget.foods.restaurants[index].address,
+                  //           fontWeight: FontWeight.w400,
+                  //           fontSize: 12.sp,
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ],
+                  // )
                 ],
               ),
             ),

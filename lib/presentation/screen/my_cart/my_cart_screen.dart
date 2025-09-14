@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart' as featureProduct;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,6 +18,7 @@ import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
 import '../../core/routes/route_names.dart';
+import '../product_details/product_details_screen.dart';
 
 class MyCartScreen extends StatefulWidget {
   const MyCartScreen({super.key});
@@ -138,13 +140,19 @@ class _MyCartScreenState extends State<MyCartScreen> {
               child: PrimaryButton(
                 text: 'Checkout',
                 onPressed: () {
-                  Navigator.pushNamed(context, RouteNames.addressScreen);
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.addressScreen,
+                    arguments: {
+                      'isSelected': true,
+                    },
+                  );
                 },
               ),
             );
           }
 
-          return const SizedBox.shrink(); // Hide bottom button if cart empty
+          return const SizedBox.shrink();
         },
       ),
     );
@@ -182,7 +190,7 @@ class CartDataLoaded extends StatelessWidget {
 }
 
 class CheckoutCart extends StatelessWidget {
-  CheckoutCart({
+  const CheckoutCart({
     super.key,
     required this.cartItem,
     required this.onDelete,
@@ -197,7 +205,6 @@ class CheckoutCart extends StatelessWidget {
     final product = cartItem.product;
     final productId = cartItem.productId;
     final cartCubit = context.read<CartCubit>();
-
     return Dismissible(
       key: ValueKey(product?.id ?? cartItem.cartId),
       direction: DismissDirection.endToStart,
@@ -251,106 +258,150 @@ class CheckoutCart extends StatelessWidget {
       onDismissed: (direction) {
         onDelete(product?.id.toString() ?? cartItem.cartId.toString());
       },
-      child: Container(
-        padding: Utils.symmetric(h: 8.0, v: 4.0),
-        height: size.height * 0.1,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6.0),
-          color: whiteColor,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 92.0,
-              height: 72.0,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: CustomImage(
-                  path: product != null
-                      ? RemoteUrls.imageUrl(product.image)
-                      : KImages.foodImage1,
-                  fit: BoxFit.cover,
+      child: GestureDetector(
+        onTap: () {
+          showModalBottomSheet(
+              context: context,
+              showDragHandle: true,
+              backgroundColor: whiteColor,
+              constraints: BoxConstraints.loose(
+                Size(
+                  Utils.mediaQuery(context).width,
+                  Utils.mediaQuery(context).height * 0.9,
                 ),
               ),
-            ),
-            Flexible(
-              child: Padding(
-                padding: Utils.only(left: 8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Flexible(
-                      child: CustomText(
-                        text: product?.name ?? 'Unknown Product',
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        maxLine: 2,
+              isScrollControlled: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(Utils.radius(10.0)),
+                  topRight: Radius.circular(Utils.radius(10.0)),
+                ),
+              ),
+              builder: (context) {
+                return DraggableScrollableSheet(
+                  initialChildSize: 0.85,
+                  minChildSize: 0.5,
+                  maxChildSize: 0.95,
+                  expand: false,
+                  builder: (context, scrollController) {
+                    return SingleChildScrollView(
+                      controller: scrollController,
+                      child: ProductDetailsScreen(
+                        id: cartItem.productId,
+                        inInCart: true,
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CustomText(
-                          text: Utils.formatPrice(context, cartItem.sizePrice),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFFE94222),
-                        ),
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () => cartCubit
-                                  .decrementProduct(productId.toString()),
-                              child: Container(
-                                height: 25,
-                                width: 25,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4.0),
-                                  color: primaryColor.withOpacity(0.2),
-                                ),
-                                child: const Center(
-                                  child:
-                                      Icon(Icons.remove, color: Colors.amber),
-                                ),
-                              ),
-                            ),
-                            Utils.horizontalSpace(8.0),
-                            CustomText(
-                              text: cartItem.qty.toString(),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            Utils.horizontalSpace(8.0),
-                            GestureDetector(
-                              onTap: () => cartCubit
-                                  .incrementProduct(productId.toString()),
-                              child: Container(
-                                height: 25,
-                                width: 25,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4.0),
-                                  color: primaryColor,
-                                ),
-                                child: const Center(
-                                  child: Icon(Icons.add,
-                                      size: 18, color: blackColor),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                    );
+                  },
+                );
+              });
+        },
+        child: Container(
+          padding: Utils.symmetric(h: 8.0, v: 4.0),
+          height: size.height * 0.1,
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 6,
+                offset: const Offset(0, 3),
+              ),
+            ],
+            borderRadius: BorderRadius.circular(6.0),
+            color: whiteColor,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 92.0,
+                height: 72.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: CustomImage(
+                    path: product != null
+                        ? RemoteUrls.imageUrl(product.image)
+                        : KImages.foodImage1,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
-          ],
+              Flexible(
+                child: Padding(
+                  padding: Utils.only(left: 8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: CustomText(
+                          text: product?.name ?? 'Product name not available',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          maxLine: 2,
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CustomText(
+                            text: '${cartItem.size} (\$${cartItem.sizePrice})',
+                            fontSize: 14,
+                          ),
+                          Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () => cartCubit
+                                    .decrementProduct(productId.toString()),
+                                child: Container(
+                                  height: 25,
+                                  width: 25,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4.0),
+                                    color: primaryColor.withOpacity(0.2),
+                                  ),
+                                  child: const Center(
+                                    child:
+                                        Icon(Icons.remove, color: Colors.amber),
+                                  ),
+                                ),
+                              ),
+                              Utils.horizontalSpace(6.0),
+                              CustomText(
+                                text: cartItem.qty.toString(),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              Utils.horizontalSpace(8.0),
+                              GestureDetector(
+                                onTap: () => cartCubit
+                                    .incrementProduct(productId.toString()),
+                                child: Container(
+                                  height: 25,
+                                  width: 25,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4.0),
+                                    color: primaryColor,
+                                  ),
+                                  child: const Center(
+                                    child: Icon(Icons.add,
+                                        size: 18, color: blackColor),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

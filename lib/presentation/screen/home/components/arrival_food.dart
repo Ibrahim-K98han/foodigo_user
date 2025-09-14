@@ -129,6 +129,14 @@ class _FoodCartState extends State<FoodCart> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
           color: whiteColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

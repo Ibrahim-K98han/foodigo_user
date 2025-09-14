@@ -6,19 +6,23 @@ import '../../Cart/model/cart_model.dart';
 class AddCartResponseModel extends Equatable {
   final CartItem? cartItem;
   final CartSummary? cartSummary;
+  final String message;
 
   const AddCartResponseModel({
     this.cartItem,
     this.cartSummary,
+    this.message = '',
   });
 
   AddCartResponseModel copyWith({
     CartItem? cartItem,
     CartSummary? cartSummary,
+    String? message,
   }) {
     return AddCartResponseModel(
       cartItem: cartItem ?? this.cartItem,
       cartSummary: cartSummary ?? this.cartSummary,
+      message: message ?? this.message,
     );
   }
 
@@ -26,17 +30,20 @@ class AddCartResponseModel extends Equatable {
     return <String, dynamic>{
       'cart_item': cartItem?.toMap(),
       'cart_summary': cartSummary?.toMap(),
+      'message': message,
     };
   }
 
   factory AddCartResponseModel.fromMap(Map<String, dynamic> map) {
     return AddCartResponseModel(
-      cartItem: map['cart_item'] != null
-          ? CartItem.fromMap(map['cart_item'] as Map<String, dynamic>)
+      cartItem: map['data']?['cart_item'] != null
+          ? CartItem.fromMap(map['data']['cart_item'] as Map<String, dynamic>)
           : null,
-      cartSummary: map['cart_summary'] != null
-          ? CartSummary.fromMap(map['cart_summary'] as Map<String, dynamic>)
+      cartSummary: map['data']?['cart_summary'] != null
+          ? CartSummary.fromMap(
+          map['data']['cart_summary'] as Map<String, dynamic>)
           : null,
+      message: map['message'] ?? '',
     );
   }
 
@@ -46,10 +53,7 @@ class AddCartResponseModel extends Equatable {
       AddCartResponseModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  bool get stringify => true;
-
-  @override
-  List<Object> get props => [cartItem!, cartSummary!];
+  List<Object?> get props => [cartItem, cartSummary, message];
 }
 
 class CartItem extends Equatable {
@@ -217,10 +221,10 @@ class CartSummary extends Equatable {
     return CartSummary(
       cartItems: map['cart_items'] != null
           ? List<CartItems>.from(
-              (map['cart_items'] as List<dynamic>).map<CartItems?>(
-                (x) => CartItems.fromMap(x as Map<String, dynamic>),
-              ),
-            )
+        (map['cart_items'] as List<dynamic>).map<CartItems?>(
+              (x) => CartItems.fromMap(x as Map<String, dynamic>),
+        ),
+      )
           : null,
       subtotal: map['subtotal'] ?? 0,
       cartCount: map['cart_count'] ?? 0,

@@ -6,6 +6,7 @@ import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_state.dart
 class ForgotPasswordStateModel extends Equatable {
   final String email;
   final String code;
+  final String otp;
   final String password;
   final String languageCode;
   final String confirmPassword;
@@ -15,6 +16,7 @@ class ForgotPasswordStateModel extends Equatable {
 
   const ForgotPasswordStateModel({
     this.email = '',
+    this.otp = '',
     this.code = '',
     this.password = '',
     this.languageCode = '',
@@ -26,6 +28,7 @@ class ForgotPasswordStateModel extends Equatable {
 
   ForgotPasswordStateModel copyWith({
     String? email,
+    String? otp,
     String? code,
     String? password,
     String? languageCode,
@@ -49,6 +52,7 @@ class ForgotPasswordStateModel extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'email': email,
+      'otp': otp,
       'token': code,
       'password': password,
       'c_password': confirmPassword,
@@ -61,6 +65,7 @@ class ForgotPasswordStateModel extends Equatable {
   static ForgotPasswordStateModel init() {
     return const ForgotPasswordStateModel(
       email: '',
+      otp: '',
       code: '',
       password: '',
       languageCode: '',
@@ -74,6 +79,7 @@ class ForgotPasswordStateModel extends Equatable {
   ForgotPasswordStateModel clear() {
     return const ForgotPasswordStateModel(
       email: '',
+      otp: '',
       code: '',
       password: '',
       confirmPassword: '',
@@ -86,6 +92,7 @@ class ForgotPasswordStateModel extends Equatable {
   factory ForgotPasswordStateModel.fromMap(Map<String, dynamic> map) {
     return ForgotPasswordStateModel(
       email: map['email'] ?? '',
+      otp: map['otp'] ?? '',
       code: map['token'] ?? '',
       password: map['password'] ?? '',
       confirmPassword: map['password_confirmation'] ?? '',
@@ -108,6 +115,7 @@ class ForgotPasswordStateModel extends Equatable {
   List<Object> get props {
     return [
       email,
+      otp,
       code,
       password,
       languageCode,

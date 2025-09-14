@@ -16,27 +16,28 @@ import '../../../widget/custom_image.dart';
 import '../../../widget/custom_text_style.dart';
 import '../../core/routes/route_names.dart';
 
-class OtpScreen extends StatefulWidget {
-  const OtpScreen({super.key});
+class ForgotOtpScreen extends StatefulWidget {
+  const ForgotOtpScreen({super.key});
 
   @override
-  State<OtpScreen> createState() => _OtpScreenState();
+  State<ForgotOtpScreen> createState() => _ForgotOtpScreenState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
-  late RegisterCubit rCubit;
+class _ForgotOtpScreenState extends State<ForgotOtpScreen> {
+  late ForgotPasswordCubit fpCubit;
 
   bool finishTime = true;
 
   @override
   void initState() {
     super.initState();
-    rCubit = context.read<RegisterCubit>();
+    fpCubit = context.read<ForgotPasswordCubit>();
   }
 
   @override
   Widget build(BuildContext context) {
-    final email = rCubit.state.email;
+    final email = fpCubit.state.email;
+    print('=============$email');
     return Scaffold(
       appBar: AppBar(
         title: const CustomImage(
@@ -51,7 +52,7 @@ class _OtpScreenState extends State<OtpScreen> {
             Utils.failureSnackBar(context, otp.message);
           } else if (otp is RegisterOtpStateSuccess) {
             Utils.successSnackBar(context, otp.message);
-            Navigator.pushNamed(context, RouteNames.authenticationScreen);
+            Navigator.pushNamed(context, RouteNames.changePasswordScreen);
           }
         },
         child: SafeArea(
@@ -104,10 +105,10 @@ class _OtpScreenState extends State<OtpScreen> {
                           ),
                         ),
                         onChanged: (String code) {
-                          rCubit.otpChange(code);
+                          fpCubit.otpChange(code);
                         },
                         onCompleted: (String code) {
-                          rCubit.verifyRegOtp(email);
+                          fpCubit.verifyForgetOtp(email);
                         },
                       ),
                     ),
@@ -183,7 +184,7 @@ class _OtpScreenState extends State<OtpScreen> {
           const CustomText(
               text: 'Don\'t get verification code', fontSize: 14.0),
           GestureDetector(
-            onTap: () => rCubit.resendVerificationCode(),
+            onTap: () {},
             child: const CustomText(
               text: 'Resend Code',
               fontSize: 14.0,

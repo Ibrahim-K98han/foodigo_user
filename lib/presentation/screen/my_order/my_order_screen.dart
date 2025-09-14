@@ -34,7 +34,6 @@ class _MyOrderScreenState extends State<MyOrderScreen>
     super.initState();
     orderCubit = context.read<OrderCubit>();
     orderCubit.getOrderData();
-
     tabController = TabController(length: 6, vsync: this);
   }
 
@@ -142,7 +141,7 @@ class LoadOrderData extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final order = filteredOrders[index];
                   return Padding(
-                    padding: Utils.symmetric(h: 20.0, v: 6.0),
+                    padding: Utils.symmetric(h: 20.0, v: 10.0),
                     child: OrderCard(orderModel: order),
                   );
                 },

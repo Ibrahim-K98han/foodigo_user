@@ -73,87 +73,65 @@ class AddCartCubit extends Cubit<AddCartStateModel> {
     }
   }
 
-  // Add to cart
-  // Future<void> addCart(BuildContext context, int productId) async {
-  //   if (state.size.isEmpty) {
-  //     Utils.showSnackBar(context, "Please select a size before adding to cart");
-  //     return;
-  //   }
-  //   emit(state.copyWith(
-  //       productId: productId, addCartState: AddCartStateLoading()));
-  //   log("cart body: ${state.toMap()}");
-  //
-  //   final uri = Utils.tokenWithCode(
-  //     RemoteUrls.addProduct,
-  //     _loginBloc.userInformation!.token,
-  //     _loginBloc.state.languageCode,
-  //   );
-  //   emit(state.copyWith(
-  //       productId: productId, addCartState: AddCartStateLoading()));
-  //
-  //   print('$uri');
-  //
-  //   final result =
-  //       await _repository.addCart(state, _loginBloc.userInformation!.token);
-  //
-  //   result.fold(
-  //     (failure) {
-  //       if (failure is InvalidAuthData) {
-  //         emit(state.copyWith(
-  //             addCartState: AddCartStateFormValidate(failure.errors)));
-  //       } else {
-  //         emit(state.copyWith(
-  //             addCartState:
-  //                 AddCartStateError(failure.message, failure.statusCode)));
-  //       }
-  //     },
-  //     (success) {
-  //       addCartResponseModel = success;
-  //       emit(state.copyWith(addCartState: AddCartStateSuccess(success)));
-  //       clear();
-  //     },
-  //   );
-  // }
-
   Future<void> addCart(BuildContext context, int productId) async {
-    // Check if a size is selected
     if (state.size.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please select a size before adding to cart"),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      Navigator.pop(context);
+      Utils.failureSnackBar(
+          context, "Please select a size before adding to cart");
       return;
     }
-
     emit(state.copyWith(
         productId: productId, addCartState: AddCartStateLoading()));
-
     final result =
         await _repository.addCart(state, _loginBloc.userInformation!.token);
-
     result.fold(
       (failure) {
-        if (failure is InvalidAuthData) {
-          emit(state.copyWith(
-              addCartState: AddCartStateFormValidate(failure.errors)));
-        } else {
-          emit(state.copyWith(
-              addCartState:
-                  AddCartStateError(failure.message, failure.statusCode)));
-        }
+        Navigator.pop(context);
+        Utils.failureSnackBar(context, failure.message);
+        emit(state.copyWith(
+            addCartState:
+                AddCartStateError(failure.message, failure.statusCode)));
       },
       (success) {
         addCartResponseModel = success;
+        Navigator.pop(context);
+        Utils.successSnackBar(context, success.message);
         emit(state.copyWith(addCartState: AddCartStateSuccess(success)));
         clear();
       },
     );
   }
 
+  Future<void> updateCart(BuildContext context, int productId) async {
+    if (state.size.isEmpty) {
+      Navigator.pop(context);
+      Utils.failureSnackBar(
+          context, "Please select a size before adding to cart");
+      return;
+    }
+    emit(state.copyWith(
+        productId: productId, addCartState: UpdateCartStateLoading()));
+    final result = await _repository.updateCart(
+        state, _loginBloc.userInformation!.token, productId);
+    result.fold(
+      (failure) {
+        Navigator.pop(context);
+        Utils.failureSnackBar(context, failure.message);
+        emit(state.copyWith(
+            addCartState:
+                UpdateCartStateError(failure.message, failure.statusCode)));
+      },
+      (success) {
+        addCartResponseModel = success;
+        Navigator.pop(context);
+        Utils.successSnackBar(context, success.message);
+        emit(state.copyWith(addCartState: UpdateCartStateSuccess(success)));
+        clear();
+      },
+    );
+  }
+
   void clear() {
-    // Emit a fresh state so that size, addons, and qty are reset
     emit(state.copyWith(
       size: '',
       qty: 1,

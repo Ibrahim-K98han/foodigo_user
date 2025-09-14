@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:foodigo/features/Order/model/order_details_model.dart';
 import 'package:foodigo/features/Order/model/order_model.dart';
 
 abstract class OrderState extends Equatable {
@@ -45,6 +46,50 @@ class OrderStateError extends OrderState {
   final int statusCode;
 
   const OrderStateError(this.message, this.statusCode);
+
+  @override
+  List<Object?> get props => [message, statusCode];
+}
+
+///OrderDetails
+
+class OrderDetailsStateInitial extends OrderState {
+  const OrderDetailsStateInitial();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class OrderDetailsStateLoading extends OrderState {
+  const OrderDetailsStateLoading();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class OrderDetailsStateLoaded extends OrderState {
+  final OrderDetails orderDetails;
+
+  const OrderDetailsStateLoaded(this.orderDetails);
+
+  @override
+  List<Object?> get props => [orderDetails];
+}
+
+class OrderDetailsStateSuccess extends OrderState {
+  final OrderDetails orderDetails;
+
+  const OrderDetailsStateSuccess(this.orderDetails);
+
+  @override
+  List<Object?> get props => [orderDetails];
+}
+
+class OrderDetailsStateError extends OrderState {
+  final String message;
+  final int statusCode;
+
+  const OrderDetailsStateError(this.message, this.statusCode);
 
   @override
   List<Object?> get props => [message, statusCode];

@@ -250,9 +250,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     label: 'Phone Number',
                     bottomSpace: 4.0,
                     child: TextFormField(
+
                       initialValue: state.phone,
                       onChanged: rCubit.phoneNumber,
-                      keyboardType: TextInputType.name,
+                      keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                         fillColor: Color(0xffF8FAFC),
                         filled: true,

@@ -19,15 +19,15 @@ class Utils {
 
   static final _initialTime = TimeOfDay.now();
 
-  static void successSnackBar (BuildContext context,String message){
-    final snackBar =   SnackBar(
+  static void successSnackBar(BuildContext context, String message) {
+    final snackBar = SnackBar(
       /// need to set following properties for best effect of awesome_snackbar_content
       elevation: 0,
       behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.transparent,
       content: AwesomeSnackbarContent(
         title: 'Oh Hey!!',
-        message:message,
+        message: message,
         contentType: ContentType.success,
       ),
     );
@@ -37,37 +37,42 @@ class Utils {
   }
 
   static Uri tokenWithCodeSearch(
-      String url,
-      String search,
-
-      List<Categories> categories,
-      List<Cuisines> cuisines,
-      String minPrice,
-      String maxPrice,
-      ) {
+    String url,
+    String page,
+    String search,
+    String sort,
+    List<String> categories,
+    List<String> cuisines,
+    String minPrice,
+    String maxPrice,
+    String langCode,
+  ) {
     // Map query parameters, including the car types
     final queryParams = {
-      "categories": categories,
-      "cuisines": cuisines,
-      "search": search,
+      "page": page,
+      "search_value": search,
+      "sort": sort,
+      "price_min": minPrice,
+      "price_max": maxPrice,
+      "lang_code": langCode,
     };
 
     // Add features to the query parameters if it's not empty
     if (categories.isNotEmpty) {
       for (int i = 0; i < categories.length; i++) {
-        queryParams["categories[$i]"] = categories[i]; // Use the feature directly
+        queryParams["categories[$i]"] =
+            categories[i]; // Use the feature directly
       }
     }
 
     if (cuisines.isNotEmpty) {
       for (int i = 0; i < cuisines.length; i++) {
-        queryParams["cuisines[$i]"] = cuisines[i];
+        queryParams["cuisine[$i]"] = cuisines[i];
       }
     }
 
     return Uri.parse('$url?').replace(queryParameters: queryParams);
   }
-
 
   static Future<String?> getAddressFromLatLng(double lat, double lng) async {
     try {
