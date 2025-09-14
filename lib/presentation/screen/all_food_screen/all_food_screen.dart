@@ -78,18 +78,18 @@ class _AllFoodScreenState extends State<AllFoodScreen> {
                   context: context,
                   isScrollControlled: true,
                   backgroundColor: Colors.white,
-                  shape: const RoundedRectangleBorder(
+                  shape: RoundedRectangleBorder(
                     borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(16)),
+                        BorderRadius.vertical(top: Radius.circular(16.r)),
                   ),
-                  builder: (_) => const SizedBox(
-                    height: 600,
-                    child: FilterBottomSheet(),
+                  builder: (_) => SizedBox(
+                    height: 450.h,
+                    child: const FilterBottomSheet(),
                   ),
                 );
               },
               child: CustomImage(
-                path: KImages.filterFood,
+                path: KImages.filterIcon,
                 width: 24.w,
                 height: 24.h,
                 fit: BoxFit.cover,

@@ -10,9 +10,11 @@ abstract class CartRepository {
 
   Future<Either<Failure, CartModel>> deleteProduct(String token, String id);
 
-  Future<Either<Failure, CartModel>> incrementProduct(String token, String id);
+  Future<Either<Failure, CartModel>> incrementProduct(
+      CartModel body, String token, String id);
 
-  Future<Either<Failure, CartModel>> decrementProduct(String token, String id);
+  Future<Either<Failure, CartModel>> decrementProduct(
+      CartModel body, String token, String id);
 
   Future<Either<Failure, CartModel>> clearCart(String token);
 }
@@ -55,9 +57,9 @@ class CartRepositoryImpl implements CartRepository {
   ///Product Decrement
   @override
   Future<Either<Failure, CartModel>> decrementProduct(
-      String token, String id) async {
+      CartModel body, String token, String id) async {
     try {
-      final result = await remoteDataSource.decrementProduct(token, id);
+      final result = await remoteDataSource.decrementProduct(body, token, id);
       final data = CartModel.fromMap(result['data']);
       return Right(data);
     } on ServerException catch (e) {
@@ -68,9 +70,9 @@ class CartRepositoryImpl implements CartRepository {
   ///Product Increment
   @override
   Future<Either<Failure, CartModel>> incrementProduct(
-      String token, String id) async {
+      CartModel body, String token, String id) async {
     try {
-      final result = await remoteDataSource.incrementProduct(token, id);
+      final result = await remoteDataSource.incrementProduct(body, token, id);
       final data = CartModel.fromMap(result['data']);
       return Right(data);
     } on ServerException catch (e) {

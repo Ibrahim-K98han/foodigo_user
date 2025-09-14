@@ -7,6 +7,7 @@ import 'package:foodigo/widget/custom_text_style.dart';
 import '../../../../data/remote_url.dart';
 import '../../../../features/AllFood/cubit/all_food_cubit.dart';
 import '../../../../features/HomeData/category_model.dart';
+import '../../../../features/HomeData/cubit/home_data_cubit.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/title_and_navigator.dart';
@@ -33,6 +34,7 @@ class _CategoryListState extends State<CategoryList> {
 
   @override
   Widget build(BuildContext context) {
+    final homeCubit = context.read<HomeDataCubit>();
     return Column(
       children: [
         TitleAndNavigator(
@@ -49,6 +51,7 @@ class _CategoryListState extends State<CategoryList> {
           child: Row(
             children: [
               ...List.generate(widget.categories.length, (index) {
+                final categories = homeCubit.homeModel!.categories!;
                 return Padding(
                   padding: const EdgeInsets.only(right: 10),
                   child: CategoryCard(
@@ -57,11 +60,11 @@ class _CategoryListState extends State<CategoryList> {
                       setState(() {
                         selectedIndex = index;
                       });
+                      searchCubit.clearFilters();
+                      searchCubit.categories([categories[index].id.toString()]);
                       Navigator.pushNamed(
                         context,
                         RouteNames.allFoodScreen,
-                        // arguments: widget.categories[index],
-                        // searchCubit.categories(selected);
                       );
                     },
                     categories: widget.categories[index],

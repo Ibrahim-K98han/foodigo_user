@@ -86,7 +86,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                           //Utils.horizontalSpace(10),
                           GestureDetector(
                             onTap: () {
-                              // Navigator.pushNamed(context, RouteNames.editProfile),
+                              Navigator.pushNamed(context, RouteNames.editProfileScreen);
                             },
                             child: Container(
                               height: Utils.vSize(52.0),
@@ -175,33 +175,40 @@ class _HomeHeaderState extends State<HomeHeader> {
                 ),
               ),
               Positioned(
-                bottom: -18.0,
+                bottom: -40,
                 left: 0,
                 right: 0,
                 child: Padding(
                   padding: Utils.symmetric(),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                        prefixIcon: const Padding(
-                          padding: EdgeInsets.all(12.0),
-                          child: CustomImage(path: KImages.searchIcon),
-                        ),
-                        suffixIcon: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, RouteNames.allFoodScreen);
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: CustomImage(path: KImages.filterIcon),
-                          ),
-                        ),
-                        hintText: 'Search',
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 18.0, horizontal: 12.0),
-                        filled: true,
-                        fillColor: whiteColor,
-                        border: InputBorder.none),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, RouteNames.allFoodScreen);
+                    },
+                    child: AbsorbPointer(
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                            prefixIcon: const Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: CustomImage(path: KImages.searchIcon),
+                            ),
+                            suffixIcon: GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, RouteNames.allFoodScreen);
+                              },
+                              child: const Padding(
+                                padding: EdgeInsets.all(12.0),
+                                child: CustomImage(path: KImages.filterIcon),
+                              ),
+                            ),
+                            hintText: 'Search',
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 18.0, horizontal: 12.0),
+                            filled: true,
+                            fillColor: whiteColor,
+                            border: InputBorder.none),
+                      ),
+                    ),
                   ),
                 ),
               ),

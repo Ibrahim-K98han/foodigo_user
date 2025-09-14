@@ -7,6 +7,7 @@ import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_state_mode
 import 'package:foodigo/features/ForgotPassword/repository/forgot_password_repository.dart';
 
 import '../../../data/errors/failure.dart';
+import '../../Register/cubit/register_state.dart';
 
 class ForgotPasswordCubit extends Cubit<ForgotPasswordStateModel> {
   final ForgotPasswordRepository _repository;
@@ -19,6 +20,12 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordStateModel> {
   void changeEmail(String text) {
     emit(state.copyWith(
         email: text, passwordState: const ForgotPasswordStateInitial()));
+  }
+
+  void otpChange(String text) {
+    emit(state.copyWith(
+      otp: text,
+    ));
   }
 
   Future<void> forgotPasswordCode() async {
@@ -40,6 +47,22 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordStateModel> {
       (successMessage) {
         emit(state.copyWith(
             passwordState: ForgotPasswordStateLoaded(successMessage)));
+      },
+    );
+  }
+
+  Future<void> verifyForgetOtp(String email) async {
+    emit(state.copyWith(passwordState: ForgotPasswordOtpStateLoading()));
+    final result = await _repository.verifyRegOtp(state, email);
+    result.fold(
+      (failure) {
+        final errors =
+            ForgotPasswordStateError(failure.message, failure.statusCode);
+        emit(state.copyWith(passwordState: errors));
+      },
+      (success) {
+        final userLoaded = ForgotPasswordStateSuccess(success);
+        emit(state.copyWith(passwordState: userLoaded));
       },
     );
   }

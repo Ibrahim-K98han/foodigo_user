@@ -10,6 +10,8 @@ abstract class ForgotPasswordRepository {
 
   Future<Either<dynamic, String>> resetPassword(
       ForgotPasswordStateModel body, String email, String otp);
+  Future<Either<dynamic, String>> verifyRegOtp(
+      ForgotPasswordStateModel body, String email);
 }
 
 class ForgotPasswordRepositoryImpl implements ForgotPasswordRepository {
@@ -38,6 +40,19 @@ class ForgotPasswordRepositoryImpl implements ForgotPasswordRepository {
     try {
       final result = await remoteDataSource.resetPassword(body, email, otp);
       return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    } on InvalidAuthData catch (e) {
+      return Left(InvalidAuthData(e.errors));
+    }
+  }
+
+  @override
+  Future<Either<dynamic, String>> verifyRegOtp(
+      ForgotPasswordStateModel body, String email) async {
+    try {
+      final result = await remoteDataSource.otpVerify(body, email);
+      return Right(result['message']);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
     } on InvalidAuthData catch (e) {

@@ -50,7 +50,7 @@ class OrderCard extends StatelessWidget {
     return Container(
       padding: Utils.symmetric(h: 10.0, v: 6.0),
       height: orderStatusMap[orderModel.orderStatus] == 'Pending'
-          ? size.height / 5.3.h
+          ? size.height / 5.8.h
           : size.height / 8.1.h,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6.r),
@@ -99,7 +99,6 @@ class OrderCard extends StatelessWidget {
                               context
                                   .read<OrderCubit>()
                                   .getOrderDetails(orderModel.id);
-
                               showDialog(
                                 context: context,
                                 barrierDismissible: true,
@@ -159,6 +158,26 @@ class OrderCard extends StatelessWidget {
                                                             sizeMap
                                                                 .values.first;
 
+                                                        final decodedAddons =
+                                                            jsonDecode(
+                                                                item.addons);
+
+                                                        Map<String, dynamic>
+                                                            addonMap = {};
+                                                        if (decodedAddons
+                                                            is Map<String,
+                                                                dynamic>) {
+                                                          addonMap =
+                                                              decodedAddons;
+                                                        } else if (decodedAddons
+                                                            is List) {
+                                                          addonMap = {
+                                                            for (var e
+                                                                in decodedAddons)
+                                                              e.toString(): 1
+                                                          };
+                                                        }
+
                                                         return Card(
                                                           margin: EdgeInsets
                                                               .symmetric(
@@ -194,7 +213,9 @@ class OrderCard extends StatelessWidget {
                                                               crossAxisAlignment:
                                                                   CrossAxisAlignment
                                                                       .start,
-                                                              mainAxisSize: MainAxisSize.min,
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
                                                               children: [
                                                                 CustomText(
                                                                     text:
@@ -296,7 +317,7 @@ class OrderCard extends StatelessWidget {
                     Navigator.pushNamed(context, RouteNames.smsScreen);
                   },
                   child: Padding(
-                    padding: Utils.only(top: 10.h),
+                    padding: Utils.only(top: 20.h),
                     child: Container(
                       padding: Utils.symmetric(v: 8.w),
                       decoration: BoxDecoration(

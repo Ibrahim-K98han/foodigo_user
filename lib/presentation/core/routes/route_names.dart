@@ -21,6 +21,7 @@ import 'package:foodigo/presentation/screen/sms/sms_screen.dart';
 
 import '../../screen/authentications/authentication_screen.dart';
 import '../../screen/authentications/create_new_password.dart';
+import '../../screen/authentications/forgot_otp_screen.dart';
 import '../../screen/authentications/forgot_password_screen.dart';
 import '../../screen/authentications/otp_screen.dart';
 import '../../screen/authentications/registration_screen.dart';
@@ -69,6 +70,7 @@ class RouteNames {
   static const String bankTransferPaymentScreen = '/bankTransferPaymentScreen';
   static const String stripTransferPaymentScreen =
       '/stripTransferPaymentScreen';
+  static const String forgotOtpScreen = '/forgotOtpScreen';
 
   static Route<dynamic> generateRoutes(RouteSettings settings) {
     switch (settings.name) {
@@ -194,6 +196,9 @@ class RouteNames {
         return MaterialPageRoute(
             settings: settings,
             builder: (_) => const ProfileChangePasswordScreen());
+      case RouteNames.forgotOtpScreen:
+        return MaterialPageRoute(
+            settings: settings, builder: (_) => const ForgotOtpScreen());
 
       case RouteNames.bankTransferPaymentScreen:
         return MaterialPageRoute(

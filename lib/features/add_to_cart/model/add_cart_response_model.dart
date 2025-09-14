@@ -41,7 +41,7 @@ class AddCartResponseModel extends Equatable {
           : null,
       cartSummary: map['data']?['cart_summary'] != null
           ? CartSummary.fromMap(
-              map['data']['cart_summary'] as Map<String, dynamic>)
+          map['data']['cart_summary'] as Map<String, dynamic>)
           : null,
       message: map['message'] ?? '',
     );
@@ -221,10 +221,10 @@ class CartSummary extends Equatable {
     return CartSummary(
       cartItems: map['cart_items'] != null
           ? List<CartItems>.from(
-              (map['cart_items'] as List<dynamic>).map<CartItems?>(
-                (x) => CartItems.fromMap(x as Map<String, dynamic>),
-              ),
-            )
+        (map['cart_items'] as List<dynamic>).map<CartItems?>(
+              (x) => CartItems.fromMap(x as Map<String, dynamic>),
+        ),
+      )
           : null,
       subtotal: map['subtotal'] ?? 0,
       cartCount: map['cart_count'] ?? 0,

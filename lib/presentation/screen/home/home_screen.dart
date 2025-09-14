@@ -109,7 +109,7 @@ class LoadedHomeData extends StatelessWidget {
       child: Column(
         children: [
           const HomeHeader(),
-          // Utils.verticalSpace(30.0),
+          Utils.verticalSpace(20.0),
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.zero,

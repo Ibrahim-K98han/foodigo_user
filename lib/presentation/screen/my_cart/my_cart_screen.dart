@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart' as featureProduct;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,6 +18,7 @@ import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
 import '../../core/routes/route_names.dart';
+import '../product_details/product_details_screen.dart';
 
 class MyCartScreen extends StatefulWidget {
   const MyCartScreen({super.key});
@@ -175,13 +177,11 @@ class CartDataLoaded extends StatelessWidget {
       children: items.map((cartItem) {
         return Padding(
           padding: Utils.only(bottom: 12.0),
-          child: GestureDetector(
-            child: CheckoutCart(
-              cartItem: cartItem,
-              onDelete: (id) {
-                context.read<CartCubit>().deleteProduct(id);
-              },
-            ),
+          child: CheckoutCart(
+            cartItem: cartItem,
+            onDelete: (id) {
+              context.read<CartCubit>().deleteProduct(id);
+            },
           ),
         );
       }).toList(),
@@ -205,7 +205,6 @@ class CheckoutCart extends StatelessWidget {
     final product = cartItem.product;
     final productId = cartItem.productId;
     final cartCubit = context.read<CartCubit>();
-
     return Dismissible(
       key: ValueKey(product?.id ?? cartItem.cartId),
       direction: DismissDirection.endToStart,
@@ -260,7 +259,42 @@ class CheckoutCart extends StatelessWidget {
         onDelete(product?.id.toString() ?? cartItem.cartId.toString());
       },
       child: GestureDetector(
-        onTap: () {},
+        onTap: () {
+          showModalBottomSheet(
+              context: context,
+              showDragHandle: true,
+              backgroundColor: whiteColor,
+              constraints: BoxConstraints.loose(
+                Size(
+                  Utils.mediaQuery(context).width,
+                  Utils.mediaQuery(context).height * 0.9,
+                ),
+              ),
+              isScrollControlled: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(Utils.radius(10.0)),
+                  topRight: Radius.circular(Utils.radius(10.0)),
+                ),
+              ),
+              builder: (context) {
+                return DraggableScrollableSheet(
+                  initialChildSize: 0.85,
+                  minChildSize: 0.5,
+                  maxChildSize: 0.95,
+                  expand: false,
+                  builder: (context, scrollController) {
+                    return SingleChildScrollView(
+                      controller: scrollController,
+                      child: ProductDetailsScreen(
+                        id: cartItem.productId,
+                        inInCart: true,
+                      ),
+                    );
+                  },
+                );
+              });
+        },
         child: Container(
           padding: Utils.symmetric(h: 8.0, v: 4.0),
           height: size.height * 0.1,

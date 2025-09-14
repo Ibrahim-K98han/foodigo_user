@@ -17,12 +17,9 @@ class AllFoodCart extends StatefulWidget {
   const AllFoodCart({
     super.key,
     required this.foods,
-    // required this.restaurants,
   });
 
   final Foods foods;
-
-  // final Restaurants restaurants;
 
   @override
   State<AllFoodCart> createState() => _AllFoodCartState();
@@ -215,12 +212,12 @@ class _AllFoodCartState extends State<AllFoodCart> {
                   //       crossAxisAlignment: CrossAxisAlignment.start,
                   //       children: [
                   //         CustomImage(
-                  //             path:
-                  //                 RemoteUrls.imageUrl(widget.restaurants.logo),
+                  //             path: RemoteUrls.imageUrl(
+                  //                 widget.foods.restaurants.logo),
                   //             height: 20),
                   //         Utils.horizontalSpace(6.0),
                   //         CustomText(
-                  //           text: widget.restaurants.name,
+                  //           text: widget.foods.restaurants.name,
                   //           fontWeight: FontWeight.w500,
                   //           fontSize: 12.sp,
                   //         ),
@@ -241,7 +238,7 @@ class _AllFoodCartState extends State<AllFoodCart> {
                   //         const CustomImage(path: KImages.location, height: 20),
                   //         Utils.horizontalSpace(6.0),
                   //         CustomText(
-                  //           text: widget.restaurants.address,
+                  //           text: widget.foods.restaurants[index].address,
                   //           fontWeight: FontWeight.w400,
                   //           fontSize: 12.sp,
                   //         ),

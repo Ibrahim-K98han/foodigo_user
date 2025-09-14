@@ -17,9 +17,15 @@ import 'component/select_addon_section.dart';
 import 'component/select_size_section.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
-  const ProductDetailsScreen({super.key, required this.id});
+  const ProductDetailsScreen({
+    super.key,
+    required this.id,
+    this.inInCart = false,
+  });
 
   final int id;
+
+  final bool inInCart;
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
@@ -53,6 +59,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         } else if (state is ProductDetailsLoaded) {
           return ProductDetailData(
             featuredProducts: productDetailsCubit.featuredProducts!,
+            isInCart: widget.inInCart,
           );
         }
         return const Center(child: Text("Something went wrong"));
@@ -62,9 +69,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 }
 
 class ProductDetailData extends StatelessWidget {
-  const ProductDetailData({super.key, required this.featuredProducts});
+  const ProductDetailData(
+      {super.key, required this.featuredProducts, this.isInCart = false});
 
   final FeaturedProducts featuredProducts;
+
+  final bool isInCart;
 
   @override
   Widget build(BuildContext context) {
@@ -91,15 +101,21 @@ class ProductDetailData extends StatelessWidget {
               const SelectAddonSection(),
 
               ///=============== Add To Cart Button ========================///
+
               BlocBuilder<AddCartCubit, AddCartStateModel>(
                 builder: (context, state) {
                   final addCartCubit = context.read<AddCartCubit>();
                   return AddToCartButton(
+                    btnName: isInCart == true ? 'Update Cart' : 'Add to Cart',
                     text: state.qty.toString(),
                     decrementBtn: () => addCartCubit.decrementQty(),
                     incrementBtn: () => addCartCubit.incrementQty(),
                     addToCartBtn: () async {
-                      await addCartCubit.addCart(context, featuredProducts.id);
+                      isInCart == true
+                          ? await addCartCubit.updateCart(
+                              context, featuredProducts.id)
+                          : await addCartCubit.addCart(
+                              context, featuredProducts.id);
                     },
                   );
                 },

@@ -80,13 +80,10 @@ class AddCartCubit extends Cubit<AddCartStateModel> {
           context, "Please select a size before adding to cart");
       return;
     }
-
     emit(state.copyWith(
         productId: productId, addCartState: AddCartStateLoading()));
-
     final result =
         await _repository.addCart(state, _loginBloc.userInformation!.token);
-
     result.fold(
       (failure) {
         Navigator.pop(context);
@@ -112,26 +109,23 @@ class AddCartCubit extends Cubit<AddCartStateModel> {
           context, "Please select a size before adding to cart");
       return;
     }
-
     emit(state.copyWith(
-        productId: productId, addCartState: AddCartStateLoading()));
-
-    final result =
-        await _repository.addCart(state, _loginBloc.userInformation!.token);
-
+        productId: productId, addCartState: UpdateCartStateLoading()));
+    final result = await _repository.updateCart(
+        state, _loginBloc.userInformation!.token, productId);
     result.fold(
       (failure) {
         Navigator.pop(context);
         Utils.failureSnackBar(context, failure.message);
         emit(state.copyWith(
             addCartState:
-                AddCartStateError(failure.message, failure.statusCode)));
+                UpdateCartStateError(failure.message, failure.statusCode)));
       },
       (success) {
         addCartResponseModel = success;
         Navigator.pop(context);
         Utils.successSnackBar(context, success.message);
-        emit(state.copyWith(addCartState: AddCartStateSuccess(success)));
+        emit(state.copyWith(addCartState: UpdateCartStateSuccess(success)));
         clear();
       },
     );

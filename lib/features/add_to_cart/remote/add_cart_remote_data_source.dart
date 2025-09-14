@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 abstract class AddCartRemoteDataSource {
   Future addCart(AddCartStateModel body, String token);
 
-  Future updateCart(AddCartStateModel body, String id, String token);
+  Future updateCart(AddCartStateModel body, String token, int id);
 }
 
 class AddCartRemoteDataSourceImpl implements AddCartRemoteDataSource {
@@ -48,9 +48,9 @@ class AddCartRemoteDataSourceImpl implements AddCartRemoteDataSource {
   }
 
   @override
-  Future updateCart(AddCartStateModel body, String id, String token) async{
+  Future updateCart(AddCartStateModel body, String token, int id) async {
     final uri = Uri.parse(RemoteUrls.updateProduct(id));
-    print('update Cart $uri');
+    print('Update Cart $uri');
     final clientMethod = client.put(
       uri,
       body: jsonEncode(body.toMap()),

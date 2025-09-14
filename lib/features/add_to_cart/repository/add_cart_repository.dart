@@ -11,7 +11,7 @@ abstract class AddCartRepository {
       AddCartStateModel body, String token);
 
   Future<Either<dynamic, AddCartResponseModel>> updateCart(
-      AddCartStateModel body, String id, String token);
+      AddCartStateModel body, String token, int id);
 }
 
 class AddCartRepositoryImpl implements AddCartRepository {
@@ -37,9 +37,9 @@ class AddCartRepositoryImpl implements AddCartRepository {
 
   @override
   Future<Either<dynamic, AddCartResponseModel>> updateCart(
-      AddCartStateModel body, String id, String token) async {
+      AddCartStateModel body, String token, int id) async {
     try {
-      final result = await remoteDataSource.updateCart(body, id, token);
+      final result = await remoteDataSource.updateCart(body, token, id);
       final response = AddCartResponseModel.fromMap(result);
       return Right(response);
     } on ServerException catch (e) {

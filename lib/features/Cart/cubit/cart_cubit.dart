@@ -21,18 +21,6 @@ class CartCubit extends Cubit<CartStateModel> {
 
   CartModel? cartModel;
 
-  // Increment main product quantity
-  void incrementQty() {
-    emit(state.copyWith(qty: state.qty + 1));
-  }
-
-  // Decrement main product quantity
-  void decrementQty() {
-    if (state.qty > 1) {
-      emit(state.copyWith(qty: state.qty - 1));
-    }
-  }
-
   Future<void> getCartData() async {
     emit(state.copyWith(cartState: CartLoading()));
     // final result = await _repository.getCartData();
@@ -74,18 +62,29 @@ class CartCubit extends Cubit<CartStateModel> {
   /// Increment product quantity
   Future<void> incrementProduct(String productId) async {
     // emit(state.copyWith(cartState: CartIncrementLoading()));
-
     final result = await _repository.incrementProduct(
+      cartModel!,
       productId,
       _loginBloc.userInformation!.token,
     );
-
     result.fold(
       (l) =>
           emit(state.copyWith(cartState: CartError(l.message, l.statusCode))),
       (success) {
-        cartModel = success;
-        emit(state.copyWith(cartState: CartLoaded(success)));
+        // preserve product details from the old cartModel
+        final updatedItems = success.cartItems?.map((newItem) {
+          final oldItem = cartModel?.cartItems?.firstWhere(
+            (i) => i.productId == newItem.productId,
+            orElse: () => newItem,
+          );
+          return newItem.copyWith(
+            product: oldItem?.product, // keep old product
+            restaurant: oldItem?.restaurant, // keep old restaurant
+          );
+        }).toList();
+
+        cartModel = success.copyWith(cartItems: updatedItems);
+        emit(state.copyWith(cartState: CartLoaded(cartModel!)));
       },
     );
   }
@@ -103,6 +102,7 @@ class CartCubit extends Cubit<CartStateModel> {
       // emit(state.copyWith(cartState: CartDecrementLoading()));
 
       final result = await _repository.decrementProduct(
+        cartModel!,
         productId,
         _loginBloc.userInformation!.token,
       );
@@ -111,8 +111,20 @@ class CartCubit extends Cubit<CartStateModel> {
         (l) =>
             emit(state.copyWith(cartState: CartError(l.message, l.statusCode))),
         (success) {
-          cartModel = success;
-          emit(state.copyWith(cartState: CartLoaded(success)));
+          // preserve product details from the old cartModel
+          final updatedItems = success.cartItems?.map((newItem) {
+            final oldItem = cartModel?.cartItems?.firstWhere(
+              (i) => i.productId == newItem.productId,
+              orElse: () => newItem,
+            );
+            return newItem.copyWith(
+              product: oldItem?.product, // keep old product
+              restaurant: oldItem?.restaurant, // keep old restaurant
+            );
+          }).toList();
+
+          cartModel = success.copyWith(cartItems: updatedItems);
+          emit(state.copyWith(cartState: CartLoaded(cartModel!)));
         },
       );
     }
