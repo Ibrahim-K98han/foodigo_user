@@ -18,6 +18,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final _homeController = MainController();
   late List<Widget> screenList;
+  bool isUser = true;
 
   @override
   void initState() {

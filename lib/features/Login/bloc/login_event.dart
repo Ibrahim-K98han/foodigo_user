@@ -65,7 +65,8 @@ class LoginEventCurrencyIcon extends LoginEvent {
 
 
 class LoginEventSubmit extends LoginEvent {
-  const LoginEventSubmit();
+  final bool isUser;
+  const LoginEventSubmit({required this.isUser});
 }
 
 class LoginEventLogout extends LoginEvent {

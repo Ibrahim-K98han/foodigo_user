@@ -26,12 +26,13 @@ class _SelectAddonSectionState extends State<SelectAddonSection> {
     final detailsCubit = context.read<ProductDetailsCubit>();
     final addCartCubit = context.read<AddCartCubit>();
 
-    final addonData = detailsCubit.featuredProducts?.addonItems != null
-        ? (json.decode(detailsCubit.featuredProducts!.addonItems)
-                as List<dynamic>)
-            .map((e) => int.parse(e.toString()))
-            .toList()
-        : <dynamic>[];
+    final addonData = (detailsCubit.featuredProducts?.addonItems != null &&
+        detailsCubit.featuredProducts!.addonItems.isNotEmpty)
+        ? (json.decode(detailsCubit.featuredProducts!.addonItems) as List<dynamic>?)
+        ?.map((e) => int.parse(e.toString()))
+        .toList() ??
+        []
+        : [];
     return Column(
       children: [
         Container(

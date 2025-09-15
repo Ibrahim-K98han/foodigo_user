@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
-import 'package:foodigo/features/Login/model/login_state_model.dart';
 import 'package:foodigo/features/Login/model/user_response_model.dart';
 import 'package:foodigo/features/Login/remote/login_remote_data.dart';
 
 import '../../../data/errors/exception.dart';
 import '../../../data/errors/failure.dart';
 import '../../../data/local_data_source.dart';
+import '../model/login_state_model.dart';
 
 abstract class LoginRepository {
   Future<Either<dynamic, UserResponseModel>> login(LoginStateModel body);

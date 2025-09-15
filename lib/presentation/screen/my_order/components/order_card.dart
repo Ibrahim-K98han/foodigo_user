@@ -50,7 +50,7 @@ class OrderCard extends StatelessWidget {
     return Container(
       padding: Utils.symmetric(h: 10.0, v: 6.0),
       height: orderStatusMap[orderModel.orderStatus] == 'Pending'
-          ? size.height / 5.8.h
+          ? size.height / 4.9.h
           : size.height / 8.1.h,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6.r),

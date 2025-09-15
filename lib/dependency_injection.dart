@@ -52,6 +52,10 @@ import 'package:foodigo/features/checkout/repository/checkout_repository.dart';
 import 'package:foodigo/features/register/cubit/register_cubit.dart';
 import 'package:foodigo/features/register/remote/register_remote_data_source.dart';
 import 'package:foodigo/features/register/repository/register_repository.dart';
+import 'package:foodigo/features/restaurant_features/Login/remote/restaurant_login_remote_data.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantDashboard/cubit/res_dashboard_cubit.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantDashboard/remote/res_dashboard_remote_data_source.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantDashboard/repository/res_dashboard_repository.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/local_data_source.dart';
@@ -62,6 +66,8 @@ import 'features/HomeData/cubit/home_data_cubit.dart';
 import 'features/AllFood/cubit/all_food_cubit.dart';
 import 'features/HomeData/remote/home_data_remote_data_source.dart';
 import 'features/HomeData/repository/home_data_repository.dart';
+import 'features/restaurant_features/Login/bloc/restaurant_login_bloc.dart';
+import 'features/restaurant_features/Login/repository/restaurant_login_repository.dart';
 
 class DInjector {
   static late final SharedPreferences _sharedPreferences;
@@ -139,6 +145,17 @@ class DInjector {
     ),
     RepositoryProvider<LoginRepository>(
       create: (context) => LoginRepositoryImpl(
+        remoteDataSources: context.read(),
+        localDataSources: context.read(),
+      ),
+    ),
+    RepositoryProvider<RestaurantLoginRemoteData>(
+      create: (context) => RestaurantLoginRemoteDataImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<RestaurantLoginRepository>(
+      create: (context) => RestaurantLoginRepositoryImpl(
         remoteDataSources: context.read(),
         localDataSources: context.read(),
       ),
@@ -283,6 +300,16 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<ResDashboardRemoteDataSource>(
+      create: (context) => ResDashboardRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<ResDashboardRepository>(
+      create: (context) => ResDashboardRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -308,6 +335,11 @@ class DInjector {
     ),
     BlocProvider<LoginBloc>(
       create: (context) => LoginBloc(
+        repository: context.read(),
+      ),
+    ),
+    BlocProvider<RestaurantLoginBloc>(
+      create: (context) => RestaurantLoginBloc(
         repository: context.read(),
       ),
     ),
@@ -393,6 +425,12 @@ class DInjector {
     ),
     BlocProvider<SubscriptionCubit>(
       create: (context) => SubscriptionCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<ResDashboardCubit>(
+      create: (context) => ResDashboardCubit(
         repository: context.read(),
         loginBloc: context.read(),
       ),

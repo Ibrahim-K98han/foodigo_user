@@ -44,6 +44,7 @@ class KImages {
   static const String language = 'assets/icons/language.svg';
   static const String offers = 'assets/icons/offers.svg';
   static const String filterFood = 'assets/icons/filter_food.svg';
+  static const String withdraw = 'assets/icons/withdraw.svg';
 
   /// Payment Icon
   static const String paypal = 'assets/icons/paypal.svg';

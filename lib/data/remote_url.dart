@@ -59,5 +59,10 @@ class RemoteUrls {
   static const String payWithBank = '${baseUrl}payment/bank';
   static const String payWithStripe = '${rootUrl}payment-api/pay-with-stripe';
 
+  ///================Restaurant======================
+  static const String restaurantLogin = '${baseUrl}restaurant/auth/login';
+  static const String restaurantLogout = '${baseUrl}restaurant/auth/logout';
+  static const String getRestaurantDashboard = '${baseUrl}restaurant/dashboard';
+
   static imageUrl(String imageUrl) => rootUrl + imageUrl;
 }
