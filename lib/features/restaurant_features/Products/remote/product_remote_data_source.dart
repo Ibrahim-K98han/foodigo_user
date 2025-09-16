@@ -20,11 +20,12 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   ///Get Product
   @override
   Future getProduct(String token) async {
-    final uri = Uri.parse(RemoteUrls.getRestaurantDashboard);
+    final uri = Uri.parse(RemoteUrls.getProduct);
+    print('get Product $uri');
     final clientMethod = client.get(uri,headers: authHeader(token));
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
-    print('Product ====$responseJsonBody');
+
     return responseJsonBody;
   }
 }

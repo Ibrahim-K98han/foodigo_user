@@ -162,7 +162,6 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
   @override
   Widget build(BuildContext context) {
     final pCubit = context.read<ProductCubit>();
-
     return Container(
       decoration: const BoxDecoration(
         boxShadow: [

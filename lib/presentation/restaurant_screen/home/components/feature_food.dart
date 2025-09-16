@@ -1,7 +1,9 @@
 // my_food_widget.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/restaurant_features/Products/model/product_model.dart';
+import 'package:foodigo/presentation/restaurant_screen/product_details/product_details_screen.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_image.dart';
@@ -52,25 +54,31 @@ class FoodCart extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // TODO: Show product details modal
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          builder: (BuildContext context) {
+            return const ProductDetailsScreen();
+          },
+        );
       },
       child: Container(
-        height: 230,
-        width: 240,
+        height: 230.h,
+        width: 240.w,
         decoration: BoxDecoration(
           color: whiteColor,
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(10.r),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(10.0),
-                topRight: Radius.circular(10.0),
+              borderRadius:  BorderRadius.only(
+                topLeft: Radius.circular(10.r),
+                topRight: Radius.circular(10.r),
               ),
               child: CustomImage(
-                path: product.image ?? '',
+                path: RemoteUrls.imageUrl(product.image!),
                 fit: BoxFit.cover,
                 height: 150,
                 width: double.infinity,
@@ -82,18 +90,18 @@ class FoodCart extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomText(
-                    text: product.name ?? 'Product Name',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    maxLine: 1,
-                    color: textColor,
+                    text: Utils.formatPrice(context, product.price ?? 0),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: redColor,
                   ),
                   Utils.verticalSpace(4.0),
                   CustomText(
-                    text: Utils.formatPrice(context, product.price ?? 0),
+                    text: product.name ?? 'Product Name',
                     fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: redColor,
+                    fontWeight: FontWeight.w600,
+                    maxLine: 2,
+                    color: textColor,
                   ),
                 ],
               ),
