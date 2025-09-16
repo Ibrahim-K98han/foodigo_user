@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodigo/presentation/restaurant_screen/restaurant_profile/edit_restaurant_screen.dart';
 import 'package:foodigo/presentation/screen/all_category/all_category_screen.dart';
 import 'package:foodigo/presentation/screen/all_food_screen/all_food_screen.dart';
 import 'package:foodigo/presentation/screen/all_restaurant_screen/all_restaurant_screen.dart';
@@ -18,7 +19,7 @@ import 'package:foodigo/presentation/screen/profile/language_screen.dart';
 import 'package:foodigo/presentation/screen/profile/profile_change_password_screen.dart';
 import 'package:foodigo/presentation/screen/profile/settings_screen.dart';
 import 'package:foodigo/presentation/screen/sms/sms_screen.dart';
-
+import '../../restaurant_screen/main_page/restaurant_main_screen.dart';
 import '../../screen/authentications/authentication_screen.dart';
 import '../../screen/authentications/create_new_password.dart';
 import '../../screen/authentications/forgot_otp_screen.dart';
@@ -44,6 +45,7 @@ class RouteNames {
   static const String createNewPasswordScreen = '/createNewPasswordScreen';
   static const String otpScreen = '/otpScreen';
   static const String mainScreen = '/mainScreen';
+  static const String restaurantMainScreen = '/restaurantMainScreen';
   static const String allFoodScreen = '/allFoodScreen';
   static const String allRestaurantScreen = '/allRestaurantScreen';
   static const String allCategoryScreen = '/allCategoryScreen';
@@ -71,6 +73,8 @@ class RouteNames {
   static const String stripTransferPaymentScreen =
       '/stripTransferPaymentScreen';
   static const String forgotOtpScreen = '/forgotOtpScreen';
+  static const String editRestaurantProfileScreen =
+      '/editRestaurantProfileScreen';
 
   static Route<dynamic> generateRoutes(RouteSettings settings) {
     switch (settings.name) {
@@ -110,6 +114,9 @@ class RouteNames {
       case RouteNames.mainScreen:
         return MaterialPageRoute(
             settings: settings, builder: (_) => const MainScreen());
+      case RouteNames.restaurantMainScreen:
+        return MaterialPageRoute(
+            settings: settings, builder: (_) => const RestaurantMainScreen());
 
       case RouteNames.allFoodScreen:
         return MaterialPageRoute(
@@ -117,7 +124,7 @@ class RouteNames {
 
       case RouteNames.allRestaurantScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => AllRestaurantScreen());
+            settings: settings, builder: (_) => const AllRestaurantScreen());
 
       case RouteNames.allCategoryScreen:
         return MaterialPageRoute(
@@ -207,6 +214,9 @@ class RouteNames {
         final url = settings.arguments as String;
         return MaterialPageRoute(
             settings: settings, builder: (_) => StripPaymentScreen(url: url));
+      case RouteNames.editRestaurantProfileScreen:
+        return MaterialPageRoute(
+            settings: settings, builder: (_) => EditRestaurantScreen());
 
       default:
         return MaterialPageRoute(

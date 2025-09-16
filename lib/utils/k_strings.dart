@@ -6,5 +6,6 @@ class KStrings{
   static const String cachedOnBoardingKey = 'cachedOnBoardingKey';
   static const String cacheUserResponse = 'cacheUserResponse';
   static const String getExistingUserResponseKey = 'exitingUserResponse';
+  static const String getExistingRestaurantResponseKey = 'exitingRestaurantResponse';
 
 }

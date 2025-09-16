@@ -101,7 +101,7 @@ class Assets {
   static const String imagesUs = 'assets/images/us.png';
   static const String imagesUserImage = 'assets/images/user_image.jpg';
   static const String libMain = 'lib/main.dart';
-  static const String mainPageMainScreen = 'lib/presentation/screen/main_page/main_screen.dart';
+  static const String mainPageMainScreen = 'lib/presentation/screen/main_page/restaurant_main_screen.dart';
   static const String modelOnbordingData = 'lib/presentation/screen/onboarding/model/onbording_data.dart';
   static const String modelOnbordingModel = 'lib/presentation/screen/onboarding/model/onbording_model.dart';
   static const String myCartMyCartScreen = 'lib/presentation/screen/my_cart/my_cart_screen.dart';

@@ -1,7 +1,8 @@
 import '../../../data/network_parser.dart';
 import '../../../data/remote_url.dart';
-import '../model/login_state_model.dart';
 import 'package:http/http.dart' as http;
+
+import '../model/login_state_model.dart';
 
 abstract class LoginRemoteDataSource {
   Future login(LoginStateModel body);
