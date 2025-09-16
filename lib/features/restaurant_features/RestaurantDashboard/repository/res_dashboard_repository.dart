@@ -22,7 +22,7 @@ class ResDashboardRepositoryImpl implements ResDashboardRepository {
   Future<Either<Failure, ResDashboardModel>> getResDashboardData(String token) async {
     try {
       final result = await remoteDataSource.getResDashboard(token);
-      final review = ResDashboardModel.fromMap(result);
+      final review = ResDashboardModel.fromMap(result['data']);
       return Right(review);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));

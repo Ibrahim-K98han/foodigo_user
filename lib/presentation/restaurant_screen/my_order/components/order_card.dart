@@ -1,17 +1,15 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/widget/primary_button.dart';
 
+import '../../../../features/restaurant_features/RestaurantDashboard/model/res_dashboard_model.dart';
 import '../../../../utils/constraints.dart';
-import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
-import '../../../../widget/custom_image.dart';
 import '../../../../widget/custom_text_style.dart';
-import '../../../core/routes/route_names.dart';
 
 class OrderCart extends StatelessWidget {
   const OrderCart({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -36,23 +34,24 @@ class OrderCart extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              width: 80.0,
-              height: 80.0,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.0),
-                shape: BoxShape.rectangle,
-              ),
-              child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(4.r),
-                    bottomLeft: Radius.circular(4.r),
-                  ),
-                  child: const CustomImage(
-                    path: KImages.foodImage1,
-                    fit: BoxFit.cover,
-                  )),
-            ),
+            // Container(
+            //   width: 80.0,
+            //   height: 80.0,
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.circular(10.0),
+            //     shape: BoxShape.rectangle,
+            //   ),
+            //   child: ClipRRect(
+            //     borderRadius: BorderRadius.only(
+            //       topLeft: Radius.circular(4.r),
+            //       bottomLeft: Radius.circular(4.r),
+            //     ),
+            //     child: CustomImage(
+            //       path: RemoteUrls.imageUrl(recentOrders.grandTotal),
+            //       fit: BoxFit.cover,
+            //     ),
+            //   ),
+            // ),
             Padding(
               padding: Utils.symmetric(h: 4.0, v: 8.0),
               child: Column(
@@ -66,8 +65,8 @@ class OrderCart extends StatelessWidget {
                         fontSize: 13,
                         color: textColor,
                       ),
-                      const CustomText(
-                        text: "015454",
+                       const CustomText(
+                        text:'  recentOrders.items!.first.productId',
                         fontWeight: FontWeight.w400,
                         fontSize: 13,
                         color: textColor,

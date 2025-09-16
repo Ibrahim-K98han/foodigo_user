@@ -55,7 +55,8 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                   // DummyData.singleServiceModel.relatedServices[index];
                   return Padding(
                     padding: Utils.symmetric(h: 20.0, v: 6.0),
-                    child: const OrderCart(),
+                    // child:  OrderCart(),
+                    child: CustomText(text: 'text'),
                   );
                 },
               ),

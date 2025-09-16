@@ -33,6 +33,10 @@ const Color faqBgColor = Color(0xFF0C1321);
 const Color bottomNavIconColor = Color(0xFF334155);
 const Color textGrayColor = Color(0xFF64748B);
 const Color smallContainerColor = Color(0xFFF98C3B);
+const Color orderActiveColor = Color(0xFFDCFFF1);
+const Color orderTotalColor = Color(0xFFF6E4E1);
+const Color orderCancelledColor = Color(0xFFF98C3B);
+const Color orderCompleteColor = Color(0xFFE7EBFF);
 
 
 

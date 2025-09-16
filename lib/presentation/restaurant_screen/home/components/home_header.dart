@@ -1,18 +1,35 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/data/remote_url.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantDashboard/cubit/res_dashboard_cubit.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_image.dart';
 import '../../../../widget/custom_text_style.dart';
-import '../../../core/routes/route_names.dart';
 
-class HomeHeader extends StatelessWidget {
+class HomeHeader extends StatefulWidget {
   const HomeHeader({super.key});
+
+  @override
+  State<HomeHeader> createState() => _HomeHeaderState();
+}
+
+class _HomeHeaderState extends State<HomeHeader> {
+  late ResDashboardCubit rdCubit;
+
+  @override
+  void initState() {
+    rdCubit = context.read<ResDashboardCubit>();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
+    print(RemoteUrls.imageUrl(
+      rdCubit.resDashboardModel!.restaurantDisplay!.logo,
+    ));
     return SizedBox(
       height: Utils.vSize(size.height * 0.22),
       child: Stack(
@@ -45,27 +62,30 @@ class HomeHeader extends StatelessWidget {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(50.0),
-                            child:  const CustomImage(
-                              path: KImages.profile,
+                            child: CustomImage(
+                              path: RemoteUrls.imageUrl(rdCubit
+                                  .resDashboardModel!.restaurantDisplay!.logo),
                               fit: BoxFit.cover,
                             ),
                           ),
                         ),
                       ),
                       Utils.horizontalSpace(10.0),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CustomText(
+                            const CustomText(
                               text: 'Welcome',
                               color: Color(0xFF334155),
                               fontSize: 13,
                               fontWeight: FontWeight.w400,
                             ),
                             CustomText(
-                              text: 'Hi, Mouton Cafe',
+                              text: rdCubit.resDashboardModel?.restaurantDisplay
+                                      ?.name ??
+                                  'Restaurant Name',
                               color: blackColor,
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -155,18 +175,23 @@ class HomeHeader extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Column(
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CustomText(
+                            const CustomText(
                               text: "My Balance",
                               fontWeight: FontWeight.w400,
                               fontSize: 14,
                             ),
                             CustomText(
-                              text: "\$2536.00",
-                              fontWeight: FontWeight.w700,
+                              text: Utils.formatPrice(
+                                  context,
+                                  rdCubit.resDashboardModel?.statistics
+                                          ?.financialStatistics?.totalIncome ??
+                                      '0'),
+                              color: blackColor,
                               fontSize: 18,
+                              fontWeight: FontWeight.w700,
                             ),
                           ],
                         ),
@@ -178,7 +203,7 @@ class HomeHeader extends StatelessWidget {
                             padding: Utils.symmetric(h: 10.0, v: 10.0),
                             child: Row(
                               children: [
-                                 const CustomImage(
+                                const CustomImage(
                                   path: KImages.withdraw,
                                   height: 24,
                                 ),

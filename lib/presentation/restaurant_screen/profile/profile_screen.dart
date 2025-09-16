@@ -24,7 +24,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Profile"),
+      appBar: const CustomAppBar(title: "Profile",visibleLeading: false,),
       body: CustomScrollView(
         slivers: [
           const ProfileImage(),
@@ -35,7 +35,7 @@ class ProfileScreen extends StatelessWidget {
               icon: KImages.profileInActive,
               onTap: () {
                 Navigator.pushNamed(
-                    context, RouteNames.restaurantProfileScreen);
+                    context, RouteNames.editRestaurantProfileScreen);
               },
             ),
             DrawerItem(

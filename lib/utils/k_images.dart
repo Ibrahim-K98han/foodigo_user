@@ -45,6 +45,12 @@ class KImages {
   static const String offers = 'assets/icons/offers.svg';
   static const String filterFood = 'assets/icons/filter_food.svg';
   static const String withdraw = 'assets/icons/withdraw.svg';
+  static const String totalOrder = 'assets/icons/total_order.svg';
+  static const String completeOrder = 'assets/icons/complete_order.svg';
+  static const String cancelOrder = 'assets/icons/cancell_order.svg';
+  static const String activeOrder = 'assets/icons/active_order.svg';
+  static const String myMenu = 'assets/icons/my_menu.svg';
+  static const String myMenuActive = 'assets/icons/my_menu_active.svg';
 
   /// Payment Icon
   static const String paypal = 'assets/icons/paypal.svg';

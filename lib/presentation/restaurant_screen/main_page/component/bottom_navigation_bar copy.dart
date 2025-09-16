@@ -47,9 +47,9 @@ class MyBottomNavigationBar extends StatelessWidget {
                   label: "Home",
                 ),
                 BottomNavigationBarItem(
-                  tooltip: " My Menu",
-                  icon: _navIcon(KImages.message, primaryColor),
-                  activeIcon: _navIcon(KImages.message, primaryColor),
+                  tooltip: "My Menu",
+                  icon: _navIcon(KImages.myMenu, primaryColor),
+                  activeIcon: _navIcon(KImages.myMenuActive, primaryColor),
                   label: 'My Menu',
                 ),
                 BottomNavigationBarItem(
@@ -60,8 +60,8 @@ class MyBottomNavigationBar extends StatelessWidget {
                 ),
                 BottomNavigationBarItem(
                   tooltip: 'Menu',
-                  icon: _navIcon(KImages.message, primaryColor),
-                  activeIcon: _navIcon(KImages.message, primaryColor),
+                  icon: _navIcon(KImages.profileInActive, primaryColor),
+                  activeIcon: _navIcon(KImages.profileActive, primaryColor),
                   label: 'Menu',
                 ),
               ],

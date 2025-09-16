@@ -23,7 +23,6 @@ class MyFood extends StatelessWidget {
           seeAllColors: subTitleTextColor,
           press: () {},
         ),
-        Utils.verticalSpace(16),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
@@ -115,9 +114,7 @@ class FoodCart extends StatelessWidget {
                     height: 30.h,
                     width: 30.w,
                     decoration: const BoxDecoration(
-                      color: whiteColor,
-                      shape: BoxShape.circle
-                    ),
+                        color: whiteColor, shape: BoxShape.circle),
                     child: Padding(
                       padding: Utils.all(value: 6.0),
                       child: const Center(
