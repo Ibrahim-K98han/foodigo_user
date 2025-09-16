@@ -63,6 +63,7 @@ class RemoteUrls {
   static const String restaurantLogin = '${baseUrl}restaurant/auth/login';
   static const String restaurantLogout = '${baseUrl}restaurant/auth/logout';
   static const String getRestaurantDashboard = '${baseUrl}restaurant/dashboard';
+  static const String getProduct = '${baseUrl}restaurant/product/product-list';
 
   static imageUrl(String imageUrl) => rootUrl + imageUrl;
 }
