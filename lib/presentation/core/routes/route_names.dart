@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodigo/presentation/restaurant_screen/my_menu/components/edit_food_screen.dart';
 import 'package:foodigo/presentation/restaurant_screen/restaurant_profile/edit_restaurant_screen.dart';
 import 'package:foodigo/presentation/screen/all_category/all_category_screen.dart';
 import 'package:foodigo/presentation/screen/all_food_screen/all_food_screen.dart';
@@ -75,6 +76,7 @@ class RouteNames {
   static const String forgotOtpScreen = '/forgotOtpScreen';
   static const String editRestaurantProfileScreen =
       '/editRestaurantProfileScreen';
+  static const String editFoodScreen = '/editFoodScreen';
 
   static Route<dynamic> generateRoutes(RouteSettings settings) {
     switch (settings.name) {
@@ -216,7 +218,10 @@ class RouteNames {
             settings: settings, builder: (_) => StripPaymentScreen(url: url));
       case RouteNames.editRestaurantProfileScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => EditRestaurantScreen());
+            settings: settings, builder: (_) => const EditRestaurantScreen());
+      case RouteNames.editFoodScreen:
+        return MaterialPageRoute(
+            settings: settings, builder: (_) => const EditFoodScreen());
 
       default:
         return MaterialPageRoute(

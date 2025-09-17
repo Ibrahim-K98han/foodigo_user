@@ -1291,6 +1291,101 @@ class Item extends Equatable {
   }
 }
 
+class Product extends Equatable {
+  final int id;
+  final String slug;
+  final String image;
+  final String categoryId;
+  final String restaurantId;
+  final String price;
+  final String offerPrice;
+  final String status;
+  final List<String> addonItems;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String isFeatured;
+  final String name;
+  final String? shortDescription;
+  final Map<String, String> size;
+
+  const Product({
+    required this.id,
+    required this.slug,
+    required this.image,
+    required this.categoryId,
+    required this.restaurantId,
+    required this.price,
+    required this.offerPrice,
+    required this.status,
+    required this.addonItems,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.isFeatured,
+    required this.name,
+    this.shortDescription,
+    required this.size,
+  });
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'],
+      slug: json['slug'],
+      image: json['image'],
+      categoryId: json['category_id'],
+      restaurantId: json['restaurant_id'],
+      price: json['price'],
+      offerPrice: json['offer_price'],
+      status: json['status'],
+      addonItems: List<String>.from(jsonDecode(json['addon_items'])),
+      createdAt: DateTime.parse(json['created_at']),
+      updatedAt: DateTime.parse(json['updated_at']),
+      isFeatured: json['is_featured'],
+      name: json['name'],
+      shortDescription: json['short_description'],
+      size: Map<String, String>.from(jsonDecode(json['size'])),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'slug': slug,
+      'image': image,
+      'category_id': categoryId,
+      'restaurant_id': restaurantId,
+      'price': price,
+      'offer_price': offerPrice,
+      'status': status,
+      'addon_items': jsonEncode(addonItems),
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+      'is_featured': isFeatured,
+      'name': name,
+      'short_description': shortDescription,
+      'size': jsonEncode(size),
+    };
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        slug,
+        image,
+        categoryId,
+        restaurantId,
+        price,
+        offerPrice,
+        status,
+        addonItems,
+        createdAt,
+        updatedAt,
+        isFeatured,
+        name,
+        shortDescription,
+        size,
+      ];
+}
+
 class WithdrawHistory extends Equatable {
   final int id;
   final String amount;

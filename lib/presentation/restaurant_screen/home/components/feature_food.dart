@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/restaurant_features/Products/model/product_model.dart';
 import 'package:foodigo/presentation/restaurant_screen/product_details/product_details_screen.dart';
+import 'package:foodigo/utils/k_images.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_image.dart';
@@ -73,7 +74,7 @@ class FoodCart extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius:  BorderRadius.only(
+              borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10.r),
                 topRight: Radius.circular(10.r),
               ),
@@ -89,11 +90,28 @@ class FoodCart extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomText(
-                    text: Utils.formatPrice(context, product.price ?? 0),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: redColor,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CustomText(
+                        text: Utils.formatPrice(context, product.price ?? 0),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: redColor,
+                      ),
+                      Row(
+                        children: [
+                          const CustomImage(path: KImages.star),
+                          CustomText(
+                            text: product.reviews!.isNotEmpty
+                                ? product.reviews!.first.rating.toString()
+                                : "0.0",
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                   Utils.verticalSpace(4.0),
                   CustomText(
