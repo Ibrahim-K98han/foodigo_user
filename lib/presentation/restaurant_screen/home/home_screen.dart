@@ -16,6 +16,7 @@ import '../../../widget/fetch_error_text.dart';
 import '../../../widget/loading_widget.dart';
 import '../../../widget/title_and_navigator.dart';
 import '../my_order/components/order_card.dart';
+import '../my_order/components/order_details_screen.dart';
 import 'components/recent_order.dart';
 import 'components/feature_food.dart';
 import 'components/home_header.dart';
@@ -104,17 +105,17 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
 
   String getOrderStatusText(dynamic status) {
     switch (status.toString()) {
-      case '0':
-        return 'Pending';
       case '1':
-        return 'Confirmed';
+        return 'Pending';
       case '2':
-        return 'Preparing';
+        return 'Confirmed';
       case '3':
-        return 'Out for Delivery';
+        return 'Processing';
       case '4':
-        return 'Completed';
+        return 'On The Way';
       case '5':
+        return 'Delivered';
+      case '6':
         return 'Cancelled';
       default:
         return 'Unknown';
@@ -123,17 +124,17 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
 
   Color getOrderStatusColor(dynamic status) {
     switch (status.toString()) {
-      case '0': // Pending
+      case '1': // Pending
         return const Color(0xFF1F7EFA);
-      case '1': // Confirmed
+      case '2': // Confirmed
         return Colors.orange;
-      case '2': // Preparing
+      case '3': // Preparing
         return Colors.blueGrey;
-      case '3': // Out for Delivery
+      case '4': // Out for Delivery
         return Colors.purple;
-      case '4': // Completed
+      case '5': // Completed
         return Colors.green;
-      case '5': // Cancelled
+      case '6': // Cancelled
         return Colors.red;
       default:
         return Colors.grey;
@@ -142,20 +143,20 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
 
   Color getOrderStatusBgColor(dynamic status) {
     switch (status.toString()) {
-      case '0': // Pending
+      case '1': // Pending
         return const Color(0xFF1F7EFA).withOpacity(0.2);
-      case '1': // Confirmed
+      case '2': // Confirmed
         return Colors.orange.withOpacity(0.2);
-      case '2': // Preparing
+      case '3': // Preparing
         return Colors.blueGrey.withOpacity(0.2);
-      case '3': // Out for Delivery
+      case '4': // Out for Delivery
         return Colors.purple.withOpacity(0.2);
-      case '4': // Completed
+      case '5': // Completed
         return Colors.green.withOpacity(0.2);
-      case '5': // Cancelled
+      case '6': // Cancelled
         return Colors.red.withOpacity(0.2);
       default:
-        return Colors.grey;
+        return Colors.grey.withOpacity(0.2);
     }
   }
 
@@ -308,7 +309,9 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
                                           BorderRadius.circular(6.r)),
-                                      child: const OrderDetailsDialog());
+                                      child:  OrderDetailsDialog(
+                                        orderId: item.id.toString(),
+                                      ));
                                 });
                           },
                           child: Padding(

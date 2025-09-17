@@ -21,14 +21,22 @@ class ProductCubit extends Cubit<ProductState> {
   ///Get Product
   Future<void> getProduct() async {
     emit(const ProductLoading());
-    final result = await _repository.getProduct(_loginBloc.userInformation!.token);
+    final result =
+        await _repository.getProduct(_loginBloc.userInformation!.token);
     result.fold(
-          (l) => emit(ProductError(l.message, l.statusCode)),
-          (success) {
+      (l) => emit(ProductError(l.message, l.statusCode)),
+      (success) {
         productModel = success;
         emit(ProductLoaded(success));
       },
     );
   }
 
+  /// Filter Products by categoryId
+  List<ProductList> filterByCategory(String categoryId) {
+    if (productModel == null) return [];
+    return productModel!.productList!
+        .where((p) => p.categoryId.toString() == categoryId.toString())
+        .toList();
+  }
 }

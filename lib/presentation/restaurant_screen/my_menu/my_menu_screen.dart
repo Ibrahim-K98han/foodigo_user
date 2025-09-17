@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/data/remote_url.dart';
+import 'package:foodigo/features/restaurant_features/Category/cubit/res_categories_cubit.dart';
+import 'package:foodigo/features/restaurant_features/Category/cubit/res_categories_state.dart';
+import 'package:foodigo/features/restaurant_features/Products/model/product_model.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
+import 'package:foodigo/widget/loading_widget.dart';
 
+import '../../../features/restaurant_features/Products/cubit/product_cubit.dart';
+import '../../../features/restaurant_features/Products/cubit/product_state.dart';
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
@@ -18,6 +26,17 @@ class MyMenuScreen extends StatefulWidget {
 
 class _MyMenuScreenState extends State<MyMenuScreen> {
   int _currentIndex = 0;
+  late ResCategoriesCubit resCatCubit;
+  late ProductCubit pCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    resCatCubit = context.read<ResCategoriesCubit>();
+    pCubit = context.read<ProductCubit>();
+    pCubit.getProduct();
+    resCatCubit.getCategories();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,47 +51,96 @@ class _MyMenuScreenState extends State<MyMenuScreen> {
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             child: Container(
               decoration: const BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(
-                color: borderColor,
-              ))),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    tabTitle.length,
-                    (index) {
-                      final active = _currentIndex == index;
-                      return GestureDetector(
-                        onTap: () => setState(() => _currentIndex = index),
-                        child: AnimatedContainer(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                  color: active
-                                      ? const Color(0xFFE94222)
-                                      : Colors.transparent,
-                                  width: 2),
-                            ),
-                          ),
-                          duration: const Duration(seconds: 0),
-                          padding: Utils.symmetric(v: 8.0, h: 12.0),
-                          child: CustomText(
-                            text: tabTitle[index],
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: regular400,
-                            color: blackColor,
-                          ),
-                        ),
-                      );
-                    },
+                border: Border(
+                  bottom: BorderSide(
+                    color: borderColor,
                   ),
                 ),
               ),
+              child: BlocBuilder<ResCategoriesCubit, ResCategoriesState>(
+                builder: (context, state) {
+                  if (state is ResCategoriesLoading) {
+                    return const LoadingWidget();
+                  } else if (state is ResCategoriesLoaded) {
+                    final categories = state.categoryModel.resCategories;
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          categories!.length,
+                          (index) {
+                            final active = _currentIndex == index;
+                            return GestureDetector(
+                              onTap: () =>
+                                  setState(() => _currentIndex = index),
+                              child: AnimatedContainer(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                        color: active
+                                            ? const Color(0xFFE94222)
+                                            : Colors.transparent,
+                                        width: 2),
+                                  ),
+                                ),
+                                duration: const Duration(seconds: 0),
+                                padding: Utils.symmetric(v: 8.0, h: 12.0),
+                                child: CustomText(
+                                  text: categories[index].name,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: regular400,
+                                  color: active ? redColor : blackColor,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  } else if (state is ResCategoriesError) {
+                    return Center(
+                      child: CustomText(text: 'Error: ${state.message}'),
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
             ),
           ),
+          // Expanded(
+          //   child: Container(
+          //     padding: Utils.symmetric(),
+          //     decoration: const BoxDecoration(
+          //       boxShadow: [
+          //         BoxShadow(
+          //           color: Color(0x0A000000),
+          //           blurRadius: 40,
+          //           offset: Offset(0, 2),
+          //           spreadRadius: 10,
+          //         )
+          //       ],
+          //     ),
+          //     child: Column(
+          //       children: [
+          //         Expanded(
+          //           child: GridView.builder(
+          //               gridDelegate:
+          //                   const SliverGridDelegateWithFixedCrossAxisCount(
+          //                       childAspectRatio: 0.89,
+          //                       crossAxisSpacing: 10.0,
+          //                       mainAxisSpacing: 10.0,
+          //                       crossAxisCount: 2),
+          //               itemCount: 9,
+          //               itemBuilder: (context, int index) {
+          //                 return const MyMenuCart();
+          //               }),
+          //         )
+          //       ],
+          //     ),
+          //   ),
+          // ),
           Expanded(
             child: Container(
               padding: Utils.symmetric(),
@@ -86,30 +154,57 @@ class _MyMenuScreenState extends State<MyMenuScreen> {
                   )
                 ],
               ),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                childAspectRatio: 0.89,
-                                crossAxisSpacing: 10.0,
-                                mainAxisSpacing: 10.0,
-                                crossAxisCount: 2),
-                        itemCount: 9,
-                        itemBuilder: (context, int index) {
-                          return const MyMenuCart();
-                        }),
-                  )
-                ],
+              child: BlocBuilder<ProductCubit, ProductState>(
+                builder: (context, state) {
+                  if (state is ProductLoading) {
+                    return const LoadingWidget();
+                  } else if (state is ProductLoaded) {
+                    // Selected Category ID
+                    final categories = context.read<ResCategoriesCubit>().state;
+                    String selectedCategoryId = '';
+                    if (categories is ResCategoriesLoaded) {
+                      selectedCategoryId = categories
+                          .categoryModel.resCategories![_currentIndex].id
+                          .toString();
+                    }
+
+                    final products = context
+                        .read<ProductCubit>()
+                        .filterByCategory(selectedCategoryId);
+
+                    if (products.isEmpty) {
+                      return const Center(
+                          child: CustomText(text: "No products found"));
+                    }
+
+                    return GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        childAspectRatio: 0.89,
+                        crossAxisSpacing: 10.0,
+                        mainAxisSpacing: 10.0,
+                        crossAxisCount: 2,
+                      ),
+                      itemCount: products.length,
+                      itemBuilder: (context, int index) {
+                        final product = products[index];
+                        return MyMenuCart(productList: product, index: index);
+                      },
+                    );
+                  } else if (state is ProductError) {
+                    return Center(
+                        child: CustomText(text: "Error: ${state.message}"));
+                  }
+                  return const SizedBox();
+                },
               ),
             ),
-          ),
+          )
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigator.pushNamed(context, RouteNames.editFoodScreen);
+          Navigator.pushNamed(context, RouteNames.editFoodScreen);
         },
         backgroundColor: redColor,
         elevation: 0,
@@ -123,10 +218,11 @@ class _MyMenuScreenState extends State<MyMenuScreen> {
   }
 }
 
-final List<String> tabTitle = ['Best Selling', 'Chicken', 'Soup', 'Beverage'];
-
 class MyMenuCart extends StatelessWidget {
-  const MyMenuCart({super.key});
+  const MyMenuCart({super.key, required this.productList, required this.index});
+
+  final ProductList productList;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -177,12 +273,12 @@ class MyMenuCart extends StatelessWidget {
           children: [
             Stack(
               children: [
-                const ClipRRect(
-                  borderRadius: BorderRadius.only(
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(10.0),
                       topRight: Radius.circular(10.0)),
                   child: CustomImage(
-                    path: KImages.foodImage1,
+                    path: RemoteUrls.imageUrl(productList.image!),
                     fit: BoxFit.fill,
                     height: 90,
                     width: double.infinity,
@@ -223,8 +319,8 @@ class MyMenuCart extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     // Add space between price and rating
                     children: [
-                      const CustomText(
-                        text: "\$25.00",
+                      CustomText(
+                        text: Utils.formatPrice(context, productList.price!),
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: redColor,
@@ -233,14 +329,11 @@ class MyMenuCart extends StatelessWidget {
                         children: [
                           const CustomImage(path: KImages.star),
                           Utils.horizontalSpace(4.0),
-                          const CustomText(
-                            text: '4.9 ',
+                          CustomText(
+                            text: productList.reviews!.isNotEmpty
+                                ? productList.reviews!.first.rating.toString()
+                                : "0.0",
                             fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                          const CustomText(
-                            text: '(5k+)',
-                            color: subTitleTextColor,
                             fontSize: 13,
                           ),
                         ],
@@ -248,8 +341,8 @@ class MyMenuCart extends StatelessWidget {
                     ],
                   ),
                   Utils.verticalSpace(4.0),
-                  const CustomText(
-                    text: 'Sandwiches Strawberry',
+                  CustomText(
+                    text: productList.name!,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     maxLine: 2,

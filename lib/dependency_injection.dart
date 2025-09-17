@@ -52,7 +52,13 @@ import 'package:foodigo/features/checkout/repository/checkout_repository.dart';
 import 'package:foodigo/features/register/cubit/register_cubit.dart';
 import 'package:foodigo/features/register/remote/register_remote_data_source.dart';
 import 'package:foodigo/features/register/repository/register_repository.dart';
+import 'package:foodigo/features/restaurant_features/Category/cubit/res_categories_cubit.dart';
+import 'package:foodigo/features/restaurant_features/Category/remote/res_category_remote_data_source.dart';
+import 'package:foodigo/features/restaurant_features/Category/repository/res_category_repository.dart';
 import 'package:foodigo/features/restaurant_features/Login/remote/restaurant_login_remote_data.dart';
+import 'package:foodigo/features/restaurant_features/Order/cubit/res_order_cubit.dart';
+import 'package:foodigo/features/restaurant_features/Order/remote/res_order_remote_data_source.dart';
+import 'package:foodigo/features/restaurant_features/Order/repository/res_order_repository.dart';
 import 'package:foodigo/features/restaurant_features/Products/cubit/product_cubit.dart';
 import 'package:foodigo/features/restaurant_features/Products/remote/product_remote_data_source.dart';
 import 'package:foodigo/features/restaurant_features/Products/repository/product_repository.dart';
@@ -323,6 +329,26 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<ResOrderRemoteDataSource>(
+      create: (context) => ResOrderRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<ResOrderRepository>(
+      create: (context) => ResOrderRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<ResCategoryRemoteDataSource>(
+      create: (context) => ResCategoryRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<ResCategoryRepository>(
+      create: (context) => ResCategoryRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -450,6 +476,18 @@ class DInjector {
     ),
     BlocProvider<ProductCubit>(
       create: (context) => ProductCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<ResOrderCubit>(
+      create: (context) => ResOrderCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<ResCategoriesCubit>(
+      create: (context) => ResCategoriesCubit(
         repository: context.read(),
         loginBloc: context.read(),
       ),

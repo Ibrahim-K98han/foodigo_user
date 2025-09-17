@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/features/Order/cubit/order_state.dart';
+import 'package:foodigo/features/restaurant_features/Order/cubit/res_order_cubit.dart';
+import 'package:foodigo/features/restaurant_features/Order/cubit/res_order_state.dart';
+import 'package:foodigo/features/restaurant_features/Order/model/res_order_model.dart';
+import 'package:foodigo/widget/custom_appbar.dart';
+import 'package:foodigo/widget/fetch_error_text.dart';
+import 'package:foodigo/widget/loading_widget.dart';
+import 'package:foodigo/widget/page_refresh.dart';
+import 'package:intl/intl.dart';
 import '../../../utils/constraints.dart';
+import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
+import '../../../widget/custom_image.dart';
 import '../../../widget/custom_text_style.dart';
-import 'components/order_card.dart';
+import 'components/res_order_card.dart';
 
 class MyOrderScreen extends StatefulWidget {
   const MyOrderScreen({super.key});
@@ -11,115 +24,127 @@ class MyOrderScreen extends StatefulWidget {
   State<MyOrderScreen> createState() => _MyOrderScreenState();
 }
 
-class _MyOrderScreenState extends State<MyOrderScreen> {
-  int selectedTab = 0;
-  PageController controller =
-      PageController(initialPage: 0, keepPage: true, viewportFraction: 1);
+class _MyOrderScreenState extends State<MyOrderScreen>
+    with TickerProviderStateMixin {
+  late ResOrderCubit orCubit;
+  late TabController tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    orCubit = context.read<ResOrderCubit>();
+    orCubit.getAllOrder();
+    tabController = TabController(length: 6, vsync: this);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x0A000000),
-              blurRadius: 40,
-              offset: Offset(0, 2),
-              spreadRadius: 10,
-            )
-          ],
-        ),
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              automaticallyImplyLeading: false,
-              pinned: true,
-              surfaceTintColor: scaffoldBgColor,
-              backgroundColor: scaffoldBgColor,
-              toolbarHeight: Utils.vSize(80.0),
-              centerTitle: true,
-              title: const CustomText(
-                text: "My Orders",
-                fontSize: 22.0,
-                fontWeight: FontWeight.w700,
-                color: blackColor,
-              ),
-              bottom: const OrderTabContent(),
-            ),
-            SliverList.list(
-              children: List.generate(
-                10,
-                (index) {
-                  // final item =
-                  // DummyData.singleServiceModel.relatedServices[index];
-                  return Padding(
-                    padding: Utils.symmetric(h: 20.0, v: 6.0),
-                    // child:  OrderCart(),
-                    child: CustomText(text: 'text'),
-                  );
-                },
-              ),
-            ),
-          ],
+      appBar: const CustomAppBar(
+        title: 'My Orders',
+        visibleLeading: false,
+      ),
+      body: PageRefresh(
+        onRefresh: () async {
+          orCubit.getAllOrder();
+        },
+        child: BlocBuilder<ResOrderCubit, ResOrderState>(
+          builder: (context, state) {
+            if (state is ResOrderLoading) {
+              return const LoadingWidget();
+            } else if (state is ResOrderError &&
+                state.statusCode != 503 &&
+                orCubit.resOrderModel!.isEmpty) {
+              return FetchErrorText(text: state.message);
+            }
+            return LoadedAllOrderData(
+              orders: orCubit.resOrderModel!,
+              tabController: tabController,
+            );
+          },
         ),
       ),
     );
   }
 }
 
-class OrderTabContent extends StatefulWidget implements PreferredSizeWidget {
-  const OrderTabContent({super.key});
+class LoadedAllOrderData extends StatelessWidget {
+  const LoadedAllOrderData({
+    super.key,
+    required this.orders,
+    required this.tabController,
+  });
 
-  @override
-  State<OrderTabContent> createState() => _OrderTabContentState();
+  final List<ResOrderModel> orders;
+  final TabController tabController;
 
-  @override
-  Size get preferredSize => Size.fromHeight(Utils.vSize(40.0));
-}
-
-class _OrderTabContentState extends State<OrderTabContent> {
-  int _currentIndex = 0;
+  static const Map<int, String> statusMap = {
+    1: "Pending",
+    2: "Confirmed",
+    3: "Processing",
+    4: "On The Way",
+    5: "Delivered",
+    6: "Cancelled",
+  };
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: Utils.hPadding()),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            orderTabItems.length,
-            (index) {
-              final active = _currentIndex == index;
-              return GestureDetector(
-                onTap: () => setState(() => _currentIndex = index),
-                child: AnimatedContainer(
-                  duration: const Duration(seconds: 0),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: borderColor),
-                    color: active ? primaryColor : whiteColor,
-                    borderRadius: Utils.borderRadius(r: 6.0),
-                  ),
-                  padding: Utils.symmetric(v: 8.0, h: 24.0),
-                  margin: Utils.only(
-                      left: index == 0 ? 0.0 : 18.0, bottom: 10.0, top: 14.0),
-                  child: CustomText(
-                    text: orderTabItems[index],
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w400,
-                    color: blackColor,
-                  ),
-                ),
-              );
-            },
+    return Column(
+      children: [
+        TabBar(
+          overlayColor: MaterialStateProperty.all(Colors.transparent),
+          controller: tabController,
+          isScrollable: true,
+          indicatorSize: TabBarIndicatorSize.tab,
+          indicatorColor: Colors.transparent,
+          labelColor: textColor,
+          dividerColor: Colors.transparent,
+          indicator: BoxDecoration(
+            color: primaryColor,
+            borderRadius: BorderRadius.circular(6),
           ),
+          unselectedLabelColor: Colors.black,
+          tabs: statusMap.values.map((label) {
+            return Tab(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: CustomText(text: label, fontSize: 14),
+              ),
+            );
+          }).toList(),
         ),
-      ),
+        Expanded(
+          child: TabBarView(
+            controller: tabController,
+            children: statusMap.keys.map((status) {
+              final filteredOrders = orders.where((order) {
+                final statusValue = int.tryParse(order.orderStatus ?? "0");
+                return statusValue == status;
+              }).toList();
+
+              if (filteredOrders.isEmpty) {
+                return const Center(
+                  child: CustomImage(path: KImages.cartNotFound),
+                );
+              }
+              return ListView.separated(
+                separatorBuilder: (context, index) {
+                  return Divider(
+                    color: greyColor.withOpacity(0.2),
+                  );
+                },
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0.0),
+                itemCount: filteredOrders.length,
+                itemBuilder: (context, index) {
+                  final item = filteredOrders[index];
+                  return ResOrderCard(order: item);
+                },
+              );
+            }).toList(),
+          ),
+        )
+      ],
     );
   }
 }
-
-List<String> orderTabItems = ['All', 'Delivered', 'Return'];
