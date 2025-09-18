@@ -3,9 +3,9 @@ import 'package:foodigo/data/errors/exception.dart';
 import 'package:foodigo/data/errors/failure.dart';
 import 'package:foodigo/features/Review/model/review_model.dart';
 import 'package:foodigo/features/WishList/model/wish_list_model.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantDashboard/remote/res_dashboard_remote_data_source.dart';
 
 import '../model/res_dashboard_model.dart';
-import '../remote/res_dashboard_remote_data_source.dart';
 
 abstract class ResDashboardRepository {
   Future<Either<Failure, ResDashboardModel>> getResDashboardData(String token);

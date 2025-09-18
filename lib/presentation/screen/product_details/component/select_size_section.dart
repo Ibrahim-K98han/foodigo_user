@@ -3,7 +3,7 @@
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:foodigo/features/add_to_cart/cubit/add_cart_cubit.dart';
+// import 'package:foodigo/features/add_to_cart/cubit/store_product_cubit.dart';
 // import 'package:foodigo/widget/custom_text_style.dart';
 //
 // import '../../../../features/ProductDetails/cubit/product_details_cubit.dart';

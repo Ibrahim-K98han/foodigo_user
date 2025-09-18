@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_cubit.dart';
 
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
@@ -13,6 +15,7 @@ class OpenSchedule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final profile = context.read<RestaurantProfileCubit>();
     return UpdateProductTile(
       title: 'Open Schedule',
       widget: Column(
@@ -39,7 +42,7 @@ class OpenSchedule extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 16),
                           decoration: BoxDecoration(
-                              color: textColor,
+                              color: whiteColor,
                               borderRadius: BorderRadius.circular(6.r),
                               border: Border.all(color: borderColor)),
                           child: Row(
@@ -51,7 +54,9 @@ class OpenSchedule extends StatelessWidget {
                                 fit: BoxFit.cover,
                               ),
                               Utils.horizontalSpace(4),
-                              const CustomText(text: '12:01 AM - 11:59 PM'),
+                              CustomText(
+                                  text:
+                                      '${profile.restaurantProfileModel!.restaurantProfile!.openingHour} - ${profile.restaurantProfileModel!.restaurantProfile!.closingHour}'),
                             ],
                           ),
                         ),
@@ -69,29 +74,29 @@ class OpenSchedule extends StatelessWidget {
             },
           ),
           Utils.verticalSpace(8),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              width: 105.w,
-              height: 36.h,
-              padding: const EdgeInsets.symmetric(horizontal: 6),
-              decoration: BoxDecoration(
-                  border: Border.all(color: greenColor),
-                  borderRadius: BorderRadius.circular(4.r)),
-              child: const Row(
-                children: [
-                  Icon(
-                    Icons.add,
-                    color: greenColor,
-                  ),
-                  CustomText(
-                    text: 'Add New',
-                    color: greenColor,
-                  )
-                ],
-              ),
-            ),
-          ),
+          // Align(
+          //   alignment: Alignment.centerLeft,
+          //   child: Container(
+          //     width: 105.w,
+          //     height: 36.h,
+          //     padding: const EdgeInsets.symmetric(horizontal: 6),
+          //     decoration: BoxDecoration(
+          //         border: Border.all(color: greenColor),
+          //         borderRadius: BorderRadius.circular(4.r)),
+          //     child: const Row(
+          //       children: [
+          //         Icon(
+          //           Icons.add,
+          //           color: greenColor,
+          //         ),
+          //         CustomText(
+          //           text: 'Add New',
+          //           color: greenColor,
+          //         )
+          //       ],
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

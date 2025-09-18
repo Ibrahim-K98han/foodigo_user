@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/features/restaurant_features/Products/model/product_model.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantDashboard/cubit/res_dashboard_cubit.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantDashboard/cubit/res_dashboard_state.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantDashboard/model/res_dashboard_model.dart';
@@ -259,11 +260,9 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                     ],
                   ),
                   // Utils.verticalSpace(12.0),
-                  MyFood(
-                    productModel: pCubit.productModel!
-                  ),
-                  // Utils.verticalSpace(20.0),
-                  // RecentOrderCard(),
+                  pCubit.productModel == null
+                      ? CustomText(text: 'Data Not Found')
+                      : MyFood(productModel: pCubit.productModel!),
 
                   Padding(
                     padding: Utils.symmetric(h: 20),

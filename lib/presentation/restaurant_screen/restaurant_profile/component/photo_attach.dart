@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/data/remote_url.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_cubit.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_state.dart';
 
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
@@ -13,6 +17,20 @@ class PhotoAttach extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final profile = context.read<RestaurantProfileCubit>();
+
+    final logoUrl =
+        profile.restaurantProfileModel!.restaurantProfile!.logo.isNotEmpty
+            ? RemoteUrls.imageUrl(
+                profile.restaurantProfileModel!.restaurantProfile!.logo)
+            : KImages.profile;
+
+    final coverUrl =
+        profile.restaurantProfileModel!.restaurantProfile!.coverImage.isNotEmpty
+            ? RemoteUrls.imageUrl(
+                profile.restaurantProfileModel!.restaurantProfile!.coverImage)
+            : KImages.foodImage1;
+
     return UpdateProductTile(
       title: 'Photo Attachment',
       widget: Column(
@@ -28,13 +46,11 @@ class PhotoAttach extends StatelessWidget {
           Stack(
             alignment: Alignment.center,
             children: [
-              const Center(
-                child: CustomImage(
-                  path: KImages.profile,
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                ),
+              CustomImage(
+                path: logoUrl,
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
               ),
               Positioned(
                 bottom: 0,
@@ -51,7 +67,7 @@ class PhotoAttach extends StatelessWidget {
                     child: const CustomImage(path: KImages.camera),
                   ),
                 ),
-              )
+              ),
             ],
           ),
           Utils.verticalSpace(16),
@@ -67,24 +83,24 @@ class PhotoAttach extends StatelessWidget {
               Center(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(6.r),
-                  child: const CustomImage(
-                    path: KImages.rImage1,
-                    width: 280,
-                    height: 127,
+                  child: CustomImage(
+                    path: coverUrl,
+                    width: 280.w,
+                    height: 125.h,
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
               Center(
                 child: Container(
-                  width: 280,
-                  height: 127,
+                  width: 280.w,
+                  height: 125.h,
                   decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(6.r)),
                 ),
               ),
-              Positioned(
+              const Positioned(
                 bottom: 0,
                 top: 0,
                 left: 0,
@@ -93,7 +109,7 @@ class PhotoAttach extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const CustomImage(
+                    CustomImage(
                       path: KImages.camera,
                       width: 30,
                       height: 30,
@@ -101,24 +117,17 @@ class PhotoAttach extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const CustomText(
-                          text: 'Uploaded or',
+                        CustomText(
+                          text: 'Uploaded Photo',
                           color: whiteColor,
-                        ),
-                        Utils.verticalSpace(6),
-                        const CustomText(
-                          text: 'Browser Photo',
-                          color: primaryColor,
-                          decoration: TextDecoration.underline,
-                          // decorationColor: primaryColor,
                         ),
                       ],
                     )
                   ],
                 ),
-              )
+              ),
             ],
-          ),
+          )
         ],
       ),
     );
