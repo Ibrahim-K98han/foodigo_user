@@ -65,9 +65,13 @@ class RemoteUrls {
   static const String getRestaurantDashboard = '${baseUrl}restaurant/dashboard';
   static const String getProduct = '${baseUrl}restaurant/product/product-list';
   static const String getAllOrder = '${baseUrl}restaurant/order/order-list';
+
   static String getOrderDetails(String id) =>
       '${baseUrl}restaurant/order/detail/$id';
-  static const String getCategoryList = '${baseUrl}restaurant/category/category-list';
+  static const String getCategoryList =
+      '${baseUrl}restaurant/category/category-list';
+  static const String storeProduct = '${baseUrl}restaurant/product/store';
+  static const String getRestaurantProfile = '${baseUrl}restaurant/profile/edit';
 
   static imageUrl(String imageUrl) => rootUrl + imageUrl;
 }

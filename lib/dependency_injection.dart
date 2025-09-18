@@ -63,8 +63,13 @@ import 'package:foodigo/features/restaurant_features/Products/cubit/product_cubi
 import 'package:foodigo/features/restaurant_features/Products/remote/product_remote_data_source.dart';
 import 'package:foodigo/features/restaurant_features/Products/repository/product_repository.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantDashboard/cubit/res_dashboard_cubit.dart';
-import 'package:foodigo/features/restaurant_features/RestaurantDashboard/remote/res_dashboard_remote_data_source.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantDashboard/repository/res_dashboard_repository.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_cubit.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantProfile/remote/restaurant_profile_remote_data_source.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantProfile/repository/restaurant_profile_repository.dart';
+import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_cubit.dart';
+import 'package:foodigo/features/restaurant_features/StoreProduct/remote/store_product_remote_data_source.dart';
+import 'package:foodigo/features/restaurant_features/StoreProduct/repository/store_product_repository.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/local_data_source.dart';
@@ -77,6 +82,7 @@ import 'features/HomeData/remote/home_data_remote_data_source.dart';
 import 'features/HomeData/repository/home_data_repository.dart';
 import 'features/restaurant_features/Login/bloc/restaurant_login_bloc.dart';
 import 'features/restaurant_features/Login/repository/restaurant_login_repository.dart';
+import 'features/restaurant_features/RestaurantDashboard/remote/res_dashboard_remote_data_source.dart';
 
 class DInjector {
   static late final SharedPreferences _sharedPreferences;
@@ -349,6 +355,26 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<StoreProductRemoteDataSource>(
+      create: (context) => StoreProductRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<StoreProductRepository>(
+      create: (context) => StoreProductRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<RestaurantProfileRemoteDataSource>(
+      create: (context) => RestaurantProfileRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<RestaurantProfileRepository>(
+      create: (context) => RestaurantProfileRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -488,6 +514,18 @@ class DInjector {
     ),
     BlocProvider<ResCategoriesCubit>(
       create: (context) => ResCategoriesCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<StoreProductCubit>(
+      create: (context) => StoreProductCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<RestaurantProfileCubit>(
+      create: (context) => RestaurantProfileCubit(
         repository: context.read(),
         loginBloc: context.read(),
       ),

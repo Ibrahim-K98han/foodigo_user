@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_cubit.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_state.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantProfile/model/restaurant_profile_model.dart';
 import 'package:foodigo/utils/k_images.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_image.dart';
-
-import '../../../features/checkout/model/checkout_response_model.dart';
+import 'package:foodigo/widget/loading_widget.dart';
+import 'package:foodigo/widget/page_refresh.dart';
 import '../../../utils/constraints.dart';
 import '../../../utils/utils.dart';
 import '../../../widget/custom_text_style.dart';
+import '../../../widget/fetch_error_text.dart';
 import '../../../widget/primary_button.dart';
 import 'component/open_schedule.dart';
 import 'component/photo_attach.dart';
+import 'component/restaurant_info.dart';
 
 class EditRestaurantScreen extends StatefulWidget {
   const EditRestaurantScreen({super.key});
@@ -20,48 +26,58 @@ class EditRestaurantScreen extends StatefulWidget {
 }
 
 class _EditRestaurantScreenState extends State<EditRestaurantScreen> {
+  late RestaurantProfileCubit resProCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    resProCubit = context.read<RestaurantProfileCubit>();
+    resProCubit.getRestaurantProfile();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Update Food'),
-      body: Padding(
-        padding: Utils.symmetric(),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ///============ Attach Photo =============///
-              const PhotoAttach(),
-              Utils.verticalSpace(12),
-
-              ///============ Restaurant Info ==========///
-              // const RestaurantInfo(),
-              Utils.verticalSpace(12),
-
-              ///============== Open Schedule ==========///
-              const OpenSchedule(),
-              Utils.verticalSpace(16),
-              SwitchWidget(
-                text: 'Delivery',
-                icon: KImages.delivery_man,
-                initialValue: true,
-                onToggle: (bool value) {},
-              ),
-              SwitchWidget(
-                text: 'Dining',
-                icon: KImages.delivery_man,
-                initialValue: true,
-                onToggle: (bool value) {},
-              ),
-              SwitchWidget(
-                text: 'Take Away',
-                icon: KImages.delivery_man,
-                initialValue: true,
-                onToggle: (bool value) {},
-              ),
-            ],
-          ),
+      appBar: const CustomAppBar(title: 'Restaurant'),
+      body: PageRefresh(
+        onRefresh: () async {
+          resProCubit.getRestaurantProfile();
+        },
+        child: BlocConsumer<RestaurantProfileCubit, RestaurantProfileState>(
+          listener: (context, state) {
+            final profile = state;
+            if (profile is RestaurantProfileError) {
+              if (profile.statusCode == 503) {
+                FetchErrorText(text: profile.message);
+              }
+            }
+          },
+          builder: (context, state) {
+            final profile = state;
+            if (profile is RestaurantProfileLoading) {
+              return const LoadingWidget();
+            } else if (profile is RestaurantProfileError) {
+              if (profile.statusCode == 503 ||
+                  resProCubit.restaurantProfileModel != null) {
+                return ProfileDataLoad(
+                  restaurantProfileModel: resProCubit.restaurantProfileModel!,
+                );
+              } else {
+                return FetchErrorText(text: profile.message);
+              }
+            } else if (profile is RestaurantProfileLoaded) {
+              return ProfileDataLoad(
+                restaurantProfileModel: resProCubit.restaurantProfileModel!,
+              );
+            }
+            if (resProCubit.restaurantProfileModel != null) {
+              return ProfileDataLoad(
+                restaurantProfileModel: resProCubit.restaurantProfileModel!,
+              );
+            } else {
+              return const FetchErrorText(text: 'Something Went Wrong');
+            }
+          },
         ),
       ),
       bottomNavigationBar: Padding(
@@ -72,6 +88,67 @@ class _EditRestaurantScreenState extends State<EditRestaurantScreen> {
   }
 }
 
+class ProfileDataLoad extends StatelessWidget {
+  const ProfileDataLoad({super.key, required this.restaurantProfileModel});
+
+  final RestaurantProfileModel restaurantProfileModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: Utils.symmetric(),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ///============ Attach Photo =============///
+            const PhotoAttach(),
+            Utils.verticalSpace(12),
+
+            ///============ Restaurant Info ==========///
+            const RestaurantInfo(),
+            Utils.verticalSpace(12),
+
+            ///============== Open Schedule ==========///
+            const OpenSchedule(),
+            Utils.verticalSpace(16),
+            SwitchWidget(
+              text: 'Delivery',
+              icon: KImages.delivery_man,
+              initialValue: true,
+              onToggle: (bool value) {
+                if (value == true) {
+                  restaurantProfileModel.restaurantProfile!.isFeatured;
+                }
+              },
+            ),
+            SwitchWidget(
+              text: 'Dining',
+              icon: KImages.delivery_man,
+              initialValue: true,
+              onToggle: (bool value) {
+                if (value == true) {
+                  restaurantProfileModel.restaurantProfile!.isPickupOrder;
+                }
+              },
+            ),
+            SwitchWidget(
+              text: 'Take Away',
+              icon: KImages.delivery_man,
+              initialValue: true,
+              onToggle: (bool value) {
+                if (value == true) {
+                  restaurantProfileModel.restaurantProfile!.isDeliveryOrder;
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class SwitchWidget extends StatefulWidget {
   const SwitchWidget({
@@ -165,7 +242,7 @@ class _SwitchWidgetState extends State<SwitchWidget> {
                     child: AnimatedAlign(
                       duration: const Duration(milliseconds: 100),
                       alignment:
-                      isOn ? Alignment.centerRight : Alignment.centerLeft,
+                          isOn ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
                         width: 22,
                         height: 22,

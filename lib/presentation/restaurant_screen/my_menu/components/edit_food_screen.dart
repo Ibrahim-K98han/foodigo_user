@@ -1,11 +1,17 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_cubit.dart';
+import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_state_model.dart';
 import 'package:foodigo/utils/k_images.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_form.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/primary_button.dart';
-
+import 'package:form_builder_validators/form_builder_validators.dart';
+import '../../../../features/restaurant_features/Category/cubit/res_categories_cubit.dart';
+import '../../../../features/restaurant_features/Category/cubit/res_categories_state.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
@@ -19,387 +25,284 @@ class EditFoodScreen extends StatefulWidget {
 
 class _EditFoodScreenState extends State<EditFoodScreen> {
   String? selectedCategoryValue;
-  final List<String> categoryItems = ['Fast food', 'Fruits'];
-  String? selectedSubCategoryValue;
-  final List<String> subCategoryItems = ['BBQ', 'Fry'];
+  late ResCategoriesCubit resCatCubit;
+  late StoreProductCubit stCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    resCatCubit = context.read<ResCategoriesCubit>();
+    stCubit = context.read<StoreProductCubit>();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Update Food'),
+      appBar: const CustomAppBar(title: 'Upload Food'),
       body: Padding(
         padding: Utils.symmetric(),
         child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
           child: Column(
             children: [
+              /// ----------------- Product Info -----------------
               UpdateProductTile(
                 title: 'Product Info',
-                widget: Column(
-                  children: [
-                    CustomFormWidget(
-                      label: 'Food Name',
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                          filled: true,
-                          fillColor: Color(0xffF8FAFC),
-                          hintText: 'Food name',
+                widget: BlocBuilder<StoreProductCubit, StoreProductStateModel>(
+                  builder: (context, state) {
+                    return Column(
+                      children: [
+                        CustomFormWidget(
+                          label: 'Food Name',
+                          child: TextFormField(
+                            initialValue: state.name,
+                            onChanged: stCubit.productName,
+                            decoration: const InputDecoration(
+                              filled: true,
+                              fillColor: Color(0xffF8FAFC),
+                              hintText: 'Food name',
+                            ),
+                            validator: FormBuilderValidators.required(
+                                errorText: 'Enter Food Name'),
+                          ),
                         ),
-                      ),
-                    ),
-                    Utils.verticalSpace(12),
-                    CustomFormWidget(
-                      label: 'Description',
-                      child: TextFormField(
-                        maxLines: 4,
-                        decoration: const InputDecoration(
-                          filled: true,
-                          fillColor: Color(0xffF8FAFC),
-                          hintText: 'description',
+                        Utils.verticalSpace(12),
+                        CustomFormWidget(
+                          label: 'Slug',
+                          child: TextFormField(
+                            initialValue: state.slug,
+                            onChanged: stCubit.productSlug,
+                            decoration: const InputDecoration(
+                              filled: true,
+                              fillColor: Color(0xffF8FAFC),
+                              hintText: 'slug',
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
+                        Utils.verticalSpace(12),
+                        CustomFormWidget(
+                          label: 'Description',
+                          child: TextFormField(
+                            initialValue: state.shortDescription,
+                            onChanged: stCubit.description,
+                            maxLines: 4,
+                            decoration: const InputDecoration(
+                              filled: true,
+                              fillColor: Color(0xffF8FAFC),
+                              hintText: 'description',
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
+
               Utils.verticalSpace(12),
+
+              /// ----------------- Category Info -----------------
               UpdateProductTile(
                 title: 'Category Info',
-                widget: Column(
-                  children: [
-                    DropdownButtonFormField<String>(
-                      hint: const CustomText(
-                        text: "Category",
-                        fontWeight: FontWeight.w500,
-                        color: textColor,
-                      ),
-                      isDense: true,
-                      isExpanded: true,
-                      dropdownColor: whiteColor,
-                      value: selectedCategoryValue,
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                      decoration: InputDecoration(
-                        fillColor: const Color(0xffF8FAFC),
-                        filled: true,
-                        isDense: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(Utils.radius(10.0)),
+                widget: BlocBuilder<ResCategoriesCubit, ResCategoriesState>(
+                  builder: (context, state) {
+                    if (state is ResCategoriesLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is ResCategoriesLoaded) {
+                      final categories = state.categoryModel.resCategories;
+                      return DropdownButtonFormField<String>(
+                        hint: const CustomText(
+                          text: "Category",
+                          fontWeight: FontWeight.w500,
+                          color: textColor,
+                        ),
+                        value: selectedCategoryValue,
+                        isExpanded: true,
+                        icon: const Icon(Icons.keyboard_arrow_down),
+                        decoration: InputDecoration(
+                          fillColor: const Color(0xffF8FAFC),
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(Utils.radius(10))),
                           ),
+                          contentPadding:
+                          const EdgeInsets.fromLTRB(16, 24, 20, 10),
                         ),
-                        contentPadding: const EdgeInsets.fromLTRB(
-                          16.0,
-                          24.0,
-                          20.0,
-                          10.0,
-                        ),
-                      ),
-                      onTap: () => Utils.closeKeyBoard(context),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedCategoryValue = value;
-                        });
-                      },
-                      items: categoryItems.map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: CustomText(text: value),
-                        );
-                      }).toList(),
-                    ),
-                    Utils.verticalSpace(12),
-                    DropdownButtonFormField<String>(
-                      hint: const CustomText(
-                        text: "Sub-Category",
-                        fontWeight: FontWeight.w500,
-                        color: textColor,
-                      ),
-                      isDense: true,
-                      isExpanded: true,
-                      dropdownColor: whiteColor,
-                      value: selectedSubCategoryValue,
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                      decoration: InputDecoration(
-                        fillColor: const Color(0xffF8FAFC),
-                        filled: true,
-                        isDense: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(Utils.radius(10.0)),
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.fromLTRB(
-                          16.0,
-                          24.0,
-                          20.0,
-                          10.0,
-                        ),
-                      ),
-                      onTap: () => Utils.closeKeyBoard(context),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedSubCategoryValue = value;
-                        });
-                      },
-                      items: subCategoryItems.map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: CustomText(text: value),
-                        );
-                      }).toList(),
-                    ),
-                  ],
+                        onChanged: (value) {
+                          setState(() {
+                            selectedCategoryValue = value;
+                            stCubit.category(value!);
+                          });
+                        },
+                        items: categories
+                            ?.map<DropdownMenuItem<String>>((category) {
+                          return DropdownMenuItem<String>(
+                            value: category.id.toString(),
+                            child: CustomText(text: category.name),
+                          );
+                        }).toList(),
+                      );
+                    } else if (state is ResCategoriesError) {
+                      return CustomText(
+                        text: state.message,
+                        color: Colors.red,
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  },
                 ),
               ),
+
               Utils.verticalSpace(12),
+
+              /// ----------------- Price Info -----------------
               UpdateProductTile(
                 title: 'Price Info',
-                widget: Column(
-                  children: [
-                    CustomFormWidget(
-                      label: 'Price',
+                widget: BlocBuilder<StoreProductCubit, StoreProductStateModel>(
+                  builder: (context, state) {
+                    return CustomFormWidget(
+                      label: 'Product Price',
                       child: TextFormField(
+                        initialValue: state.productPrice.toString(),
+                        onChanged: stCubit.productPrice,
                         decoration: const InputDecoration(
                           filled: true,
                           fillColor: Color(0xffF8FAFC),
                           hintText: '\$23.00',
                         ),
                       ),
-                    ),
-                    Utils.verticalSpace(12),
-                    CustomFormWidget(
-                      label: 'Display Price',
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                          filled: true,
-                          fillColor: Color(0xffF8FAFC),
-                          hintText: '\$23.00',
-                        ),
-                      ),
-                    ),
-                    Utils.verticalSpace(12),
-                    CustomFormWidget(
-                      label: 'Stock',
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                          filled: true,
-                          fillColor: Color(0xffF8FAFC),
-                          hintText: '23',
-                        ),
-                      ),
-                    ),
-                    Utils.verticalSpace(12),
-                    CustomFormWidget(
-                      label: 'Order Quantity',
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                          filled: true,
-                          fillColor: Color(0xffF8FAFC),
-                          hintText: '4',
-                        ),
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
+
               Utils.verticalSpace(12),
+
+              /// ----------------- Variations -----------------
               UpdateProductTile(
                 title: 'Food Variations',
-                widget: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+                widget: BlocBuilder<StoreProductCubit, StoreProductStateModel>(
+                  builder: (context, state) {
+                    return Column(
                       children: [
-                        Expanded(
-                          child: CustomFormWidget(
-                            label: 'Option Name',
-                            child: TextFormField(
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Color(0xffF8FAFC),
-                                hintText: 'Small',
-                              ),
-                            ),
-                          ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: state.size.length,
+                          itemBuilder: (context, index) {
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: CustomFormWidget(
+                                    label: 'Option Name',
+                                    child: TextFormField(
+                                      initialValue: state.size[index],
+                                      onChanged: (val) {
+                                        final updatedSizes = [...state.size];
+                                        updatedSizes[index] = val;
+                                        stCubit.size(updatedSizes);
+                                      },
+                                      decoration: const InputDecoration(
+                                        filled: true,
+                                        fillColor: Color(0xffF8FAFC),
+                                        hintText: 'Small',
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: CustomFormWidget(
+                                    label: 'Price',
+                                    child: TextFormField(
+                                      initialValue: state.price[index],
+                                      onChanged: (val) {
+                                        final updatedPrices = [...state.price];
+                                        updatedPrices[index] = val;
+                                        stCubit.sizePrice(updatedPrices);
+                                      },
+                                      decoration: const InputDecoration(
+                                        filled: true,
+                                        fillColor: Color(0xffF8FAFC),
+                                        hintText: '\$23.00',
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () {
+                                    final updatedSizes = [...state.size];
+                                    final updatedPrices = [...state.price];
+                                    updatedSizes.removeAt(index);
+                                    updatedPrices.removeAt(index);
+                                    stCubit.size(updatedSizes);
+                                    stCubit.sizePrice(updatedPrices);
+                                  },
+                                ),
+                              ],
+                            );
+                          },
                         ),
-                        Utils.horizontalSpace(8),
-                        Expanded(
-                          child: CustomFormWidget(
-                            label: 'Price',
-                            child: TextFormField(
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Color(0xffF8FAFC),
-                                hintText: '\$23.00',
-                              ),
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: () {
+                            stCubit.size([...stCubit.state.size, '']);
+                            stCubit.sizePrice([...stCubit.state.price, '']);
+                          },
+                          child: Container(
+                            width: 105,
+                            height: 45,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.orange),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.add, color: Colors.orange, size: 20),
+                                SizedBox(width: 5),
+                                Text('Add New',
+                                    style: TextStyle(color: Colors.orange)),
+                              ],
                             ),
                           ),
                         ),
                       ],
-                    ),
-                    Utils.verticalSpace(12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomFormWidget(
-                            label: 'Option Name',
-                            child: TextFormField(
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Color(0xffF8FAFC),
-                                hintText: 'Medium',
-                              ),
-                            ),
-                          ),
-                        ),
-                        Utils.horizontalSpace(8),
-                        Expanded(
-                          child: CustomFormWidget(
-                            label: 'Price',
-                            child: TextFormField(
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Color(0xffF8FAFC),
-                                hintText: '\$23.00',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Utils.verticalSpace(12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomFormWidget(
-                            label: 'Option Name',
-                            child: TextFormField(
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Color(0xffF8FAFC),
-                                hintText: 'Large',
-                              ),
-                            ),
-                          ),
-                        ),
-                        Utils.horizontalSpace(8),
-                        Expanded(
-                          child: CustomFormWidget(
-                            label: 'Price',
-                            child: TextFormField(
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Color(0xffF8FAFC),
-                                hintText: '\$23.00',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Utils.verticalSpace(12),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        width: 105.w,
-                        height: 40.h,
-                        padding: Utils.symmetric(h: 4),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: smallContainerColor),
-                            borderRadius: BorderRadius.circular(4.r)),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.add,
-                              color: smallContainerColor,
-                              size: 25,
-                            ),
-                            Utils.horizontalSpace(5),
-                            const CustomText(
-                              text: 'Add New',
-                              color: smallContainerColor,
-                            )
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
+                    );
+                  },
                 ),
               ),
+
               Utils.verticalSpace(12),
-              UpdateProductTile(
-                title: 'Food Tag',
-                widget: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: CustomFormWidget(
-                        label: 'Keyword',
-                        child: TextFormField(
-                          decoration: const InputDecoration(
-                            filled: true,
-                            fillColor: Color(0xffF8FAFC),
-                            hintText: 'Burger, pizza, food',
-                          ),
-                        ),
-                      ),
-                    ),
-                    Utils.horizontalSpace(8),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 22),
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: 60.w,
-                          height: 52.h,
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: redColor,
-                            borderRadius: BorderRadius.circular(6.r),
-                          ),
-                          child: const CustomText(
-                            text: 'Add',
-                            color: whiteColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Utils.verticalSpace(12),
+
+              /// ----------------- Photo Attachment -----------------
               UpdateProductTile(
                 title: 'Photo Attachment',
-                widget: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CustomText(
-                      text: 'Thumbnail Image Preview',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: textColor,
-                    ),
-                    const CustomText(
-                      text: 'Cover of at least Size1170x990. Max 5MB',
-                      fontSize: 13,
-                      color: primaryColor,
-                    ),
-                    Utils.verticalSpace(12),
-                    Stack(
+                widget: BlocBuilder<StoreProductCubit, StoreProductStateModel>(
+                  builder: (context, state) {
+                    return Stack(
                       alignment: Alignment.center,
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(6.r),
-                          child: CustomImage(
+                          child: state.image.isNotEmpty
+                              ? Image.file(
+                            File(state.image),
+                            width: 250.w,
+                            height: 110.h,
+                            fit: BoxFit.cover,
+                          )
+                              : CustomImage(
                             path: KImages.rImage1,
-                            width: 190.w,
+                            width: 250.w,
                             height: 110.h,
                             fit: BoxFit.cover,
                           ),
                         ),
                         Container(
-                          width: 190.w,
+                          width: 250.w,
                           height: 110.h,
                           decoration: BoxDecoration(
                             color: Colors.black.withOpacity(0.2),
@@ -407,40 +310,26 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
                           ),
                         ),
                         Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              CustomImage(
-                                path: KImages.camera,
-                                width: 24.w,
-                                height: 24.h,
-                                fit: BoxFit.cover,
-                              ),
-                              Utils.verticalSpace(4),
-                              const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CustomText(
-                                    text: 'Upload or',
-                                    color: whiteColor,
-                                    fontSize: 12,
-                                  ),
-                                  CustomText(
-                                    text: 'Upload or',
-                                    color: primaryColor,
-                                    fontSize: 12,
-                                    decoration: TextDecoration.underline,
-                                    // decorationColor: primaryColor,
-                                  ),
-                                ],
-                              )
-                            ],
+                          child: GestureDetector(
+                            onTap: () async {
+                              final img = await Utils.pickSingleImage();
+                              if (img != null && img.isNotEmpty) {
+                                stCubit.image(img);
+                              }
+                            },
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: const [
+                                Icon(Icons.camera_alt, color: Colors.white),
+                                SizedBox(height: 4),
+                                Text('Upload', style: TextStyle(color: Colors.white))
+                              ],
+                            ),
                           ),
                         )
                       ],
-                    )
-                  ],
+                    );
+                  },
                 ),
               ),
             ],
@@ -449,7 +338,13 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
       ),
       bottomNavigationBar: Padding(
         padding: Utils.symmetric(v: 20.0),
-        child: PrimaryButton(text: 'Update Now', onPressed: () {}),
+        child: PrimaryButton(
+          text: 'Upload',
+          onPressed: () {
+            stCubit.storeProduct();
+            stCubit.clear();
+          },
+        ),
       ),
     );
   }
@@ -471,10 +366,10 @@ class UpdateProductTile extends StatelessWidget {
         borderRadius: Utils.borderRadius(),
       ),
       child: Theme(
-        data: Theme.of(context).copyWith(dividerColor: transparent),
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           initiallyExpanded: false,
-          iconColor: blackColor,
+          iconColor: Colors.black,
           title: CustomText(
             text: title ?? '',
             fontWeight: FontWeight.w600,

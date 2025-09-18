@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_cubit.dart';
+import '../../../../features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_state.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_form.dart';
@@ -14,241 +17,222 @@ class RestaurantInfo extends StatefulWidget {
 }
 
 class _RestaurantInfoState extends State<RestaurantInfo> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
+
+
   String? selectedCountryValue;
   String? selectedCityValue;
   String? selectedStateValue;
+
   final List<String> countryItems = ['Bangladesh', 'Afghanistan', 'Pakistan'];
   final List<String> cityItems = ['Dhaka', 'Kabul'];
   final List<String> stateItems = ['Dhaka', 'Kabul'];
+
   @override
   Widget build(BuildContext context) {
-    return  UpdateProductTile(
-      title: 'Restaurant Info',
-      widget: Column(
-        children: [
-          CustomFormWidget(
-            label: 'Restaurant Name',
-            child: TextFormField(
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color(0xffF8FAFC),
-                hintText: 'Chefs place',
-              ),
-            ),
-          ),
-          Utils.verticalSpace(12),
-          CustomFormWidget(
-            label: 'Email',
-            child: TextFormField(
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color(0xffF8FAFC),
-                hintText: 'chef@gmail.com',
-              ),
-            ),
-          ),
-          Utils.verticalSpace(12),
-          CustomFormWidget(
-            label: 'Phone Number',
-            child: TextFormField(
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color(0xffF8FAFC),
-                hintText: '+725415454',
-              ),
-            ),
-          ),
-          Utils.verticalSpace(12),
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: CustomText(
-              text: 'Country',
-              fontWeight: FontWeight.w500,
-              color: textColor,
-            ),
-          ),
-          Utils.verticalSpace(4),
-          DropdownButtonFormField<String>(
-            hint: const CustomText(
-              text: "Country",
-              fontWeight: FontWeight.w500,
-              color: textColor,
-            ),
-            isDense: true,
-            isExpanded: true,
-            dropdownColor: whiteColor,
-            value: selectedCountryValue,
-            icon: const Icon(Icons.keyboard_arrow_down),
-            decoration: InputDecoration(
-              fillColor: const Color(0xffF8FAFC),
-              filled: true,
-              isDense: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(Utils.radius(10.0)),
-                ),
-              ),
-              contentPadding: const EdgeInsets.fromLTRB(
-                16.0,
-                24.0,
-                20.0,
-                10.0,
-              ),
-            ),
-            onTap: () => Utils.closeKeyBoard(context),
-            onChanged: (value) {
-              setState(() {
-                selectedCountryValue = value;
-              });
-            },
-            items: countryItems.map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: CustomText(text: value),
-              );
-            }).toList(),
-          ),
-          Utils.verticalSpace(12),
-          Row(
+    return BlocBuilder<RestaurantProfileCubit, RestaurantProfileState>(
+      builder: (context, state) {
+        if (state is RestaurantProfileLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state is RestaurantProfileLoaded) {
+          final profile = state.restaurantProfileModel.restaurantProfile;
+          if (_nameController.text.isEmpty) {
+            _nameController.text = profile?.restaurantName ?? '';
+          }
+          if (_emailController.text.isEmpty) {
+            _emailController.text = profile?.email ?? '';
+          }
+          if (_phoneController.text.isEmpty) {
+            _phoneController.text = profile?.ownerPhone ?? '';
+          }
+          if (_addressController.text.isEmpty) {
+            _addressController.text = profile?.address ?? '';
+          }
+          if (_bioController.text.isEmpty) {
+            _bioController.text = profile?.cityId ?? '';
+          }
+
+          // Dropdowns – only assign if exists in list
+          final country = profile?.cityId ?? '';
+          if (countryItems.contains(country)) {
+            selectedCountryValue = country;
+          }
+
+          final city = profile?.cityId ?? '';
+          if (cityItems.contains(city)) {
+            selectedCityValue = city;
+          }
+
+          final stateName = profile?.slug ?? '';
+          if (stateItems.contains(stateName)) {
+            selectedStateValue = stateName;
+          }
+        }
+
+
+        return UpdateProductTile(
+          title: 'Restaurant Info',
+          widget: Column(
             children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: CustomText(
-                        text: 'City',
-                        fontWeight: FontWeight.w500,
-                        color: textColor,
-                      ),
-                    ),
-                    Utils.verticalSpace(4),
-                    DropdownButtonFormField<String>(
-                      hint: const CustomText(
-                        text: "City",
-                        fontWeight: FontWeight.w500,
-                        color: textColor,
-                      ),
-                      isDense: true,
-                      isExpanded: true,
-                      dropdownColor: whiteColor,
-                      value: selectedStateValue,
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                      decoration: InputDecoration(
-                        fillColor: const Color(0xffF8FAFC),
-                        filled: true,
-                        isDense: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(Utils.radius(10.0)),
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.fromLTRB(
-                          16.0,
-                          24.0,
-                          20.0,
-                          10.0,
-                        ),
-                      ),
-                      onTap: () => Utils.closeKeyBoard(context),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedStateValue = value;
-                        });
-                      },
-                      items: stateItems.map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: CustomText(text: value),
-                        );
-                      }).toList(),
-                    ),
-                  ],
+              CustomFormWidget(
+                label: 'Restaurant Name',
+                child: TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Color(0xffF8FAFC),
+                    hintText: 'Chefs place',
+                  ),
                 ),
               ),
-              Utils.horizontalSpace(8),
-              Expanded(
-                child: Column(
-                  children: [
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: CustomText(
-                        text: 'State',
-                        fontWeight: FontWeight.w500,
-                        color: textColor,
-                      ),
-                    ),
-                    Utils.verticalSpace(4),
-                    DropdownButtonFormField<String>(
-                      hint: const CustomText(
-                        text: "State",
-                        fontWeight: FontWeight.w500,
-                        color: textColor,
-                      ),
-                      isDense: true,
-                      isExpanded: true,
-                      dropdownColor: whiteColor,
-                      value: selectedCityValue,
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                      decoration: InputDecoration(
-                        fillColor: const Color(0xffF8FAFC),
-                        filled: true,
-                        isDense: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(Utils.radius(10.0)),
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.fromLTRB(
-                          16.0,
-                          24.0,
-                          20.0,
-                          10.0,
-                        ),
-                      ),
-                      onTap: () => Utils.closeKeyBoard(context),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedCityValue = value;
-                        });
-                      },
-                      items: cityItems.map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: CustomText(text: value),
-                        );
-                      }).toList(),
-                    ),
-                  ],
+              Utils.verticalSpace(12),
+              CustomFormWidget(
+                label: 'Email',
+                child: TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Color(0xffF8FAFC),
+                    hintText: 'chef@gmail.com',
+                  ),
                 ),
               ),
+              Utils.verticalSpace(12),
+              CustomFormWidget(
+                label: 'Phone Number',
+                child: TextFormField(
+                  controller: _phoneController,
+                  decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Color(0xffF8FAFC),
+                    hintText: '+725415454',
+                  ),
+                ),
+              ),
+              Utils.verticalSpace(12),
+
+              // Country
+              // const Align(
+              //   alignment: Alignment.centerLeft,
+              //   child: CustomText(
+              //     text: 'Country',
+              //     fontWeight: FontWeight.w500,
+              //     color: textColor,
+              //   ),
+              // ),
+              Utils.verticalSpace(4),
+              // DropdownButtonFormField<String>(
+              //   value: selectedCountryValue,
+              //   hint: const CustomText(
+              //     text: "Country",
+              //     fontWeight: FontWeight.w500,
+              //     color: textColor,
+              //   ),
+              //   isExpanded: true,
+              //   dropdownColor: whiteColor,
+              //   icon: const Icon(Icons.keyboard_arrow_down),
+              //   decoration: const InputDecoration(
+              //     fillColor: Color(0xffF8FAFC),
+              //     filled: true,
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.all(
+              //         Radius.circular(10),
+              //       ),
+              //     ),
+              //   ),
+              //   onChanged: (value) {
+              //     setState(() => selectedCountryValue = value);
+              //   },
+              //   items: countryItems.map((String value) {
+              //     return DropdownMenuItem<String>(
+              //       value: value,
+              //       child: CustomText(text: value),
+              //     );
+              //   }).toList(),
+              // ),
+              // Utils.verticalSpace(12),
+
+              // City & State
+              // Row(
+              //   children: [
+              //     Expanded(
+              //       child: DropdownButtonFormField<String>(
+              //         value: selectedCityValue,
+              //         hint: const CustomText(
+              //           text: "City",
+              //           fontWeight: FontWeight.w500,
+              //           color: textColor,
+              //         ),
+              //         isExpanded: true,
+              //         onChanged: (value) {
+              //           setState(() => selectedCityValue = value);
+              //         },
+              //         items: cityItems.map((String value) {
+              //           return DropdownMenuItem<String>(
+              //             value: value,
+              //             child: CustomText(text: value),
+              //           );
+              //         }).toList(),
+              //       ),
+              //     ),
+              //     Utils.horizontalSpace(8),
+              //     Expanded(
+              //       child: DropdownButtonFormField<String>(
+              //         value: selectedStateValue,
+              //         hint: const CustomText(
+              //           text: "State",
+              //           fontWeight: FontWeight.w500,
+              //           color: textColor,
+              //         ),
+              //         isExpanded: true,
+              //         onChanged: (value) {
+              //           setState(() => selectedStateValue = value);
+              //         },
+              //         items: stateItems.map((String value) {
+              //           return DropdownMenuItem<String>(
+              //             value: value,
+              //             child: CustomText(text: value),
+              //           );
+              //         }).toList(),
+              //       ),
+              //     ),
+              //   ],
+              // ),
+
+              // Utils.verticalSpace(12),
+              CustomFormWidget(
+                label: 'Address',
+                child: TextFormField(
+                  controller: _addressController,
+                  decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Color(0xffF8FAFC),
+                    hintText: 'Bangladesh',
+                  ),
+                ),
+              ),
+              Utils.verticalSpace(12),
+              // CustomFormWidget(
+              //   label: 'Bio',
+              //   child: TextFormField(
+              //     controller: _bioController,
+              //     maxLines: 4,
+              //     decoration: const InputDecoration(
+              //       filled: true,
+              //       fillColor: Color(0xffF8FAFC),
+              //       hintText: 'Mirpur - 10, Dhaka',
+              //     ),
+              //   ),
+              // ),
             ],
           ),
-          Utils.verticalSpace(12),
-          CustomFormWidget(
-            label: 'Address',
-            child: TextFormField(
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color(0xffF8FAFC),
-                hintText: 'Bangladesh',
-              ),
-            ),
-          ),
-          Utils.verticalSpace(12),
-          CustomFormWidget(
-            label: 'Bio',
-            child: TextFormField(
-              maxLines: 4,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color(0xffF8FAFC),
-                hintText: 'Mirpur - 10, Dhaka',
-              ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
