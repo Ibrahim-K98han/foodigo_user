@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:equatable/equatable.dart';
+import 'package:foodigo/features/SingleRestaurant/model/single_restaurant_model.dart';
 
 class StoreProductResponseModel extends Equatable {
   final String image;
@@ -16,6 +17,7 @@ class StoreProductResponseModel extends Equatable {
   final String name;
   final String? shortDescription;
   final Map<String, dynamic> size;
+  final Products? products;
 
   const StoreProductResponseModel({
     required this.image,
@@ -32,6 +34,7 @@ class StoreProductResponseModel extends Equatable {
     required this.name,
     this.shortDescription,
     required this.size,
+    this.products,
   });
 
   StoreProductResponseModel copyWith({
@@ -65,6 +68,7 @@ class StoreProductResponseModel extends Equatable {
       name: name ?? this.name,
       shortDescription: shortDescription ?? this.shortDescription,
       size: size ?? this.size,
+      products: products ?? this.products,
     );
   }
 
@@ -72,10 +76,14 @@ class StoreProductResponseModel extends Equatable {
     return StoreProductResponseModel(
       image: map['image'] ?? '',
       slug: map['slug'] ?? '',
-      restaurantId: map['restaurant_id'] ?? 0,
+      restaurantId: map['restaurant_id'] is int
+          ? map['restaurant_id']
+          : int.tryParse(map['restaurant_id'].toString()) ?? 0,
       categoryId: map['category_id'].toString(),
       price: map['price'].toString(),
-      offerPrice: map['offer_price'] ?? 0,
+      offerPrice: map['offer_price'] is int
+          ? map['offer_price']
+          : int.tryParse(map['offer_price'].toString()) ?? 0,
       addonItems: map['addon_items'],
       status: map['status'] ?? '',
       updatedAt: map['updated_at'] ?? '',
@@ -83,7 +91,10 @@ class StoreProductResponseModel extends Equatable {
       id: map['id'] ?? 0,
       name: map['name'] ?? '',
       shortDescription: map['short_description'],
-      size: map['size'] is String ? jsonDecode(map['size']) : {},
+      size:
+          map['size'] is String ? jsonDecode(map['size']) : (map['size'] ?? {}),
+      products:
+          map['products'] != null ? Products.fromMap(map['products']) : null,
     );
   }
 
@@ -103,6 +114,7 @@ class StoreProductResponseModel extends Equatable {
       'name': name,
       'short_description': shortDescription,
       'size': size,
+      'products': products?.toMap(),
     };
   }
 
@@ -113,19 +125,20 @@ class StoreProductResponseModel extends Equatable {
 
   @override
   List<Object?> get props => [
-    image,
-    slug,
-    restaurantId,
-    categoryId,
-    price,
-    offerPrice,
-    addonItems,
-    status,
-    updatedAt,
-    createdAt,
-    id,
-    name,
-    shortDescription,
-    size,
-  ];
+        image,
+        slug,
+        restaurantId,
+        categoryId,
+        price,
+        offerPrice,
+        addonItems,
+        status,
+        updatedAt,
+        createdAt,
+        id,
+        name,
+        shortDescription,
+        size,
+        products,
+      ];
 }

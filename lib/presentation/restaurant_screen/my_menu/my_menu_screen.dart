@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/restaurant_features/Category/cubit/res_categories_cubit.dart';
 import 'package:foodigo/features/restaurant_features/Category/cubit/res_categories_state.dart';
 import 'package:foodigo/features/restaurant_features/Products/model/product_model.dart';
+import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_cubit.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
@@ -180,7 +182,7 @@ class _MyMenuScreenState extends State<MyMenuScreen> {
                     return GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 0.89,
+                        childAspectRatio: 0.80,
                         crossAxisSpacing: 10.0,
                         mainAxisSpacing: 10.0,
                         crossAxisCount: 2,
@@ -204,7 +206,11 @@ class _MyMenuScreenState extends State<MyMenuScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, RouteNames.editFoodScreen);
+          Navigator.pushNamed(
+            context,
+            RouteNames.editFoodScreen,
+            arguments: {"isEdit": false},
+          );
         },
         backgroundColor: redColor,
         elevation: 0,
@@ -226,45 +232,46 @@ class MyMenuCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final storeProduct = context.read<StoreProductCubit>();
     return GestureDetector(
       onTap: () {
         // Navigator.pushNamed(context, RouteNames.productDetailsScreen);
-        showModalBottomSheet(
-          context: context,
-          showDragHandle: true,
-          backgroundColor: whiteColor,
-          constraints: BoxConstraints.loose(
-            Size(
-              Utils.mediaQuery(context).width,
-              Utils.mediaQuery(context).height * 0.9,
-            ),
-          ),
-          isScrollControlled: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(Utils.radius(10.0)),
-              topRight: Radius.circular(Utils.radius(10.0)),
-            ),
-          ),
-          builder: (context) => DraggableScrollableSheet(
-            initialChildSize: 0.85,
-            minChildSize: 0.5,
-            maxChildSize: 0.95,
-            expand: false,
-            builder: (context, scrollController) {
-              return SingleChildScrollView(
-                controller: scrollController,
-                child: const ProductDetailsScreen(),
-              );
-            },
-          ),
-        );
+        // showModalBottomSheet(
+        //   context: context,
+        //   showDragHandle: true,
+        //   backgroundColor: whiteColor,
+        //   constraints: BoxConstraints.loose(
+        //     Size(
+        //       Utils.mediaQuery(context).width,
+        //       Utils.mediaQuery(context).height * 0.9,
+        //     ),
+        //   ),
+        //   isScrollControlled: true,
+        //   shape: RoundedRectangleBorder(
+        //     borderRadius: BorderRadius.only(
+        //       topLeft: Radius.circular(Utils.radius(10.0)),
+        //       topRight: Radius.circular(Utils.radius(10.0)),
+        //     ),
+        //   ),
+        //   builder: (context) => DraggableScrollableSheet(
+        //     initialChildSize: 0.85,
+        //     minChildSize: 0.5,
+        //     maxChildSize: 0.95,
+        //     expand: false,
+        //     builder: (context, scrollController) {
+        //       return SingleChildScrollView(
+        //         controller: scrollController,
+        //         child: const ProductDetailsScreen(),
+        //       );
+        //     },
+        //   ),
+        // );
       },
       child: Container(
         //  height: 220.0,
-        width: 240.0,
+        width: 240.w,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6.0),
+          borderRadius: BorderRadius.circular(6.r),
           color: whiteColor,
         ),
         child: Column(
@@ -274,37 +281,67 @@ class MyMenuCart extends StatelessWidget {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10.0),
-                      topRight: Radius.circular(10.0)),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10.r),
+                      topRight: Radius.circular(10.r)),
                   child: CustomImage(
                     path: RemoteUrls.imageUrl(productList.image!),
                     fit: BoxFit.fill,
-                    height: 90,
+                    height: 110.h,
                     width: double.infinity,
                   ),
                 ),
                 Positioned(
-                  top: 10,
-                  right: 10,
-                  child: GestureDetector(
-                    onTap: () {
-                      // Navigator.pushNamed(context, RouteNames.editFoodScreen);
-                    },
-                    child: Container(
-                      decoration: const BoxDecoration(
-                          color: whiteColor, shape: BoxShape.circle),
-                      child: Padding(
-                        padding: Utils.all(value: 4.0),
-                        child: const Center(
-                            child: CustomImage(
-                          path: KImages.editIcon,
-                          width: 16,
-                          height: 16,
-                          color: redColor,
-                        )),
+                  top: 10.h,
+                  right: 10.w,
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, RouteNames.editFoodScreen,
+                              arguments: {
+                                'isEdit': true,
+                                'id': productList.id.toString(),
+                              });
+                        },
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              color: whiteColor, shape: BoxShape.circle),
+                          child: Padding(
+                            padding: Utils.all(value: 4.0),
+                            child: const Center(
+                                child: CustomImage(
+                              path: KImages.editIcon,
+                              width: 16,
+                              height: 16,
+                              color: redColor,
+                            )),
+                          ),
+                        ),
                       ),
-                    ),
+                      Utils.horizontalSpace(4.w),
+                      GestureDetector(
+                        onTap: () {
+                          storeProduct
+                              .deleteStoreProduct(productList.id.toString());
+                        },
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              color: whiteColor, shape: BoxShape.circle),
+                          child: Padding(
+                            padding: Utils.all(value: 4.0),
+                            child: const Center(
+                                child: CustomImage(
+                              path: KImages.deleteIcon,
+                              width: 16,
+                              height: 16,
+                              color: redColor,
+                            )),
+                          ),
+                        ),
+                      )
+                    ],
                   ),
                 )
               ],

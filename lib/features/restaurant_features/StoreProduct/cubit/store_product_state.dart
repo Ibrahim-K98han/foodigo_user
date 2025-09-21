@@ -47,32 +47,60 @@ class StoreProductFormValidate extends StoreProductState {
   List<Object?> get props => [errors];
 }
 
-/// ---------- Update Cart States ----------
-class UpdateCartLoading extends StoreProductState {}
+///Store Product Update
 
-class UpdateCartError extends StoreProductState {
+class StoreProductUpdateInitial extends StoreProductState {
+  const StoreProductUpdateInitial();
+}
+
+class StoreProductUpdateLoading extends StoreProductState {}
+
+class StoreProductUpdateLoaded extends StoreProductState {
+  final StoreProductResponseModel response;
+
+  const StoreProductUpdateLoaded(this.response);
+
+  @override
+  List<Object?> get props => [response];
+}
+
+class StoreProductUpdateError extends StoreProductState {
   final String message;
   final int statusCode;
 
-  const UpdateCartError(this.message, this.statusCode);
+  const StoreProductUpdateError(this.message, this.statusCode);
 
   @override
   List<Object?> get props => [message, statusCode];
 }
 
-class UpdateCartFormValidate extends StoreProductState {
+class StoreProductUpdateFormValidate extends StoreProductState {
   final Errors errors;
 
-  const UpdateCartFormValidate(this.errors);
+  const StoreProductUpdateFormValidate(this.errors);
 
   @override
   List<Object?> get props => [errors];
 }
 
-class UpdateCartSuccess extends StoreProductState {
-  final AddCartResponseModel response;
+/// ---------- Delete Store Product ----------
 
-  const UpdateCartSuccess(this.response);
+class DeleteStoreProductLoading extends StoreProductState {}
+
+class DeleteStoreProError extends StoreProductState {
+  final String message;
+  final int statusCode;
+
+  const DeleteStoreProError(this.message, this.statusCode);
+
+  @override
+  List<Object?> get props => [message, statusCode];
+}
+
+class CartDeleteSuccess extends StoreProductState {
+  final StoreProductResponseModel response;
+
+  const CartDeleteSuccess(this.response);
 
   @override
   List<Object> get props => [response];

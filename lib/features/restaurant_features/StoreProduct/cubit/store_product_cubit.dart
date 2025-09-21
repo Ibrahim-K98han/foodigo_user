@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/restaurant_features/Login/bloc/restaurant_login_bloc.dart';
@@ -27,28 +28,32 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
 
   void category(String category) => emit(state.copyWith(categoryId: category));
 
+  void addon(String addon) => emit(state.copyWith(addonId: addon));
+
   void image(String image) => emit(state.copyWith(image: image));
 
   void productPrice(String price) => emit(state.copyWith(productPrice: price));
 
-  void size(List<String> size) => emit(state.copyWith(size: size));
+  void offerPrice(String offerPrice) =>
+      emit(state.copyWith(offerPrice: offerPrice));
+  void translateId(String translateId) =>
+      emit(state.copyWith(translateId: translateId));
 
-  void sizePrice(List<String> sizePrice) =>
-      emit(state.copyWith(price: sizePrice));
+  void size(List<String> sizes) => emit(state.copyWith(size: sizes));
+
+  void sizePrice(List<String> prices) => emit(state.copyWith(price: prices));
 
   void description(String text) => emit(state.copyWith(shortDescription: text));
 
   /// ----------------- Store Product API -----------------
   Future<void> storeProduct() async {
     emit(state.copyWith(storeProductState: StoreProductLoading()));
-
     final uri = Utils.tokenWithCode(
       RemoteUrls.storeProduct,
       _loginBloc.userInformation!.token,
       _loginBloc.state.languageCode,
     );
-    print('Store Product API: $uri');
-
+    print('Store Product URI: $uri');
     try {
       final result = await _repository.storeProduct(
         state,
@@ -80,7 +85,94 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
     }
   }
 
-  /// ----------------- Reset State -----------------
+  /// ----------------- Get Product By ID -----------------
+  Future<void> getEditProduct(String id) async {
+    emit(state.copyWith(storeProductState: StoreProductLoading()));
+    final url = RemoteUrls.editProduct(id);
+    final result = await _repository.getEditProduct(
+        _loginBloc.userInformation!.token, id, Uri.parse(url));
+    result.fold((failure) {
+      final errorState = StoreProductError(failure.message, failure.statusCode);
+      emit(state.copyWith(storeProductState: errorState));
+    }, (success) {
+      storeProductResponseModel = success;
+      if (storeProductResponseModel != null) {
+        emit(state.copyWith(
+            name: storeProductResponseModel!.name,
+            slug: storeProductResponseModel!.slug,
+            categoryId: storeProductResponseModel!.categoryId,
+            image: storeProductResponseModel!.image,
+            productPrice: storeProductResponseModel!.price,
+            offerPrice: storeProductResponseModel!.offerPrice.toString(),
+            size: storeProductResponseModel!.size['size'] != null
+                ? List<String>.from(storeProductResponseModel!.size['size'])
+                : [],
+            price: storeProductResponseModel!.size['price'] != null
+                ? List<String>.from(storeProductResponseModel!.size['price'])
+                : [],
+            shortDescription: storeProductResponseModel!.shortDescription ?? '',
+            storeProductState: StoreProductLoaded(success)));
+      }
+      final successState = StoreProductLoaded(success);
+      emit(state.copyWith(storeProductState: successState));
+    });
+  }
+
+  /// ----------------- Delete Store Product -----------------
+  Future<void> deleteStoreProduct(String productId) async {
+    emit(state.copyWith(storeProductState: DeleteStoreProductLoading()));
+    final result = await _repository.deleteStoreProduct(
+        _loginBloc.userInformation!.token, productId);
+    result.fold(
+      (l) => emit(state.copyWith(
+          storeProductState: DeleteStoreProError(l.message, l.statusCode))),
+      (success) =>
+          emit(state.copyWith(storeProductState: CartDeleteSuccess(success))),
+    );
+  }
+
+  /// ----------------- Update Store Product -----------------
+  Future<void> updateProduct(String productId) async {
+    print('UpdateProduct call for id: $productId');
+    emit(state.copyWith(storeProductState: StoreProductUpdateLoading()));
+    final uri = Utils.tokenWithCode(
+      RemoteUrls.updateStoreProduct(productId),
+      _loginBloc.userInformation!.token,
+      _loginBloc.state.languageCode,
+    );
+    print('Update product url: $uri');
+
+    try {
+      final result = await _repository.updateStoreProduct(
+        state,
+        uri,
+        _loginBloc.userInformation!.token,
+      );
+
+      print('API called successfully');
+
+      result.fold(
+        (failure) {
+          emit(state.copyWith(
+            storeProductState: StoreProductUpdateError(
+              failure.message,
+              failure.statusCode,
+            ),
+          ));
+        },
+        (success) {
+          storeProductResponseModel = success;
+          emit(state.copyWith(storeProductState: StoreProductUpdateLoaded(success)));
+        },
+      );
+    } catch (e) {
+      emit(state.copyWith(
+        storeProductState: StoreProductUpdateError(e.toString(), 500),
+      ));
+    }
+  }
+
+  /// ----------------- Reset Form State -----------------
   void clear() {
     emit(const StoreProductStateModel(
       name: '',
@@ -88,6 +180,7 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
       categoryId: '',
       image: '',
       productPrice: '',
+      offerPrice: '',
       size: [],
       price: [],
       shortDescription: '',
