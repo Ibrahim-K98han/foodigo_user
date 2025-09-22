@@ -12,8 +12,14 @@ abstract class StoreProductRepository {
   Future<Either<dynamic, StoreProductResponseModel>> storeProduct(
       StoreProductStateModel body, Uri uri, String token);
 
-  Future<Either<dynamic, AddCartResponseModel>> updateCart(
-      AddCartStateModel body, String token, int id);
+  Future<Either<dynamic, StoreProductResponseModel>> updateStoreProduct(
+      StoreProductStateModel body, Uri uri, String token);
+
+  Future<Either<dynamic, StoreProductResponseModel>> getEditProduct(
+      String token, String id, Uri url);
+
+  Future<Either<Failure, StoreProductResponseModel>> deleteStoreProduct(
+      String token, String id);
 }
 
 class StoreProductRepositoryImpl implements StoreProductRepository {
@@ -27,7 +33,7 @@ class StoreProductRepositoryImpl implements StoreProductRepository {
   Future<Either<dynamic, StoreProductResponseModel>> storeProduct(
       StoreProductStateModel body, uri, String token) async {
     try {
-      final result = await remoteDataSource.storeProduct(body,uri, token);
+      final result = await remoteDataSource.storeProduct(body, uri, token);
       final response = StoreProductResponseModel.fromMap(result);
       return Right(response);
     } on ServerException catch (e) {
@@ -38,16 +44,47 @@ class StoreProductRepositoryImpl implements StoreProductRepository {
   }
 
   @override
-  Future<Either<dynamic, AddCartResponseModel>> updateCart(
-      AddCartStateModel body, String token, int id) async {
+  Future<Either<dynamic, StoreProductResponseModel>> getEditProduct(
+      String token, String id, Uri url) async {
     try {
-      final result = await remoteDataSource.updateCart(body, token, id);
-      final response = AddCartResponseModel.fromMap(result);
+      final result = await remoteDataSource.getEditProduct(token, id, url);
+      final response =
+          StoreProductResponseModel.fromMap(result['data']['product']);
       return Right(response);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
     } on InvalidAuthData catch (e) {
       return Left(InvalidAuthData(e.errors));
+    }
+  }
+
+  ///Delete Store Product
+  @override
+  Future<Either<Failure, StoreProductResponseModel>> deleteStoreProduct(
+      String token, String id) async {
+    try {
+      final result = await remoteDataSource.deleteStoreProduct(token, id);
+      final data = StoreProductResponseModel.fromMap(result);
+      return Right(data);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    }
+  }
+
+  /// -------- UPDATE PRODUCT ----------
+  @override
+  Future<Either<dynamic, StoreProductResponseModel>> updateStoreProduct(
+      StoreProductStateModel body, Uri uri, String token) async {
+    try {
+      final result =
+      await remoteDataSource.updateStoreProduct(body, uri, token);
+      final response = StoreProductResponseModel.fromMap(result);
+      print('product Name: ${response.name}');
+      return Right(response);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    } catch (e) {
+      return Left(ServerFailure(e.toString(), 500));
     }
   }
 }

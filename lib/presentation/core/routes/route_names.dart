@@ -21,6 +21,10 @@ import 'package:foodigo/presentation/screen/profile/profile_change_password_scre
 import 'package:foodigo/presentation/screen/profile/settings_screen.dart';
 import 'package:foodigo/presentation/screen/sms/sms_screen.dart';
 import '../../restaurant_screen/main_page/restaurant_main_screen.dart';
+import '../../restaurant_screen/my_menu/my_menu_screen.dart';
+import '../../restaurant_screen/profile/addon_manage_screen.dart';
+import '../../restaurant_screen/profile/components/wallet_screen.dart';
+import '../../restaurant_screen/profile/restaurant_change_password_screen.dart';
 import '../../screen/authentications/authentication_screen.dart';
 import '../../screen/authentications/create_new_password.dart';
 import '../../screen/authentications/forgot_otp_screen.dart';
@@ -48,6 +52,7 @@ class RouteNames {
   static const String mainScreen = '/mainScreen';
   static const String restaurantMainScreen = '/restaurantMainScreen';
   static const String allFoodScreen = '/allFoodScreen';
+  static const String myMenuScreen = '/myMenuScreen';
   static const String allRestaurantScreen = '/allRestaurantScreen';
   static const String allCategoryScreen = '/allCategoryScreen';
   static const String productDetailsScreen = '/productDetailsScreen';
@@ -77,6 +82,10 @@ class RouteNames {
   static const String editRestaurantProfileScreen =
       '/editRestaurantProfileScreen';
   static const String editFoodScreen = '/editFoodScreen';
+  static const String addonMangeScreen = '/addonMangeScreen';
+  static const String walletScreen = '/walletScreen';
+  static const String restaurantChangePasswordScreen =
+      '/restaurantChangePasswordScreen';
 
   static Route<dynamic> generateRoutes(RouteSettings settings) {
     switch (settings.name) {
@@ -220,8 +229,28 @@ class RouteNames {
         return MaterialPageRoute(
             settings: settings, builder: (_) => const EditRestaurantScreen());
       case RouteNames.editFoodScreen:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final String? productId = args?['id'];
+        final bool isEdit = args?['isEdit'] ?? false;
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const EditFoodScreen());
+            settings: settings,
+            builder: (_) => EditFoodScreen(
+                  prdId: productId.toString(),
+                  isEdit: isEdit,
+                ));
+      case RouteNames.myMenuScreen:
+        return MaterialPageRoute(
+            settings: settings, builder: (_) => const MyMenuScreen());
+      case RouteNames.addonMangeScreen:
+        return MaterialPageRoute(
+            settings: settings, builder: (_) => const AddonManageScreen());
+      case RouteNames.walletScreen:
+        return MaterialPageRoute(
+            settings: settings, builder: (_) => const WalletScreen());
+      case RouteNames.restaurantChangePasswordScreen:
+        return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => const RestaurantChangePasswordScreen());
 
       default:
         return MaterialPageRoute(

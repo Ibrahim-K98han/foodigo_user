@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/restaurant_features/Products/model/product_model.dart';
+import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/presentation/restaurant_screen/product_details/product_details_screen.dart';
 import 'package:foodigo/utils/k_images.dart';
 import '../../../../utils/constraints.dart';
@@ -25,7 +26,9 @@ class MyFood extends StatelessWidget {
           title: 'My Food Menu',
           textColors: textColor,
           seeAllColors: subTitleTextColor,
-          press: () {},
+          press: () {
+            Navigator.pushNamed(context, RouteNames.myMenuScreen);
+          },
         ),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -55,13 +58,13 @@ class FoodCart extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (BuildContext context) {
-            return const ProductDetailsScreen();
-          },
-        );
+        // showModalBottomSheet(
+        //   context: context,
+        //   isScrollControlled: true,
+        //   builder: (BuildContext context) {
+        //     return const ProductDetailsScreen();
+        //   },
+        // );
       },
       child: Container(
         height: 230.h,

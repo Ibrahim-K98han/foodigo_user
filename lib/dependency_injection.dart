@@ -52,9 +52,18 @@ import 'package:foodigo/features/checkout/repository/checkout_repository.dart';
 import 'package:foodigo/features/register/cubit/register_cubit.dart';
 import 'package:foodigo/features/register/remote/register_remote_data_source.dart';
 import 'package:foodigo/features/register/repository/register_repository.dart';
+import 'package:foodigo/features/restaurant_features/Addons/cubit/res_addons_cubit.dart';
+import 'package:foodigo/features/restaurant_features/Addons/remote/res_addon_remote_data_source.dart';
+import 'package:foodigo/features/restaurant_features/Addons/repository/res_addon_repository.dart';
 import 'package:foodigo/features/restaurant_features/Category/cubit/res_categories_cubit.dart';
 import 'package:foodigo/features/restaurant_features/Category/remote/res_category_remote_data_source.dart';
 import 'package:foodigo/features/restaurant_features/Category/repository/res_category_repository.dart';
+import 'package:foodigo/features/restaurant_features/ChangePassword/cubit/res_change_pass_cubit.dart';
+import 'package:foodigo/features/restaurant_features/ChangePassword/remote/res_change_pass_remote_data_source.dart';
+import 'package:foodigo/features/restaurant_features/ChangePassword/repository/res_change_pass_repository.dart';
+import 'package:foodigo/features/restaurant_features/EarningData/cubit/earning_cubit.dart';
+import 'package:foodigo/features/restaurant_features/EarningData/remote/earning_remote_data_source.dart';
+import 'package:foodigo/features/restaurant_features/EarningData/repository/earning_repository.dart';
 import 'package:foodigo/features/restaurant_features/Login/remote/restaurant_login_remote_data.dart';
 import 'package:foodigo/features/restaurant_features/Order/cubit/res_order_cubit.dart';
 import 'package:foodigo/features/restaurant_features/Order/remote/res_order_remote_data_source.dart';
@@ -70,14 +79,18 @@ import 'package:foodigo/features/restaurant_features/RestaurantProfile/repositor
 import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_cubit.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/remote/store_product_remote_data_source.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/repository/store_product_repository.dart';
+import 'package:foodigo/features/restaurant_features/WithdrawData/cubit/withdraw_cubit.dart';
+import 'package:foodigo/features/restaurant_features/WithdrawData/remote/withdraw_remote_data_source.dart';
+import 'package:foodigo/features/restaurant_features/WithdrawData/repository/withdraw_repository.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'data/local_data_source.dart';
+import 'features/AllFood/cubit/all_food_cubit.dart';
 import 'features/AllRestaurant/cubit/all_restaurant_cubit.dart';
 import 'features/AllRestaurant/remote/all_restaurant_remote_data_source.dart';
 import 'features/AllRestaurant/repository/all_restaurant_repository.dart';
 import 'features/HomeData/cubit/home_data_cubit.dart';
-import 'features/AllFood/cubit/all_food_cubit.dart';
 import 'features/HomeData/remote/home_data_remote_data_source.dart';
 import 'features/HomeData/repository/home_data_repository.dart';
 import 'features/restaurant_features/Login/bloc/restaurant_login_bloc.dart';
@@ -375,6 +388,46 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<ResAddonRemoteDataSource>(
+      create: (context) => ResAddonRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<ResAddonRepository>(
+      create: (context) => ResAddonRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<ResChangePassRemoteDataSource>(
+      create: (context) => ResChangePassRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<ResChangePassRepository>(
+      create: (context) => ResChangePassRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<EarningRemoteDataSource>(
+      create: (context) => EarningRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<EarningRepository>(
+      create: (context) => EarningRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<WithdrawRemoteDataSource>(
+      create: (context) => WithdrawRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<WithdrawRepository>(
+      create: (context) => WithdrawRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -530,5 +583,30 @@ class DInjector {
         loginBloc: context.read(),
       ),
     ),
+    BlocProvider<ResAddonsCubit>(
+      create: (context) => ResAddonsCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<ResChangePassCubit>(
+      create: (context) => ResChangePassCubit(
+        registerRepository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<EarningCubit>(
+      create: (context) => EarningCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+    BlocProvider<WithdrawCubit>(
+      create: (context) => WithdrawCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
+
   ];
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantDashboard/cubit/res_dashboard_cubit.dart';
+import 'package:foodigo/presentation/core/routes/route_names.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
@@ -195,25 +196,30 @@ class _HomeHeaderState extends State<HomeHeader> {
                             ),
                           ],
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.0),
-                              color: primaryColor),
-                          child: Padding(
-                            padding: Utils.symmetric(h: 10.0, v: 10.0),
-                            child: Row(
-                              children: [
-                                const CustomImage(
-                                  path: KImages.withdraw,
-                                  height: 24,
-                                ),
-                                Utils.horizontalSpace(6.0),
-                                const CustomText(
-                                  text: 'Withdraw',
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
-                                ),
-                              ],
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, RouteNames.walletScreen);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color: primaryColor),
+                            child: Padding(
+                              padding: Utils.symmetric(h: 10.0, v: 10.0),
+                              child: Row(
+                                children: [
+                                  const CustomImage(
+                                    path: KImages.withdraw,
+                                    height: 24,
+                                  ),
+                                  Utils.horizontalSpace(6.0),
+                                  const CustomText(
+                                    text: 'Withdraw',
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
