@@ -75,13 +75,28 @@ class RemoteUrls {
   static String editProduct(String id) =>
       '${baseUrl}restaurant/product/edit/$id';
 
-  static String updateStoreProduct(String id) => '${baseUrl}restaurant/product/update/$id';
+  static String updateStoreProduct(String id) =>
+      '${baseUrl}restaurant/product/update/$id';
 
   static String deleteStoreProduct(String id) =>
       '${baseUrl}restaurant/product/delete/$id';
   static const String getRestaurantProfile =
       '${baseUrl}restaurant/profile/edit';
   static const String getAddon = '${baseUrl}restaurant/addon/addon-list';
+
+  static String editAddon(String id) => '${baseUrl}restaurant/addon/edit/$id';
+  static const String storeAddon = '${baseUrl}restaurant/addon/store';
+
+  static String deleteAddon(String id) =>
+      '${baseUrl}restaurant/addon/delete/$id';
+
+  static String updateAddon(String id) =>
+      '${baseUrl}restaurant/addon/update/$id';
+  static const String restaurantPassChange =
+      '${baseUrl}restaurant/profile/change-password';
+  static const String getEarning = '${baseUrl}restaurant/withdraw/my-withdraw';
+  static const String getWithdraw = '${baseUrl}restaurant/withdraw/create';
+  static const String withdrawStore = '${baseUrl}restaurant/withdraw/store';
 
   static imageUrl(String imageUrl) => rootUrl + imageUrl;
 }

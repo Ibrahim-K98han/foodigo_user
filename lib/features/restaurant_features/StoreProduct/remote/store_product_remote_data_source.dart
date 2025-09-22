@@ -71,7 +71,6 @@ class StoreProductRemoteDataSourceImpl implements StoreProductRemoteDataSource {
 
   /// --------- UPDATE PRODUCT -------------
   @override
-  @override
   Future updateStoreProduct(
       StoreProductStateModel body, Uri uri, String token) async {
     final request = http.MultipartRequest('POST', uri);

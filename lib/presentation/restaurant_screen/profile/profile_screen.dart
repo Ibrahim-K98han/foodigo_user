@@ -24,7 +24,10 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Profile",visibleLeading: false,),
+      appBar: const CustomAppBar(
+        title: "Profile",
+        visibleLeading: false,
+      ),
       body: CustomScrollView(
         slivers: [
           const ProfileImage(),
@@ -42,7 +45,7 @@ class ProfileScreen extends StatelessWidget {
               title: "Wallet",
               icon: KImages.dollarBag,
               onTap: () {
-                // Navigator.pushNamed(context, RouteNames.walletScreen);
+                Navigator.pushNamed(context, RouteNames.walletScreen);
               },
             ),
             DrawerItem(
@@ -52,8 +55,18 @@ class ProfileScreen extends StatelessWidget {
                   // Navigator.pushNamed(context, RouteNames.settingsScreen);
                 }),
             DrawerItem(
-                title: "Change Password", icon: KImages.unlock, onTap: () {}),
-
+                title: "Addon Manage",
+                icon: KImages.filterFood,
+                onTap: () {
+                  Navigator.pushNamed(context, RouteNames.addonMangeScreen);
+                }),
+            DrawerItem(
+                title: "Change Password",
+                icon: KImages.unlock,
+                onTap: () {
+                  Navigator.pushNamed(
+                      context, RouteNames.restaurantChangePasswordScreen);
+                }),
             Utils.verticalSpace(40.0),
             GestureDetector(
               onTap: () {
@@ -161,10 +174,7 @@ class LogoutPrompt extends StatelessWidget {
                         onPressed: () {
                           context
                               .read<RestaurantLoginBloc>()
-                              .add( RestaurantLoginEventLogout(
-
-                            email: email
-                          ));
+                              .add(RestaurantLoginEventLogout(email: email));
                         },
                         bgColor: redColor,
                         textColor: whiteColor,

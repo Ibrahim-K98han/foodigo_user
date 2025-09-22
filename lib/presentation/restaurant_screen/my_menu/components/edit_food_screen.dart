@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/restaurant_features/Addons/cubit/res_addons_cubit.dart';
 import 'package:foodigo/features/restaurant_features/Addons/cubit/res_addons_state.dart';
+import 'package:foodigo/features/restaurant_features/Addons/model/res_addon_state_model.dart';
 import 'package:foodigo/features/restaurant_features/Category/cubit/res_categories_cubit.dart';
 import 'package:foodigo/features/restaurant_features/Category/cubit/res_categories_state.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_cubit.dart';
@@ -153,37 +154,42 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
               Utils.verticalSpace(12),
 
               /// Addon Info
+
               UpdateProductTile(
                 title: 'Addons Info',
-                widget: BlocBuilder<ResAddonsCubit, ResAddonsState>(
+                widget: BlocBuilder<ResAddonsCubit, ResAddonStateModel>(
                   builder: (context, addonState) {
-                    if (addonState is ResAddonsLoading) {
+                    final resState = addonState.resAddonsState;
+
+                    if (resState is ResAddonsLoading) {
                       return const Center(child: CircularProgressIndicator());
-                    } else if (addonState is ResAddonsLoaded) {
-                      final addons = addonState.resAddonModel.resAddons;
+                    } else if (resState is ResAddonsLoaded) {
+                      final addons = resState.resAddonModel.resAddons ?? [];
+
                       return DropdownButtonFormField<String>(
                         hint: const Text('Select Addon'),
-                        value: addons?.any((addon) =>
-                                    addon.id.toString() ==
-                                    selectedAddonValue) ==
-                                true
+                        value: addons.any((addon) =>
+                                addon.id.toString() == selectedAddonValue)
                             ? selectedAddonValue
                             : null,
                         isExpanded: true,
                         onChanged: (value) {
-                          stCubit.addon(value!);
+                          if (value != null) {
+                            stCubit.addon(value); // update your form Cubit
+                          }
                         },
-                        items: addons?.map<DropdownMenuItem<String>>((addon) {
+                        items: addons.map<DropdownMenuItem<String>>((addon) {
                           return DropdownMenuItem(
                             value: addon.id.toString(),
-                            child: Text(addon.name),
+                            child: Text(addon.name ?? "Unnamed"),
                           );
                         }).toList(),
                       );
-                    } else if (addonState is ResAddonsError) {
-                      return Text(addonState.message,
+                    } else if (resState is ResAddonsError) {
+                      return Text(resState.message,
                           style: const TextStyle(color: Colors.red));
                     }
+
                     return const SizedBox();
                   },
                 ),
