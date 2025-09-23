@@ -230,20 +230,20 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
                         );
                       },
                     ),
-                    BlocBuilder<StoreProductCubit, StoreProductStateModel>(
-                      builder: (context, state) {
-                        return CustomFormWidget(
-                          label: 'Translate Id',
-                          child: TextFormField(
-                            initialValue: state.translateId,
-                            onChanged: stCubit.translateId,
-                            decoration: const InputDecoration(
-                              hintText: 'Enter Translate Id',
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                    // BlocBuilder<StoreProductCubit, StoreProductStateModel>(
+                    //   builder: (context, state) {
+                    //     return CustomFormWidget(
+                    //       label: 'Translate Id',
+                    //       child: TextFormField(
+                    //         initialValue: state.translateId,
+                    //         onChanged: stCubit.translateId,
+                    //         decoration: const InputDecoration(
+                    //           hintText: 'Enter Translate Id',
+                    //         ),
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
                   ],
                 ),
               ),
@@ -405,7 +405,6 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
           text: widget.isEdit ? 'Update' : 'Upload',
           onPressed: () {
             if (widget.isEdit) {
-              print('Update button pressed');
               stCubit.updateProduct(widget.prdId);
             } else {
               stCubit.storeProduct();

@@ -1,9 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:foodigo/data/network_parser.dart';
 import 'package:foodigo/data/remote_url.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantProfile/model/restaurant_profile_state_model.dart';
 import 'package:http/http.dart' as http;
 
 abstract class RestaurantProfileRemoteDataSource {
   Future getRestaurantProfile(String token);
+
+  Future updateRestaurantProfile(
+      RestaurantProfileStateModel body, Uri uri, String token);
 }
 
 class RestaurantProfileRemoteDataSourceImpl
@@ -27,5 +34,33 @@ class RestaurantProfileRemoteDataSourceImpl
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
     return responseJsonBody;
+  }
+
+  @override
+  Future updateRestaurantProfile(
+      RestaurantProfileStateModel body, Uri uri, String token) async {
+    final request = http.MultipartRequest('POST', uri);
+    request.fields.addAll(
+        body.toMap().map((key, value) => MapEntry(key, value.toString())));
+    request.headers.addAll({
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/json',
+    });
+    request.fields['cuisines'] = jsonEncode(body.cuisines);
+
+    if (body.images.isNotEmpty) {
+      final file = await http.MultipartFile.fromPath('cover_image', body.images);
+      request.files.add(file);
+    }
+    if (body.logo.isNotEmpty) {
+      final file = await http.MultipartFile.fromPath('logo', body.logo);
+      request.files.add(file);
+    }
+
+    http.StreamedResponse response = await request.send();
+    final clientMethod = http.Response.fromStream(response);
+    final responseJsonBody =
+        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    return responseJsonBody['data'];
   }
 }

@@ -51,3 +51,26 @@ class RestaurantProfileError extends RestaurantProfileState {
   @override
   List<Object?> get props => [message, statusCode];
 }
+
+///Update Profile
+
+class UpdateRestaurantProfileLoading extends RestaurantProfileState {}
+
+class UpdateRestaurantProfileError extends RestaurantProfileState {
+  final String message;
+  final int statusCode;
+
+  const UpdateRestaurantProfileError(this.message, this.statusCode);
+
+  @override
+  List<Object?> get props => [message, statusCode];
+}
+
+class UpdateRestaurantProfileLoaded extends RestaurantProfileState {
+  final RestaurantProfileModel restaurantProfileModel;
+
+  const UpdateRestaurantProfileLoaded(this.restaurantProfileModel);
+
+  @override
+  List<Object?> get props => [restaurantProfileModel];
+}

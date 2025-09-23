@@ -79,7 +79,6 @@ class StoreProductRepositoryImpl implements StoreProductRepository {
       final result =
       await remoteDataSource.updateStoreProduct(body, uri, token);
       final response = StoreProductResponseModel.fromMap(result);
-      print('product Name: ${response.name}');
       return Right(response);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));

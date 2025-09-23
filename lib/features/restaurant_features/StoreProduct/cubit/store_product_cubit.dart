@@ -36,6 +36,7 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
 
   void offerPrice(String offerPrice) =>
       emit(state.copyWith(offerPrice: offerPrice));
+
   void translateId(String translateId) =>
       emit(state.copyWith(translateId: translateId));
 
@@ -60,22 +61,25 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
         uri,
         _loginBloc.userInformation!.token,
       );
-
       result.fold(
         (failure) {
-          emit(state.copyWith(
-            storeProductState: StoreProductError(
-              failure.message,
-              failure.statusCode,
+          emit(
+            state.copyWith(
+              storeProductState: StoreProductError(
+                failure.message,
+                failure.statusCode,
+              ),
             ),
-          ));
+          );
         },
         (success) {
           storeProductResponseModel = success;
-          emit(state.copyWith(
-            storeProductState: StoreProductLoaded(success),
-          ));
-          clear();
+          emit(
+            state.copyWith(
+              storeProductState: StoreProductLoaded(success),
+            ),
+          );
+          // clear();
         },
       );
     } catch (e) {
@@ -88,9 +92,16 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
   /// ----------------- Get Product By ID -----------------
   Future<void> getEditProduct(String id) async {
     emit(state.copyWith(storeProductState: StoreProductLoading()));
-    final url = RemoteUrls.editProduct(id);
+    // final url = RemoteUrls.editProduct(id);
+    final url = Utils.tokenWithCode(RemoteUrls.editProduct(id),
+        _loginBloc.userInformation!.token, _loginBloc.state.languageCode);
+    print('Get Product $url');
+
     final result = await _repository.getEditProduct(
-        _loginBloc.userInformation!.token, id, Uri.parse(url));
+      _loginBloc.userInformation!.token,
+      id,
+      url,
+    );
     result.fold((failure) {
       final errorState = StoreProductError(failure.message, failure.statusCode);
       emit(state.copyWith(storeProductState: errorState));
@@ -133,7 +144,6 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
 
   /// ----------------- Update Store Product -----------------
   Future<void> updateProduct(String productId) async {
-    print('UpdateProduct call for id: $productId');
     emit(state.copyWith(storeProductState: StoreProductUpdateLoading()));
     final uri = Utils.tokenWithCode(
       RemoteUrls.updateStoreProduct(productId),
@@ -141,16 +151,13 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
       _loginBloc.state.languageCode,
     );
     print('Update product url: $uri');
-
     try {
       final result = await _repository.updateStoreProduct(
         state,
         uri,
         _loginBloc.userInformation!.token,
       );
-
       print('API called successfully');
-
       result.fold(
         (failure) {
           emit(state.copyWith(
@@ -162,7 +169,11 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
         },
         (success) {
           storeProductResponseModel = success;
-          emit(state.copyWith(storeProductState: StoreProductUpdateLoaded(success)));
+          emit(
+            state.copyWith(
+              storeProductState: StoreProductUpdateLoaded(success),
+            ),
+          );
         },
       );
     } catch (e) {
