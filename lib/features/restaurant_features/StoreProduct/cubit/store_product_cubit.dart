@@ -37,8 +37,9 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
   void offerPrice(String offerPrice) =>
       emit(state.copyWith(offerPrice: offerPrice));
 
-  void translateId(String translateId) =>
-      emit(state.copyWith(translateId: translateId));
+  void translateId(String translateId) {
+    emit(state.copyWith(translateId: translateId));
+  }
 
   void size(List<String> sizes) => emit(state.copyWith(size: sizes));
 
@@ -122,6 +123,9 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
                 ? List<String>.from(storeProductResponseModel!.size['price'])
                 : [],
             shortDescription: storeProductResponseModel!.shortDescription ?? '',
+            translateId:
+                storeProductResponseModel!.productTranslate?.id.toString() ??
+                    '',
             storeProductState: StoreProductLoaded(success)));
       }
       final successState = StoreProductLoaded(success);
@@ -143,23 +147,80 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
   }
 
   /// ----------------- Update Store Product -----------------
+  // Future<void> updateProduct(String productId) async {
+  //   emit(state.copyWith(storeProductState: StoreProductUpdateLoading()));
+  //   final uri = Utils.tokenWithCode(
+  //     RemoteUrls.updateStoreProduct(productId),
+  //     _loginBloc.userInformation!.token,
+  //     _loginBloc.state.languageCode,
+  //   );
+  //   print('Update product url: $uri');
+  //   print('Update Product Fields => ${state.toMap()}');
+  //   try {
+  //     final result = await _repository.updateStoreProduct(
+  //       state,
+  //       uri,
+  //       _loginBloc.userInformation!.token,
+  //     );
+  //     print('API called successfully');
+  //     result.fold(
+  //       (failure) {
+  //         emit(state.copyWith(
+  //           storeProductState: StoreProductUpdateError(
+  //             failure.message,
+  //             failure.statusCode,
+  //           ),
+  //         ));
+  //       },
+  //       (success) {
+  //         storeProductResponseModel = success;
+  //         emit(
+  //           state.copyWith(
+  //               storeProductState: StoreProductUpdateLoaded(success),
+  //               translateId: state.translateId),
+  //         );
+  //       },
+  //     );
+  //   } catch (e) {
+  //     emit(state.copyWith(
+  //       storeProductState: StoreProductUpdateError(e.toString(), 500),
+  //     ));
+  //   }
+  // }
+
   Future<void> updateProduct(String productId) async {
     emit(state.copyWith(storeProductState: StoreProductUpdateLoading()));
+
     final uri = Utils.tokenWithCode(
       RemoteUrls.updateStoreProduct(productId),
       _loginBloc.userInformation!.token,
       _loginBloc.state.languageCode,
     );
     print('Update product url: $uri');
+
     try {
+      // state থেকে Map বানান
+      final body = state.toMap();
+
+      // translate_id must, ফাঁকা হলেও পাঠান
+      body['translate_id'] = state.translateId.isNotEmpty ? state.translateId : '0';
+
+      // size & price JSON encode করুন
+      body['size'] = jsonEncode(state.size);
+      body['price'] = jsonEncode(state.price);
+
+      print('Final Body Sent: $body');
+
       final result = await _repository.updateStoreProduct(
         state,
         uri,
         _loginBloc.userInformation!.token,
       );
+
       print('API called successfully');
+
       result.fold(
-        (failure) {
+            (failure) {
           emit(state.copyWith(
             storeProductState: StoreProductUpdateError(
               failure.message,
@@ -167,11 +228,12 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
             ),
           ));
         },
-        (success) {
+            (success) {
           storeProductResponseModel = success;
           emit(
             state.copyWith(
               storeProductState: StoreProductUpdateLoaded(success),
+              translateId: state.translateId, // state ঠিক রেখে
             ),
           );
         },
@@ -182,6 +244,7 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
       ));
     }
   }
+
 
   /// ----------------- Reset Form State -----------------
   void clear() {

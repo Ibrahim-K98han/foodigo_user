@@ -17,7 +17,6 @@ import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
 import '../../core/routes/route_names.dart';
-import '../product_details/product_details_screen.dart';
 
 class MyMenuScreen extends StatefulWidget {
   const MyMenuScreen({super.key});
@@ -303,6 +302,8 @@ class MyMenuCart extends StatelessWidget {
                               arguments: {
                                 'isEdit': true,
                                 'id': productList.id.toString(),
+                                'translationId':
+                                    productList.translateProduct!.id.toString(),
                               });
                         },
                         child: Container(

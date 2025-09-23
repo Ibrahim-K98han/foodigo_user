@@ -51,6 +51,9 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Map;
+    final translationId = args['translationId'];
+    print('translateId:$translationId');
     return Scaffold(
       appBar: CustomAppBar(title: widget.isEdit ? 'Edit Food' : 'Upload Food'),
       body: Padding(

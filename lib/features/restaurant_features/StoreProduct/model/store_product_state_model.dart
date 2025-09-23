@@ -74,7 +74,7 @@ class StoreProductStateModel extends Equatable {
       'size': jsonEncode(size),
       'price': jsonEncode(price),
       'short_description': shortDescription,
-      'id': translateId,
+      'translate_id': translateId,
     };
   }
 
@@ -87,7 +87,7 @@ class StoreProductStateModel extends Equatable {
       image: map['image'] ?? '',
       productPrice: map['product_price']?.toString() ?? '0',
       offerPrice: map['offer_price']?.toString() ?? '0',
-      translateId: map['id']?.toString() ?? '0',
+      translateId: map['translate_id']?.toString() ?? '0',
       size:
           map['size'] != null ? List<String>.from(jsonDecode(map['size'])) : [],
       price: map['price'] != null
