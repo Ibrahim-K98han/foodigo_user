@@ -3,6 +3,38 @@ import 'package:equatable/equatable.dart';
 import 'package:foodigo/features/SingleRestaurant/model/single_restaurant_model.dart';
 
 class StoreProductResponseModel extends Equatable {
+  final Data? data;
+  final String message;
+
+  const StoreProductResponseModel({
+    this.data,
+    this.message = '',
+  });
+
+  factory StoreProductResponseModel.fromMap(Map<String, dynamic> map) {
+    return StoreProductResponseModel(
+      data: map['data'] != null ? Data.fromMap(map['data']) : null,
+      message: map['message'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'data': data?.toMap(),
+      'message': message,
+    };
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory StoreProductResponseModel.fromJson(String source) =>
+      StoreProductResponseModel.fromMap(json.decode(source));
+
+  @override
+  List<Object?> get props => [data, message];
+}
+
+class Data extends Equatable{
   final String image;
   final String slug;
   final int restaurantId;
@@ -20,7 +52,7 @@ class StoreProductResponseModel extends Equatable {
   final Products? products;
   final ProductTranslate? productTranslate;
 
-  const StoreProductResponseModel({
+  const Data({
     required this.image,
     required this.slug,
     required this.restaurantId,
@@ -39,7 +71,7 @@ class StoreProductResponseModel extends Equatable {
     required this.productTranslate,
   });
 
-  StoreProductResponseModel copyWith({
+  Data copyWith({
     String? image,
     String? slug,
     int? restaurantId,
@@ -57,7 +89,7 @@ class StoreProductResponseModel extends Equatable {
     Products? products,
     ProductTranslate? productTranslate,
   }) {
-    return StoreProductResponseModel(
+    return Data(
       image: image ?? this.image,
       slug: slug ?? this.slug,
       restaurantId: restaurantId ?? this.restaurantId,
@@ -77,8 +109,8 @@ class StoreProductResponseModel extends Equatable {
     );
   }
 
-  factory StoreProductResponseModel.fromMap(Map<String, dynamic> map) {
-    return StoreProductResponseModel(
+  factory Data.fromMap(Map<String, dynamic> map) {
+    return Data(
       image: map['image'] ?? '',
       slug: map['slug'] ?? '',
       restaurantId: map['restaurant_id'] is int
@@ -127,28 +159,28 @@ class StoreProductResponseModel extends Equatable {
 
   String toJson() => json.encode(toMap());
 
-  factory StoreProductResponseModel.fromJson(String source) =>
-      StoreProductResponseModel.fromMap(json.decode(source));
+  factory Data.fromJson(String source) =>
+      Data.fromMap(json.decode(source));
 
   @override
   List<Object?> get props => [
-        image,
-        slug,
-        restaurantId,
-        categoryId,
-        price,
-        offerPrice,
-        addonItems,
-        status,
-        updatedAt,
-        createdAt,
-        id,
-        name,
-        shortDescription,
-        size,
-        products,
-        productTranslate,
-      ];
+    image,
+    slug,
+    restaurantId,
+    categoryId,
+    price,
+    offerPrice,
+    addonItems,
+    status,
+    updatedAt,
+    createdAt,
+    id,
+    name,
+    shortDescription,
+    size,
+    products,
+    productTranslate,
+  ];
 }
 
 class ProductTranslate extends Equatable {

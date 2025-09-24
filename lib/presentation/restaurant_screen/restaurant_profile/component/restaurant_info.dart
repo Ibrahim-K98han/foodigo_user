@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_cubit.dart';
-import '../../../../features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_state.dart';
 import '../../../../features/restaurant_features/RestaurantProfile/model/restaurant_profile_state_model.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';

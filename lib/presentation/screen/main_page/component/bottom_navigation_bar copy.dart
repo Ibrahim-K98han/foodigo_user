@@ -42,25 +42,25 @@ class MyBottomNavigationBar extends StatelessWidget {
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   tooltip: 'Home',
-                  icon: _navIcon(KImages.homeInActive,bottomNavIconColor),
+                  icon: _navIcon(KImages.homeInActive,textColor),
                   activeIcon: _navIcon(KImages.homeActive,primaryColor),
                   label: "Home",
                 ),
                 BottomNavigationBarItem(
                   tooltip: " My Cart",
-                  icon: _navIcon(KImages.cartInActive,bottomNavIconColor),
+                  icon: _navIcon(KImages.cartInActive,textColor),
                   activeIcon: _navIcon(KImages.cartActive,primaryColor),
                   label: 'My Cart',
                 ),
                 BottomNavigationBarItem(
                   tooltip: 'My Order',
-                  icon: _navIcon(KImages.orderInActive,bottomNavIconColor),
+                  icon: _navIcon(KImages.orderInActive,textColor),
                   activeIcon: _navIcon(KImages.orderActive,primaryColor),
                   label: 'My Order',
                 ),
                 BottomNavigationBarItem(
                   tooltip: 'Profile',
-                  icon: _navIcon(KImages.profileInActive,bottomNavIconColor ),
+                  icon: _navIcon(KImages.profileInActive,textColor ),
                   activeIcon: _navIcon(KImages.profileActive,primaryColor),
                   label: 'Profile',
                 ),

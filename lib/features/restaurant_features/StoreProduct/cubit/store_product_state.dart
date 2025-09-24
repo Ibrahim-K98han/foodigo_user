@@ -38,6 +38,16 @@ class StoreProductError extends StoreProductState {
   List<Object?> get props => [message, statusCode];
 }
 
+class StoreProductSuccess extends StoreProductState {
+  final StoreProductResponseModel response;
+
+  const StoreProductSuccess(this.response);
+
+  @override
+  List<Object> get props => [response];
+}
+
+
 class StoreProductFormValidate extends StoreProductState {
   final Errors errors;
 
@@ -82,6 +92,16 @@ class StoreProductUpdateFormValidate extends StoreProductState {
   @override
   List<Object?> get props => [errors];
 }
+
+class StoreProductUpdateSuccess extends StoreProductState {
+  final StoreProductResponseModel response;
+
+  const StoreProductUpdateSuccess(this.response);
+
+  @override
+  List<Object> get props => [response];
+}
+
 
 /// ---------- Delete Store Product ----------
 

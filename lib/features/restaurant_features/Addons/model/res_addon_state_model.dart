@@ -6,12 +6,14 @@ import 'package:foodigo/features/restaurant_features/Addons/cubit/res_addons_sta
 class ResAddonStateModel extends Equatable {
   final String name;
   final String price;
+  final String translateId;
   final bool isSelected;
   final ResAddonsState resAddonsState;
 
   const ResAddonStateModel({
     this.name = '',
     this.price = '',
+    this.translateId = '',
     this.isSelected = false,
     this.resAddonsState = const ResAddonsInitial(),
   });
@@ -19,12 +21,14 @@ class ResAddonStateModel extends Equatable {
   ResAddonStateModel copyWith({
     String? name,
     String? price,
+    String? translateId,
     bool? isSelected,
     ResAddonsState? resAddonsState,
   }) {
     return ResAddonStateModel(
       name: name ?? this.name,
       price: price ?? this.price,
+      translateId: translateId ?? this.translateId,
       isSelected: isSelected ?? this.isSelected,
       resAddonsState: resAddonsState ?? this.resAddonsState,
     );
@@ -34,6 +38,7 @@ class ResAddonStateModel extends Equatable {
     return <String, dynamic>{
       'name': name,
       'price': price,
+      'translate_id': translateId,
       'is_selected': isSelected,
     };
   }
@@ -42,6 +47,7 @@ class ResAddonStateModel extends Equatable {
     return ResAddonStateModel(
       name: map['name'] ?? '',
       price: map['price'] ?? 0.0,
+      translateId: map['translate_id'] ?? '',
       isSelected: map['is_selected'] ?? false,
     );
   }
@@ -55,5 +61,6 @@ class ResAddonStateModel extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props => [name, price, isSelected, resAddonsState];
+  List<Object> get props =>
+      [name, price, translateId, isSelected, resAddonsState];
 }

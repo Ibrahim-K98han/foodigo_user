@@ -12,7 +12,7 @@ abstract class ResAddonRemoteDataSource {
 
   Future storeAddon(ResAddonStateModel body, String token);
 
-  Future updateAddon(ResAddonStateModel body, String token, String id);
+  Future updateAddon(ResAddonStateModel body, Uri url, String token, String id);
 
   Future deleteAddon(String token, String id);
 
@@ -79,18 +79,24 @@ class ResAddonRemoteDataSourceImpl implements ResAddonRemoteDataSource {
     return responseJsonBody;
   }
 
+  ///Update addon
   @override
-  Future updateAddon(ResAddonStateModel body, String token, String id) async {
-    final uri = Uri.parse(RemoteUrls.updateAddon(id));
-    print('Update Addon $uri');
-    final clientMethod = client.post(
-      uri,
-      headers: authHeader(token),
-      body: jsonEncode(body.toMap()),
-    );
+  Future updateAddon(
+      ResAddonStateModel body, Uri url, String token, String id) async {
+    final request = http.MultipartRequest('POST', url);
+    request.fields.addAll(
+        body.toMap().map((key, value) => MapEntry(key, value.toString())));
+    request.headers.addAll({
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/json',
+    });
+
+    print('Body print: ${body.toMap()}');
+
+    http.StreamedResponse response = await request.send();
+    final clientMethod = http.Response.fromStream(response);
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
-    final addonData = responseJsonBody['data']['addon'];
-    return ResAddonModel(resAddons: [ResAddons.fromMap(addonData)]);
+    return responseJsonBody['data']['addon'];
   }
 }

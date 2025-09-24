@@ -8,7 +8,9 @@ import 'package:foodigo/features/restaurant_features/Addons/model/res_addon_stat
 import 'package:foodigo/features/restaurant_features/Category/cubit/res_categories_cubit.dart';
 import 'package:foodigo/features/restaurant_features/Category/cubit/res_categories_state.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_cubit.dart';
+import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_state.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_state_model.dart';
+import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/utils/constraints.dart';
 import 'package:foodigo/utils/k_images.dart';
 import 'package:foodigo/utils/utils.dart';
@@ -16,6 +18,8 @@ import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_form.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/primary_button.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
 
 class EditFoodScreen extends StatefulWidget {
   const EditFoodScreen({super.key, required this.prdId, required this.isEdit});
@@ -51,9 +55,6 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as Map;
-    final translationId = args['translationId'];
-    print('translateId:$translationId');
     return Scaffold(
       appBar: CustomAppBar(title: widget.isEdit ? 'Edit Food' : 'Upload Food'),
       body: Padding(
@@ -119,82 +120,67 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
 
               /// Category Info
               UpdateProductTile(
-                title: 'Category Info',
-                widget: BlocBuilder<ResCategoriesCubit, ResCategoriesState>(
-                  builder: (context, catState) {
-                    if (catState is ResCategoriesLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (catState is ResCategoriesLoaded) {
-                      final categories = catState.categoryModel.resCategories;
-                      return DropdownButtonFormField<String>(
-                        hint: const Text('Select Category'),
-                        value: categories?.any((cat) =>
-                                    cat.id.toString() ==
-                                    selectedCategoryValue) ==
-                                true
-                            ? selectedCategoryValue
-                            : null,
-                        isExpanded: true,
-                        onChanged: (value) {
-                          stCubit.category(value!);
-                        },
-                        items: categories?.map<DropdownMenuItem<String>>((cat) {
-                          return DropdownMenuItem(
-                            value: cat.id.toString(),
-                            child: Text(cat.name),
+                title: 'Addon And Category Info',
+                widget: Column(
+                  children: [
+                    BlocBuilder<ResCategoriesCubit, ResCategoriesState>(
+                      builder: (context, catState) {
+                        if (catState is ResCategoriesLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (catState is ResCategoriesLoaded) {
+                          final categories = catState.categoryModel.resCategories;
+                          return DropdownButtonFormField<String>(
+                            hint: const Text('Select Category'),
+                            value: categories?.any((cat) =>
+                                        cat.id.toString() ==
+                                        selectedCategoryValue) ==
+                                    true
+                                ? selectedCategoryValue
+                                : null,
+                            isExpanded: true,
+                            onChanged: (value) {
+                              stCubit.category(value!);
+                            },
+                            items: categories
+                                ?.map<DropdownMenuItem<String>>((cat) {
+                              return DropdownMenuItem(
+                                value: cat.id.toString(),
+                                child: Text(cat.name),
+                              );
+                            }).toList(),
                           );
-                        }).toList(),
-                      );
-                    } else if (catState is ResCategoriesError) {
-                      return Text(catState.message,
-                          style: const TextStyle(color: Colors.red));
-                    }
-                    return const SizedBox();
-                  },
-                ),
-              ),
-
-              Utils.verticalSpace(12),
-
-              /// Addon Info
-
-              UpdateProductTile(
-                title: 'Addons Info',
-                widget: BlocBuilder<ResAddonsCubit, ResAddonStateModel>(
-                  builder: (context, addonState) {
-                    final resState = addonState.resAddonsState;
-
-                    if (resState is ResAddonsLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (resState is ResAddonsLoaded) {
-                      final addons = resState.resAddonModel.resAddons ?? [];
-
-                      return DropdownButtonFormField<String>(
-                        hint: const Text('Select Addon'),
-                        value: addons.any((addon) =>
-                                addon.id.toString() == selectedAddonValue)
-                            ? selectedAddonValue
-                            : null,
-                        isExpanded: true,
-                        onChanged: (value) {
-                          if (value != null) {
-                            stCubit.addon(value); // update your form Cubit
-                          }
-                        },
-                        items: addons.map<DropdownMenuItem<String>>((addon) {
-                          return DropdownMenuItem(
-                            value: addon.id.toString(),
-                            child: Text(addon.name ?? "Unnamed"),
+                        } else if (catState is ResCategoriesError) {
+                          return Text(catState.message,
+                              style: const TextStyle(color: Colors.red));
+                        }
+                        return const SizedBox();
+                      },
+                    ),
+                    Utils.verticalSpace(12),
+                    BlocBuilder<ResAddonsCubit, ResAddonStateModel>(
+                      builder: (context, addonState) {
+                        if (addonState.resAddonsState is ResAddonsLoaded) {
+                          final loaded = addonState.resAddonsState as ResAddonsLoaded;
+                          final addons = loaded.resAddonModel.resAddons;
+                          return MultiSelectDialogField<String>(
+                            items: addons.map((addon) => MultiSelectItem(
+                              addon.id.toString(),
+                              addon.name ?? "Unnamed",
+                            ))
+                                .toList(),
+                            title: const Text("Select Addons"),
+                            buttonText: const Text("Select Addons"),
+                            initialValue: context.read<StoreProductCubit>().state.addonItems,
+                            onConfirm: (values) {
+                              context.read<StoreProductCubit>().addon(values);
+                            },
                           );
-                        }).toList(),
-                      );
-                    } else if (resState is ResAddonsError) {
-                      return Text(resState.message,
-                          style: const TextStyle(color: Colors.red));
-                    }
-
-                    return const SizedBox();
-                  },
+                        }
+                        return const SizedBox();
+                      },
+                    )
+                  ],
                 ),
               ),
 
@@ -233,20 +219,6 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
                         );
                       },
                     ),
-                    // BlocBuilder<StoreProductCubit, StoreProductStateModel>(
-                    //   builder: (context, state) {
-                    //     return CustomFormWidget(
-                    //       label: 'Translate Id',
-                    //       child: TextFormField(
-                    //         initialValue: state.translateId,
-                    //         onChanged: stCubit.translateId,
-                    //         decoration: const InputDecoration(
-                    //           hintText: 'Enter Translate Id',
-                    //         ),
-                    //       ),
-                    //     );
-                    //   },
-                    // ),
                   ],
                 ),
               ),
@@ -312,11 +284,96 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
                         );
                       },
                     ),
-                    const SizedBox(height: 8),
+                    Utils.verticalSpace(8),
                     GestureDetector(
                       onTap: () {
                         stCubit.size([...stCubit.state.size, '']);
                         stCubit.sizePrice([...stCubit.state.price, '']);
+                      },
+                      child: Container(
+                        width: 105,
+                        height: 45,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.orange),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.add, color: Colors.orange, size: 20),
+                            SizedBox(width: 5),
+                            Text('Add New',
+                                style: TextStyle(color: Colors.orange)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Utils.verticalSpace(12),
+
+              /// Specification
+              UpdateProductTile(
+                title: 'Specification',
+                widget: Column(
+                  children: [
+                    BlocBuilder<StoreProductCubit, StoreProductStateModel>(
+                      builder: (context, state) {
+                        final specifications = state.specification.isEmpty
+                            ? [''] // at least 1 always
+                            : state.specification;
+
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: specifications.length,
+                          itemBuilder: (context, index) {
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: CustomFormWidget(
+                                    label: 'Specification Name',
+                                    child: TextFormField(
+                                      initialValue: specifications[index],
+                                      onChanged: (val) {
+                                        final updatedSpecification = [
+                                          ...specifications
+                                        ];
+                                        updatedSpecification[index] = val;
+                                        stCubit.specification(
+                                            updatedSpecification);
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.red),
+                                  onPressed: () {
+                                    final updatedSpecification = [
+                                      ...specifications
+                                    ];
+                                    updatedSpecification.removeAt(index);
+
+                                    if (updatedSpecification.isEmpty) {
+                                      updatedSpecification.add('');
+                                    }
+
+                                    stCubit.specification(updatedSpecification);
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: () {
+                        stCubit.specification(
+                            [...stCubit.state.specification, '']);
                       },
                       child: Container(
                         width: 105,
@@ -402,17 +459,53 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
           ),
         ),
       ),
+
+
+
+      // BlocListener<ResAddonsCubit, ResAddonStateModel>(
+      //   listener: (context, state) {
+      //     final addAddon = state.resAddonsState;
+      //     if (addAddon is ResAddonsError) {
+      //       Utils.failureSnackBar(
+      //           context, addAddon.message);
+      //     } else if (addAddon is ResAddonsSuccess) {
+      //       Utils.successSnackBar(
+      //           context, addAddon.message);
+      //     }
+      //   },
+      //   child: PrimaryButton(
+      //     text: 'Add',
+      //     onPressed: () async {
+      //       Navigator.pop(context);
+      //       await resAddonsCubit.storeAddon();
+      //       resAddonsCubit.getAddon();
+      //     },
+      //   ),
+      // ),
+
+
       bottomNavigationBar: Padding(
         padding: Utils.symmetric(v: 20.0),
-        child: PrimaryButton(
-          text: widget.isEdit ? 'Update' : 'Upload',
-          onPressed: () {
-            if (widget.isEdit) {
-              stCubit.updateProduct(widget.prdId);
-            } else {
-              stCubit.storeProduct();
+        child: BlocListener<StoreProductCubit, StoreProductStateModel>(
+          listener: (context, state) {
+            final update = state.storeProductState;
+            if(update is StoreProductError){
+              Utils.failureSnackBar(context, update.message);
+            }else if(update is StoreProductSuccess){
+              Utils.successSnackBar(context, update.response.message);
             }
           },
+          child: PrimaryButton(
+            text: widget.isEdit ? 'Update' : 'Upload',
+            onPressed: () {
+              if (widget.isEdit) {
+                stCubit.updateProduct(widget.prdId);
+                Navigator.pushNamed(context, RouteNames.myMenuScreen);
+              } else {
+                stCubit.storeProduct();
+              }
+            },
+          ),
         ),
       ),
     );

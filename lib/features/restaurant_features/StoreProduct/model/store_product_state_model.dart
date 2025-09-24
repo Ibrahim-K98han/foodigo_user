@@ -1,48 +1,52 @@
 import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
-import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_state.dart';
+
+import '../cubit/store_product_state.dart';
 
 class StoreProductStateModel extends Equatable {
   final String name;
   final String slug;
   final String categoryId;
-  final String addonId;
   final String image; // file path
   final String productPrice;
-  final String offerPrice;
-  final String translateId;
   final List<String> size; // ["small", "medium", "large"]
   final List<String> price; // ["20", "40", "60"]
   final String shortDescription;
+  final List<String> addonItems; // ["1","2","3"]
+  final List<String> specification;
+  final String offerPrice;
+  final String translateId;
   final StoreProductState storeProductState;
 
   const StoreProductStateModel({
     this.name = '',
     this.slug = '',
     this.categoryId = '',
-    this.addonId = '',
     this.image = '',
     this.productPrice = '',
-    this.offerPrice = '',
-    this.translateId = '',
     this.size = const [],
     this.price = const [],
     this.shortDescription = '',
+    this.addonItems = const [],
+    this.specification = const [],
+    this.offerPrice = '',
+    this.translateId = '',
     this.storeProductState = const StoreProductInitial(),
   });
 
-  /// copyWith method
   StoreProductStateModel copyWith({
     String? name,
     String? slug,
     String? categoryId,
-    String? addonId,
     String? image,
     String? productPrice,
-    String? offerPrice,
     List<String>? size,
     List<String>? price,
     String? shortDescription,
+    List<String>? addonItems,
+    List<String>? specification,
+    String? offerPrice,
     String? translateId,
     StoreProductState? storeProductState,
   }) {
@@ -50,30 +54,33 @@ class StoreProductStateModel extends Equatable {
       name: name ?? this.name,
       slug: slug ?? this.slug,
       categoryId: categoryId ?? this.categoryId,
-      addonId: addonId ?? this.addonId,
       image: image ?? this.image,
       productPrice: productPrice ?? this.productPrice,
-      offerPrice: offerPrice ?? this.offerPrice,
-      translateId: translateId ?? this.translateId,
       size: size ?? this.size,
       price: price ?? this.price,
       shortDescription: shortDescription ?? this.shortDescription,
+      addonItems: addonItems ?? this.addonItems,
+      specification: specification ?? this.specification,
+      offerPrice: offerPrice ?? this.offerPrice,
+      translateId: translateId ?? this.translateId,
       storeProductState: storeProductState ?? this.storeProductState,
     );
   }
 
-  /// for API body (MultipartRequest fields are always String)
-  Map<String, String> toMap() {
+  /// 🔹 API body বানানোর জন্য
+  Map<String, dynamic> toMap() {
     return {
       'name': name,
       'slug': slug,
       'category_id': categoryId,
-      'addon': addonId,
+      'image': image,
       'product_price': productPrice,
-      'offer_price': offerPrice,
-      'size': jsonEncode(size),
-      'price': jsonEncode(price),
+      'size': jsonEncode(size),            // stringified list
+      'price': jsonEncode(price),          // stringified list
       'short_description': shortDescription,
+      'addon_items': jsonEncode(addonItems), // ["1","2","3"]
+      'specification': jsonEncode(specification),
+      'offer_price': offerPrice,
       'translate_id': translateId,
     };
   }
@@ -83,17 +90,23 @@ class StoreProductStateModel extends Equatable {
       name: map['name'] ?? '',
       slug: map['slug'] ?? '',
       categoryId: map['category_id']?.toString() ?? '',
-      addonId: map['addon']?.toString() ?? '',
       image: map['image'] ?? '',
-      productPrice: map['product_price']?.toString() ?? '0',
-      offerPrice: map['offer_price']?.toString() ?? '0',
-      translateId: map['translate_id']?.toString() ?? '0',
-      size:
-          map['size'] != null ? List<String>.from(jsonDecode(map['size'])) : [],
+      productPrice: map['product_price']?.toString() ?? '',
+      size: map['size'] != null
+          ? List<String>.from(jsonDecode(map['size']))
+          : [],
       price: map['price'] != null
           ? List<String>.from(jsonDecode(map['price']))
           : [],
       shortDescription: map['short_description'] ?? '',
+      addonItems: map['addon_items'] != null
+          ? List<String>.from(jsonDecode(map['addon_items']))
+          : [],
+      specification: map['specification'] != null
+          ? List<String>.from(jsonDecode(map['specification']))
+          : [],
+      offerPrice: map['offer_price']?.toString() ?? '',
+      translateId: map['translate_id']?.toString() ?? '',
     );
   }
 
@@ -103,18 +116,19 @@ class StoreProductStateModel extends Equatable {
       StoreProductStateModel.fromMap(json.decode(source));
 
   @override
-  List<Object?> get props => [
-        name,
-        slug,
-        categoryId,
-        addonId,
-        image,
-        productPrice,
-        offerPrice,
-        translateId,
-        size,
-        price,
-        shortDescription,
-        storeProductState,
-      ];
+  List<Object> get props => [
+    name,
+    slug,
+    categoryId,
+    image,
+    productPrice,
+    size,
+    price,
+    shortDescription,
+    addonItems,
+    specification,
+    offerPrice,
+    translateId,
+    storeProductState,
+  ];
 }

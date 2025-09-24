@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 
 class ResAddonModel extends Equatable {
@@ -27,10 +28,10 @@ class ResAddonModel extends Equatable {
     return ResAddonModel(
       resAddons: map['addons'] != null
           ? List<ResAddons>.from(
-        (map['addons'] as List).map(
-              (x) => ResAddons.fromMap(x as Map<String, dynamic>),
-        ),
-      )
+              (map['addons'] as List).map(
+                (x) => ResAddons.fromMap(x as Map<String, dynamic>),
+              ),
+            )
           : [],
     );
   }
@@ -42,6 +43,141 @@ class ResAddonModel extends Equatable {
 
   @override
   List<Object> get props => [resAddons];
+}
+
+class TranslateAddonModel extends Equatable {
+  final Addon? addon;
+  final AddonTranslate? addonTranslate;
+
+  const TranslateAddonModel({
+    this.addon,
+    this.addonTranslate,
+  });
+
+  TranslateAddonModel copyWith({
+    Addon? addon,
+    AddonTranslate? addonTranslate,
+  }) {
+    return TranslateAddonModel(
+      addon: addon ?? this.addon,
+      addonTranslate: addonTranslate ?? this.addonTranslate,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'addon': addon?.toMap(),
+      'addon_translate': addonTranslate?.toMap(),
+    };
+  }
+
+  factory TranslateAddonModel.fromMap(Map<String, dynamic> map) {
+    return TranslateAddonModel(
+      addon: map['addon'] != null
+          ? Addon.fromMap(map['addon'] as Map<String, dynamic>)
+          : null,
+      addonTranslate: map['addon_translate'] != null
+          ? AddonTranslate.fromMap(
+              map['addon_translate'] as Map<String, dynamic>)
+          : null,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory TranslateAddonModel.fromJson(String source) =>
+      TranslateAddonModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  bool get stringify => true;
+
+  @override
+  List<Object> get props => [addon!, addonTranslate!];
+}
+
+class Addon extends Equatable {
+  final int id;
+  final String restaurantId;
+  final String price;
+  final String status;
+  final String createdAt;
+  final String updatedAt;
+  final String name;
+
+  const Addon({
+    required this.id,
+    required this.restaurantId,
+    required this.price,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.name,
+  });
+
+  Addon copyWith({
+    int? id,
+    String? restaurantId,
+    String? price,
+    String? status,
+    String? createdAt,
+    String? updatedAt,
+    String? name,
+  }) {
+    return Addon(
+      id: id ?? this.id,
+      restaurantId: restaurantId ?? this.restaurantId,
+      price: price ?? this.price,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      name: name ?? this.name,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'restaurant_id': restaurantId,
+      'price': price,
+      'status': status,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'name': name,
+    };
+  }
+
+  factory Addon.fromMap(Map<String, dynamic> map) {
+    return Addon(
+      id: map['id'] ?? 0,
+      restaurantId: map['restaurant_id'] ?? '',
+      price: map['price'] ?? '',
+      status: map['status'] ?? '',
+      createdAt: map['created_at'] ?? '',
+      updatedAt: map['updated_at'] ?? '',
+      name: map['name'] ?? '',
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Addon.fromJson(String source) =>
+      Addon.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  bool get stringify => true;
+
+  @override
+  List<Object> get props {
+    return [
+      id,
+      restaurantId,
+      price,
+      status,
+      createdAt,
+      updatedAt,
+      name,
+    ];
+  }
 }
 
 class ResAddons extends Equatable {
@@ -102,15 +238,13 @@ class ResAddons extends Equatable {
 
   factory ResAddons.fromMap(Map<String, dynamic> map) {
     return ResAddons(
-      id: (map['id'] is String)
-          ? int.tryParse(map['id']) ?? 0
-          : (map['id'] ?? 0),
-      restaurantId: map['restaurant_id']?.toString() ?? '',
-      price: map['price']?.toString() ?? '',
-      status: map['status']?.toString() ?? '',
-      createdAt: map['created_at']?.toString() ?? '',
-      updatedAt: map['updated_at']?.toString() ?? '',
-      name: map['name']?.toString() ?? '',
+      id: map['id'] ?? 0,
+      restaurantId: map['restaurant_id'] ?? '',
+      price: map['price'] ?? '',
+      status: map['status'] ?? '',
+      createdAt: map['created_at'] ?? '',
+      updatedAt: map['updated_at'] ?? '',
+      name: map['name'] ?? '',
       addonTranslate: map['addon_translate'] != null
           ? AddonTranslate.fromMap(map['addon_translate'])
           : null,
@@ -124,15 +258,15 @@ class ResAddons extends Equatable {
 
   @override
   List<Object?> get props => [
-    id,
-    restaurantId,
-    price,
-    status,
-    createdAt,
-    updatedAt,
-    name,
-    addonTranslate,
-  ];
+        id,
+        restaurantId,
+        price,
+        status,
+        createdAt,
+        updatedAt,
+        name,
+        addonTranslate,
+      ];
 }
 
 class AddonTranslate extends Equatable {
@@ -183,14 +317,12 @@ class AddonTranslate extends Equatable {
 
   factory AddonTranslate.fromMap(Map<String, dynamic> map) {
     return AddonTranslate(
-      id: (map['id'] is String)
-          ? int.tryParse(map['id']) ?? 0
-          : (map['id'] ?? 0),
-      addonId: map['addon_id']?.toString() ?? '',
-      langCode: map['lang_code']?.toString() ?? '',
-      name: map['name']?.toString() ?? '',
-      createdAt: map['created_at']?.toString() ?? '',
-      updatedAt: map['updated_at']?.toString() ?? '',
+      id: map['id'] ?? 0,
+      addonId: map['addon_id'] ?? '',
+      langCode: map['lang_code'] ?? '',
+      name: map['name'] ?? '',
+      createdAt: map['created_at'] ?? '',
+      updatedAt: map['updated_at'] ?? '',
     );
   }
 
