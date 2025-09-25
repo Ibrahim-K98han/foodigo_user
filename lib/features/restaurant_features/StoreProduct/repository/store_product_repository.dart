@@ -1,8 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:foodigo/data/errors/exception.dart';
 import 'package:foodigo/data/errors/failure.dart';
+import 'package:foodigo/features/SingleRestaurant/model/single_restaurant_model.dart';
 import 'package:foodigo/features/add_to_cart/model/add_cart_response_model.dart';
 import 'package:foodigo/features/add_to_cart/model/add_cart_state_model.dart';
+import 'package:foodigo/features/restaurant_features/Products/model/product_model.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_response_model.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_state_model.dart';
 
@@ -12,11 +14,10 @@ abstract class StoreProductRepository {
   Future<Either<dynamic, StoreProductResponseModel>> storeProduct(
       StoreProductStateModel body, Uri uri, String token);
 
-  Future<Either<dynamic, StoreProductResponseModel>> updateStoreProduct(
+  Future<Either<dynamic, ProductList>> updateStoreProduct(
       StoreProductStateModel body, Uri uri, String token);
 
-  Future<Either<dynamic, StoreProductResponseModel>> getEditProduct(
-      String token, String id, Uri url);
+  Future<Either<dynamic, ProductList>> getEditProduct(Uri url, String token);
 
   Future<Either<Failure, StoreProductResponseModel>> deleteStoreProduct(
       String token, String id);
@@ -43,13 +44,12 @@ class StoreProductRepositoryImpl implements StoreProductRepository {
     }
   }
 
+  ///Edit Product
   @override
-  Future<Either<dynamic, StoreProductResponseModel>> getEditProduct(
-      String token, String id, Uri url) async {
+  Future<Either<dynamic, ProductList>> getEditProduct( Uri url, String token) async {
     try {
-      final result = await remoteDataSource.getEditProduct(token, id, url);
-      final response =
-          StoreProductResponseModel.fromMap(result['data']['product']);
+      final result = await remoteDataSource.getEditProduct(url, token);
+      final response = ProductList.fromMap(result['data']['product']);
       return Right(response);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
@@ -73,12 +73,12 @@ class StoreProductRepositoryImpl implements StoreProductRepository {
 
   /// -------- UPDATE PRODUCT ----------
   @override
-  Future<Either<dynamic, StoreProductResponseModel>> updateStoreProduct(
+  Future<Either<dynamic, ProductList>> updateStoreProduct(
       StoreProductStateModel body, Uri uri, String token) async {
     try {
       final result =
-      await remoteDataSource.updateStoreProduct(body, uri, token);
-      final response = StoreProductResponseModel.fromMap(result);
+          await remoteDataSource.updateStoreProduct(body, uri, token);
+      final response = ProductList.fromMap(result);
       return Right(response);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));

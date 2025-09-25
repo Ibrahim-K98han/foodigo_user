@@ -5,7 +5,8 @@ import 'package:foodigo/features/restaurant_features/RestaurantProfile/model/res
 
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_form.dart';
-import '../../my_menu/components/edit_food_screen.dart';
+import '../../my_menu/edit_food_screen.dart';
+import '../../my_menu/components/update_product_tile.dart';
 
 class AccountInfo extends StatefulWidget {
   const AccountInfo({super.key});

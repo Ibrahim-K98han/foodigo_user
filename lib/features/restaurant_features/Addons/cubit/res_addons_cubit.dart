@@ -28,6 +28,7 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
 
   void translateId(String translateId) => emit(state.copyWith(translateId: translateId));
 
+
   /// Get Addon List
   Future<void> getAddon() async {
     print("call get addon");

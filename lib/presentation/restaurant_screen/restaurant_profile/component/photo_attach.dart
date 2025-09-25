@@ -10,7 +10,8 @@ import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_image.dart';
 import '../../../../widget/custom_text_style.dart';
-import '../../my_menu/components/edit_food_screen.dart';
+import '../../my_menu/edit_food_screen.dart';
+import '../../my_menu/components/update_product_tile.dart';
 
 class PhotoAttach extends StatefulWidget {
   const PhotoAttach({super.key});
@@ -132,24 +133,21 @@ class _PhotoAttachState extends State<PhotoAttach> {
           Stack(
             alignment: Alignment.center,
             children: [
-              GestureDetector(
-                onTap: () => _pickLogo(),
-                child: _logoFile != null
-                    ? Image.file(_logoFile!,
-                        width: 80, height: 80, fit: BoxFit.cover)
-                    : CustomImage(
-                        path: resProCubit.restaurantProfileModel!
-                                .restaurantProfile!.logo.isNotEmpty
-                            ? RemoteUrls.imageUrl(resProCubit
-                                .restaurantProfileModel!
-                                .restaurantProfile!
-                                .logo)
-                            : KImages.profile,
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.cover,
-                      ),
-              ),
+              _logoFile != null
+                  ? Image.file(_logoFile!,
+                      width: 80, height: 80, fit: BoxFit.cover)
+                  : CustomImage(
+                      path: resProCubit.restaurantProfileModel!
+                              .restaurantProfile!.logo.isNotEmpty
+                          ? RemoteUrls.imageUrl(resProCubit
+                              .restaurantProfileModel!
+                              .restaurantProfile!
+                              .logo)
+                          : KImages.profile,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
               Positioned(
                 bottom: 0,
                 right: 0,

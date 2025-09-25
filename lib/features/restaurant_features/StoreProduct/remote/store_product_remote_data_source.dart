@@ -11,7 +11,7 @@ abstract class StoreProductRemoteDataSource {
 
   Future updateStoreProduct(StoreProductStateModel body, Uri uri, String token);
 
-  Future getEditProduct(String token, String id, Uri url);
+  Future getEditProduct(Uri url, String token);
 
   Future deleteStoreProduct(String token, String id);
 }
@@ -66,6 +66,8 @@ class StoreProductRemoteDataSourceImpl implements StoreProductRemoteDataSource {
       final file = await http.MultipartFile.fromPath('image', body.image);
       request.files.add(file);
     }
+    request.fields['translate_id'] = body.translateId;
+    print("update product body :${body.toMap()}");
     http.StreamedResponse response = await request.send();
     final clientMethod = http.Response.fromStream(response);
     final responseJsonBody =
@@ -75,7 +77,7 @@ class StoreProductRemoteDataSourceImpl implements StoreProductRemoteDataSource {
 
   /// --------- GET PRODUCT BY ID -------------
   @override
-  Future getEditProduct(String token, String id, Uri url) async {
+  Future getEditProduct(Uri url, String token) async {
     final clientMethod = client.get(url, headers: authHeader(token));
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);

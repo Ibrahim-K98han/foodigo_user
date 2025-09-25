@@ -152,7 +152,7 @@ class ProductList extends Equatable {
       'name': name,
       'short_description': shortDescription,
       'size': size,
-      'translate_product': translateProduct?.toMap(),
+      'product_translate': translateProduct?.toMap(),
       'category': category?.toMap(),
       'restaurant': restaurant?.toMap(),
       'offer': offer?.toMap(),
@@ -178,9 +178,7 @@ class ProductList extends Equatable {
       name: map['name'] ?? '',
       shortDescription: map['short_description'] ?? '',
       size: map['size'] ?? '',
-      translateProduct: map['translate_product'] != null
-          ? TranslateProduct.fromMap(map['translate_product'])
-          : null,
+      translateProduct: map['product_translate'] != null ? TranslateProduct.fromMap(map['product_translate'] as Map<String,dynamic>) : null,
       category:
           map['category'] != null ? Category.fromMap(map['category']) : null,
       restaurant: map['restaurant'] != null
@@ -296,8 +294,8 @@ class TranslateProduct extends Equatable {
   factory TranslateProduct.fromMap(Map<String, dynamic> map) {
     return TranslateProduct(
       id: map['id'] ?? 0,
-      productId: map['product_id'] ?? 0,
-      langCode: map['lang_code'] ?? 0,
+      productId: map['product_id'] ?? '',
+      langCode: map['lang_code'] ?? '',
       name: map['name'] ?? '',
       shortDescription: map['short_description'] ?? '',
       size: map['size'] ?? '',

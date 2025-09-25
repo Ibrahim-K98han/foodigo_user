@@ -8,7 +8,8 @@ import '../../../../utils/utils.dart';
 import '../../../../widget/custom_form.dart';
 import '../../../../widget/custom_text_style.dart';
 import '../../../screen/my_cart/components/map_pcker_screen.dart';
-import '../../my_menu/components/edit_food_screen.dart';
+import '../../my_menu/edit_food_screen.dart';
+import '../../my_menu/components/update_product_tile.dart';
 
 class RestaurantInfo extends StatefulWidget {
   const RestaurantInfo({super.key});

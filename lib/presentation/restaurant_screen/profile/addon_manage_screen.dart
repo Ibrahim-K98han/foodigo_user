@@ -190,23 +190,24 @@ class _AddonManageScreenState extends State<AddonManageScreen> {
                                 ),
                                 SizedBox(height: 20.h),
                                 BlocBuilder<ResAddonsCubit, ResAddonStateModel>(
-                                    builder: (context, state) {
-                                  final update = state.resAddonsState;
-                                  if (update is UpdateAddonsLoading) {
-                                    return const LoadingWidget();
-                                  }
-                                  return PrimaryButton(
-                                      text: 'Update',
-                                      onPressed: () {
-                                        resAddonsCubit.translateId(edit
-                                            .editAddon.addonTranslate!.id
-                                            .toString());
-                                        resAddonsCubit.updateAddon(edit
-                                            .editAddon.addon!.id
-                                            .toString());
-                                        Navigator.pop(context);
-                                      });
-                                }),
+                                  builder: (context, state) {
+                                    final update = state.resAddonsState;
+                                    if (update is UpdateAddonsLoading) {
+                                      return const LoadingWidget();
+                                    }
+                                    return PrimaryButton(
+                                        text: 'Update',
+                                        onPressed: () {
+                                          resAddonsCubit.translateId(edit
+                                              .editAddon.addonTranslate!.id
+                                              .toString());
+                                          resAddonsCubit.updateAddon(edit
+                                              .editAddon.addon!.id
+                                              .toString());
+                                          Navigator.pop(context);
+                                        });
+                                  },
+                                ),
                                 SizedBox(height: 20.h),
                               ],
                             ),

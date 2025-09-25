@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foodigo/widget/primary_button.dart';
 
-import '../../../../features/restaurant_features/RestaurantDashboard/model/res_dashboard_model.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
-import 'order_details_screen.dart';
 
 class OrderCart extends StatelessWidget {
   const OrderCart({super.key});

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foodigo/features/restaurant_features/Products/model/product_model.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantDashboard/cubit/res_dashboard_cubit.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantDashboard/cubit/res_dashboard_state.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantDashboard/model/res_dashboard_model.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/page_refresh.dart';
 import 'package:intl/intl.dart';
+
 import '../../../features/restaurant_features/Products/cubit/product_cubit.dart';
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
@@ -15,10 +15,7 @@ import '../../../utils/utils.dart';
 import '../../../widget/custom_text_style.dart';
 import '../../../widget/fetch_error_text.dart';
 import '../../../widget/loading_widget.dart';
-import '../../../widget/title_and_navigator.dart';
-import '../my_order/components/order_card.dart';
 import '../my_order/components/order_details_screen.dart';
-import 'components/recent_order.dart';
 import 'components/feature_food.dart';
 import 'components/home_header.dart';
 

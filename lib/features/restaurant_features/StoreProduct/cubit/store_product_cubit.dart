@@ -1,7 +1,9 @@
 import 'dart:convert';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/restaurant_features/Login/bloc/restaurant_login_bloc.dart';
+import 'package:foodigo/features/restaurant_features/Products/model/product_model.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_state.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_response_model.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_state_model.dart';
@@ -20,6 +22,8 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
         super(const StoreProductStateModel());
 
   StoreProductResponseModel? storeProductResponseModel;
+  ProductList? products;
+  TranslateProduct? translateProduct;
 
   /// ----------------- Form Updaters -----------------
   void productName(String name) => emit(state.copyWith(name: name));
@@ -41,7 +45,9 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
       emit(state.copyWith(translateId: translateId));
 
   void size(List<String> sizes) => emit(state.copyWith(size: sizes));
-  void specification(List<String> specification) => emit(state.copyWith(specification: specification));
+
+  void specification(List<String> specification) =>
+      emit(state.copyWith(specification: specification));
 
   void sizePrice(List<String> prices) => emit(state.copyWith(price: prices));
 
@@ -49,7 +55,7 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
 
   /// ----------------- Store Product API -----------------
   Future<void> storeProduct() async {
-    emit(state.copyWith(storeProductState: StoreProductLoading()));
+    emit(state.copyWith(storeProductState: const StoreProductLoading()));
     final uri = Utils.tokenWithCode(
       RemoteUrls.storeProduct,
       _loginBloc.userInformation!.token,
@@ -62,9 +68,24 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
         uri,
         _loginBloc.userInformation!.token,
       );
-      result.fold((failure) {emit(state.copyWith(storeProductState: StoreProductError(failure.message, failure.statusCode,),),);},
-        (success) {storeProductResponseModel = success;
-          emit(state.copyWith(storeProductState: StoreProductLoaded(success),),);
+      result.fold(
+        (failure) {
+          emit(
+            state.copyWith(
+              storeProductState: StoreProductError(
+                failure.message,
+                failure.statusCode,
+              ),
+            ),
+          );
+        },
+        (success) {
+          storeProductResponseModel = success;
+          emit(
+            state.copyWith(
+              storeProductState: StoreProductLoaded(success),
+            ),
+          );
           clear();
         },
       );
@@ -85,11 +106,27 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
     );
     print('Update product url: $uri');
     try {
-      final result = await _repository.updateStoreProduct(state, uri, _loginBloc.userInformation!.token,
+      final result = await _repository.updateStoreProduct(
+        state,
+        uri,
+        _loginBloc.userInformation!.token,
       );
       print('API called successfully');
-      result.fold((failure) {emit(state.copyWith(storeProductState: StoreProductUpdateError(failure.message, failure.statusCode,),));},
-            (success) {storeProductResponseModel = success;emit(state.copyWith(storeProductState: StoreProductUpdateLoaded(success),),
+      result.fold(
+        (failure) {
+          emit(state.copyWith(
+            storeProductState: StoreProductUpdateError(
+              failure.message,
+              failure.statusCode,
+            ),
+          ));
+        },
+        (success) {
+          products = success;
+          emit(
+            state.copyWith(
+              storeProductState: StoreProductUpdateLoaded(success),
+            ),
           );
         },
       );
@@ -102,38 +139,34 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
 
   /// ----------------- Get Product By ID -----------------
   Future<void> getEditProduct(String id) async {
-    emit(state.copyWith(storeProductState: StoreProductLoading()));
-    // final url = RemoteUrls.editProduct(id);
+    emit(state.copyWith(storeProductState: EditProductLoading()));
     final url = Utils.tokenWithCode(RemoteUrls.editProduct(id),
         _loginBloc.userInformation!.token, _loginBloc.state.languageCode);
     print('Get Product $url');
 
     final result = await _repository.getEditProduct(
-      _loginBloc.userInformation!.token,
-      id,
       url,
+      _loginBloc.userInformation!.token,
     );
     result.fold((failure) {
-      final errorState = StoreProductError(failure.message, failure.statusCode);
+      final errorState = EditProductError(failure.message, failure.statusCode);
       emit(state.copyWith(storeProductState: errorState));
     }, (success) {
-      storeProductResponseModel = success;
-      final translateId = storeProductResponseModel?.data!.productTranslate?.id;
-      if (storeProductResponseModel != null) {
+      products = success;
+      if (products != null) {
         emit(state.copyWith(
-            name: storeProductResponseModel!.data!.name,
-            slug: storeProductResponseModel!.data!.slug,
-            categoryId: storeProductResponseModel!.data!.categoryId,
-            image: storeProductResponseModel!.data!.image,
-            productPrice: storeProductResponseModel!.data!.products!.price.toString(),
-            offerPrice: storeProductResponseModel!.data!.offerPrice.toString(),
-            size: _parseSize(storeProductResponseModel?.data!.size),
-            price: _parseSizePrice(storeProductResponseModel?.data!.price),
-            shortDescription: storeProductResponseModel!.data!.shortDescription ?? '',
-            translateId: translateId.toString(),
-            storeProductState: StoreProductLoaded(success)));
+            name: products!.name,
+            slug: products!.slug,
+            categoryId: products!.categoryId.toString(),
+            image: products!.image,
+            productPrice: products!.price.toString(),
+            offerPrice: products!.offerPrice.toString(),
+            size: _parseSize(products!.size),
+            price: _parseSizePrice(products!.price),
+            shortDescription: products!.shortDescription.toString(),
+            ));
       }
-      final successState = StoreProductLoaded(success);
+      final successState = EditProductLoaded(success);
       emit(state.copyWith(storeProductState: successState));
     });
   }
@@ -151,7 +184,6 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
     );
   }
 
-
   List<String> _parseSize(dynamic raw) {
     if (raw == null) return [];
     try {
@@ -163,6 +195,7 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
     } catch (_) {}
     return [];
   }
+
   List<String> _parseSizePrice(dynamic raw) {
     if (raw == null) return [];
     try {

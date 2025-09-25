@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:foodigo/features/SingleRestaurant/model/single_restaurant_model.dart';
+import 'package:foodigo/features/restaurant_features/Products/model/product_model.dart';
 import 'package:meta/meta.dart';
 import 'package:foodigo/features/add_to_cart/model/add_cart_response_model.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_response_model.dart';
@@ -17,7 +19,9 @@ class StoreProductInitial extends StoreProductState {
   const StoreProductInitial();
 }
 
-class StoreProductLoading extends StoreProductState {}
+class StoreProductLoading extends StoreProductState {
+  const StoreProductLoading();
+}
 
 class StoreProductLoaded extends StoreProductState {
   final StoreProductResponseModel response;
@@ -47,11 +51,55 @@ class StoreProductSuccess extends StoreProductState {
   List<Object> get props => [response];
 }
 
-
 class StoreProductFormValidate extends StoreProductState {
   final Errors errors;
 
   const StoreProductFormValidate(this.errors);
+
+  @override
+  List<Object?> get props => [errors];
+}
+
+///Get Edit Product
+
+class EditProductInitial extends StoreProductState {
+  const EditProductInitial();
+}
+
+class EditProductLoading extends StoreProductState {}
+
+class EditProductLoaded extends StoreProductState {
+  final ProductList response;
+
+  const EditProductLoaded(this.response);
+
+  @override
+  List<Object?> get props => [response];
+}
+
+class EditProductError extends StoreProductState {
+  final String message;
+  final int statusCode;
+
+  const EditProductError(this.message, this.statusCode);
+
+  @override
+  List<Object?> get props => [message, statusCode];
+}
+
+class EditProductSuccess extends StoreProductState {
+  final Products response;
+
+  const EditProductSuccess(this.response);
+
+  @override
+  List<Object> get props => [response];
+}
+
+class EditProductFormValidate extends StoreProductState {
+  final Errors errors;
+
+  const EditProductFormValidate(this.errors);
 
   @override
   List<Object?> get props => [errors];
@@ -66,7 +114,7 @@ class StoreProductUpdateInitial extends StoreProductState {
 class StoreProductUpdateLoading extends StoreProductState {}
 
 class StoreProductUpdateLoaded extends StoreProductState {
-  final StoreProductResponseModel response;
+  final ProductList response;
 
   const StoreProductUpdateLoaded(this.response);
 
@@ -101,7 +149,6 @@ class StoreProductUpdateSuccess extends StoreProductState {
   @override
   List<Object> get props => [response];
 }
-
 
 /// ---------- Delete Store Product ----------
 

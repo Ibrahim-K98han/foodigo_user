@@ -5,7 +5,8 @@ import '../../../../features/restaurant_features/RestaurantProfile/cubit/restaur
 import '../../../../features/restaurant_features/RestaurantProfile/model/restaurant_profile_state_model.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_form.dart';
-import '../../my_menu/components/edit_food_screen.dart';
+import '../../my_menu/edit_food_screen.dart';
+import '../../my_menu/components/update_product_tile.dart';
 
 class OtherInfo extends StatefulWidget {
   const OtherInfo({super.key});

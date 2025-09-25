@@ -89,12 +89,10 @@ class StoreProductStateModel extends Equatable {
     return StoreProductStateModel(
       name: map['name'] ?? '',
       slug: map['slug'] ?? '',
-      categoryId: map['category_id']?.toString() ?? '',
+      categoryId: map['category_id'] ?? '',
       image: map['image'] ?? '',
-      productPrice: map['product_price']?.toString() ?? '',
-      size: map['size'] != null
-          ? List<String>.from(jsonDecode(map['size']))
-          : [],
+      productPrice: map['product_price'] ?? '',
+      size: map['size'] != null ? List<String>.from(jsonDecode(map['size'])) : [],
       price: map['price'] != null
           ? List<String>.from(jsonDecode(map['price']))
           : [],
@@ -105,8 +103,8 @@ class StoreProductStateModel extends Equatable {
       specification: map['specification'] != null
           ? List<String>.from(jsonDecode(map['specification']))
           : [],
-      offerPrice: map['offer_price']?.toString() ?? '',
-      translateId: map['translate_id']?.toString() ?? '',
+      offerPrice: map['offer_price']?? '',
+      translateId: map['translate_id'] ?? '',
     );
   }
 
