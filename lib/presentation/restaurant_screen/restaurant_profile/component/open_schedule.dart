@@ -8,7 +8,8 @@ import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_image.dart';
 import '../../../../widget/custom_text_style.dart';
-import '../../my_menu/components/edit_food_screen.dart';
+import '../../my_menu/edit_food_screen.dart';
+import '../../my_menu/components/update_product_tile.dart';
 
 class OpenSchedule extends StatelessWidget {
   const OpenSchedule({super.key});

@@ -50,17 +50,31 @@ class WithdrawCubit extends Cubit<WithdrawStoreStateModel> {
     );
     result.fold(
       (failure) {
-        emit(state.copyWith(
-          withdrawState:
-              WithdrawMethodError(failure.message, failure.statusCode),
-        ));
+        emit(
+          state.copyWith(
+            withdrawState:
+                WithdrawMethodError(failure.message, failure.statusCode),
+          ),
+        );
       },
       (success) {
         withdrawModel = success;
-        emit(state.copyWith(
-          withdrawState: WithdrawStoreLoaded(success),
-        ));
+        emit(
+          state.copyWith(
+            withdrawState: WithdrawStoreLoaded(success),
+          ),
+        );
+        clear();
       },
     );
+  }
+
+  void clear() {
+    emit(const WithdrawStoreStateModel(
+      methodId: '',
+      amount: '',
+      bankDescription: '',
+      withdrawState: WithdrawMethodInitial(),
+    ));
   }
 }

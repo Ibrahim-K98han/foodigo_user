@@ -4,19 +4,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_cubit.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_state.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantProfile/model/restaurant_profile_model.dart';
-import 'package:foodigo/utils/k_images.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantProfile/model/restaurant_profile_state_model.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
-import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/loading_widget.dart';
 import 'package:foodigo/widget/page_refresh.dart';
+
 import '../../../utils/constraints.dart';
 import '../../../utils/utils.dart';
 import '../../../widget/custom_text_style.dart';
 import '../../../widget/fetch_error_text.dart';
 import '../../../widget/primary_button.dart';
-import 'component/open_schedule.dart';
+import 'component/account_info.dart';
+import 'component/other_info.dart';
 import 'component/photo_attach.dart';
 import 'component/restaurant_info.dart';
+import 'component/restaurant_owner_info.dart';
 
 class EditRestaurantScreen extends StatefulWidget {
   const EditRestaurantScreen({super.key});
@@ -43,9 +45,10 @@ class _EditRestaurantScreenState extends State<EditRestaurantScreen> {
         onRefresh: () async {
           resProCubit.getRestaurantProfile();
         },
-        child: BlocConsumer<RestaurantProfileCubit, RestaurantProfileState>(
+        child:
+            BlocConsumer<RestaurantProfileCubit, RestaurantProfileStateModel>(
           listener: (context, state) {
-            final profile = state;
+            final profile = state.restaurantProfileState;
             if (profile is RestaurantProfileError) {
               if (profile.statusCode == 503) {
                 FetchErrorText(text: profile.message);
@@ -53,7 +56,7 @@ class _EditRestaurantScreenState extends State<EditRestaurantScreen> {
             }
           },
           builder: (context, state) {
-            final profile = state;
+            final profile = state.restaurantProfileState;
             if (profile is RestaurantProfileLoading) {
               return const LoadingWidget();
             } else if (profile is RestaurantProfileError) {
@@ -82,7 +85,11 @@ class _EditRestaurantScreenState extends State<EditRestaurantScreen> {
       ),
       bottomNavigationBar: Padding(
         padding: Utils.symmetric(v: 20.0),
-        child: PrimaryButton(text: 'Update', onPressed: () {}),
+        child: PrimaryButton(
+            text: 'Update',
+            onPressed: () {
+              resProCubit.updateRestaurantProfile();
+            }),
       ),
     );
   }
@@ -95,6 +102,7 @@ class ProfileDataLoad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final resProCubit = context.read<RestaurantProfileCubit>();
     return Padding(
       padding: Utils.symmetric(),
       child: SingleChildScrollView(
@@ -110,37 +118,51 @@ class ProfileDataLoad extends StatelessWidget {
             const RestaurantInfo(),
             Utils.verticalSpace(12),
 
-            ///============== Open Schedule ==========///
-            const OpenSchedule(),
-            Utils.verticalSpace(16),
-            SwitchWidget(
-              text: 'Delivery',
-              icon: KImages.delivery_man,
-              initialValue: true,
-              onToggle: (bool value) {
-                if (value == true) {
-                  restaurantProfileModel.restaurantProfile!.isFeatured;
-                }
+            ///============ Restaurant Owner Info ==========///
+            const RestaurantOwnerInfo(),
+            Utils.verticalSpace(12),
+
+            ///============ Account Info ==========///
+            const AccountInfo(),
+            Utils.verticalSpace(12),
+
+            ///============ Other Info ==========///
+            const OtherInfo(),
+            Utils.verticalSpace(12),
+
+            BlocBuilder<RestaurantProfileCubit, RestaurantProfileStateModel>(
+              builder: (context, state) {
+                return SwitchWidget(
+                  text: 'Make Featured',
+                  initialValue: state.isFeatured,
+                  onToggle: (bool value) {
+                    resProCubit.isFeatured(value);
+                  },
+                );
               },
             ),
-            SwitchWidget(
-              text: 'Dining',
-              icon: KImages.delivery_man,
-              initialValue: true,
-              onToggle: (bool value) {
-                if (value == true) {
-                  restaurantProfileModel.restaurantProfile!.isPickupOrder;
-                }
+
+            BlocBuilder<RestaurantProfileCubit, RestaurantProfileStateModel>(
+              builder: (context, state) {
+                return SwitchWidget(
+                  text: 'Pickup Order',
+                  initialValue: state.isPickupOrder,
+                  onToggle: (bool value) {
+                    resProCubit.isPickup(value);
+                  },
+                );
               },
             ),
-            SwitchWidget(
-              text: 'Take Away',
-              icon: KImages.delivery_man,
-              initialValue: true,
-              onToggle: (bool value) {
-                if (value == true) {
-                  restaurantProfileModel.restaurantProfile!.isDeliveryOrder;
-                }
+
+            BlocBuilder<RestaurantProfileCubit, RestaurantProfileStateModel>(
+              builder: (context, state) {
+                return SwitchWidget(
+                  text: 'Delivery Order',
+                  initialValue: state.isDeliveryOrder,
+                  onToggle: (bool value) {
+                    resProCubit.isDelivery(value);
+                  },
+                );
               },
             ),
           ],
@@ -207,12 +229,12 @@ class _SwitchWidgetState extends State<SwitchWidget> {
           children: [
             Row(
               children: [
-                CustomImage(
-                  path: widget.icon,
-                  width: 24,
-                  height: 24,
-                  fit: BoxFit.cover,
-                ),
+                // CustomImage(
+                //   path: widget.icon,
+                //   width: 24,
+                //   height: 24,
+                //   fit: BoxFit.cover,
+                // ),
                 Utils.horizontalSpace(12),
                 CustomText(
                   text: widget.text ?? '',

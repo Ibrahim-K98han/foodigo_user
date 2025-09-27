@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foodigo/widget/primary_button.dart';
 
-import '../../../../features/restaurant_features/RestaurantDashboard/model/res_dashboard_model.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
-import 'order_details_screen.dart';
 
 class OrderCart extends StatelessWidget {
   const OrderCart({super.key});
@@ -16,13 +13,16 @@ class OrderCart extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         showDialog(
-            context: context,
-            builder: (context) {
-              return Dialog(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6.r)),
-                  child: CustomText(text: 'text'));
-            });
+          context: context,
+          builder: (context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6.r),
+              ),
+              child: const CustomText(text: 'text'),
+            );
+          },
+        );
       },
       child: Container(
         height: 80.0,
@@ -103,8 +103,9 @@ class OrderCart extends StatelessWidget {
                           height: 5,
                           width: 5,
                           decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: smallContainerColor),
+                            shape: BoxShape.circle,
+                            color: smallContainerColor,
+                          ),
                         ),
                       ),
                       const CustomText(
@@ -113,7 +114,7 @@ class OrderCart extends StatelessWidget {
                         fontSize: 12,
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

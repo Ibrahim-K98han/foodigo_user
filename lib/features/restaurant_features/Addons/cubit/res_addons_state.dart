@@ -119,10 +119,10 @@ class EditAddonsError extends ResAddonsState {
 }
 
 class EditAddonsLoaded extends ResAddonsState {
-  final ResAddonModel resAddonModel;
+  final TranslateAddonModel editAddon;
 
-  const EditAddonsLoaded(this.resAddonModel);
+  const EditAddonsLoaded(this.editAddon);
 
   @override
-  List<Object?> get props => [resAddonModel];
+  List<Object?> get props => [editAddon];
 }

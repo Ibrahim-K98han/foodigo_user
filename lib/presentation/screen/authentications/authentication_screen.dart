@@ -54,21 +54,31 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
           path: KImages.logo,
           height: 30.h,
         ),
-        bottom: TabBar(
-          indicatorPadding: const EdgeInsets.symmetric(horizontal: 10),
-          controller: _tabController,
-          indicatorSize: TabBarIndicatorSize.tab,
-          indicatorColor: Colors.transparent,
-          labelColor: textColor,
-          dividerColor: Colors.transparent,
-          indicator: BoxDecoration(
-            color: primaryColor.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(6),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 30.w),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: primaryColor, width: 0.5),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicator: BoxDecoration(
+                color: primaryColor,
+                borderRadius: BorderRadius.circular(6.r),
+              ),
+              overlayColor: WidgetStateProperty.all(Colors.transparent),
+              dividerColor: Colors.transparent,
+              labelColor: textColor,
+              unselectedLabelColor: primaryColor,
+              indicatorSize: TabBarIndicatorSize.tab,
+              tabs: const [
+                Tab(text: "USER"),
+                Tab(text: "RESTAURANT"),
+              ],
+            ),
           ),
-          tabs: [
-            Tab(text: "User".toUpperCase()),
-            Tab(text: "Restaurant".toUpperCase()),
-          ],
         ),
       ),
       body: TabBarView(

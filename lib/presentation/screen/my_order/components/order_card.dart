@@ -5,10 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/Order/cubit/order_cubit.dart';
-import 'package:foodigo/features/Order/model/order_details_model.dart';
 import 'package:foodigo/features/Order/model/order_model.dart';
-import 'package:foodigo/presentation/core/routes/route_names.dart';
-import 'package:foodigo/utils/k_images.dart';
 import 'package:foodigo/widget/custom_image.dart';
 import 'package:foodigo/widget/loading_widget.dart';
 
@@ -18,10 +15,7 @@ import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
 
 class OrderCard extends StatelessWidget {
-  OrderCard({
-    super.key,
-    required this.orderModel,
-  });
+  OrderCard({super.key, required this.orderModel});
 
   final OrderModel orderModel;
 
@@ -49,9 +43,10 @@ class OrderCard extends StatelessWidget {
     final orderDetails = context.read<OrderCubit>();
     return Container(
       padding: Utils.symmetric(h: 10.0, v: 6.0),
-      height: orderStatusMap[orderModel.orderStatus] == 'Pending'
-          ? size.height / 4.9.h
-          : size.height / 8.1.h,
+      height:
+          orderStatusMap[orderModel.orderStatus] == 'Pending'
+              ? size.height / 8.1.h
+              : size.height / 8.1.h,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6.r),
         color: whiteColor,
@@ -89,16 +84,18 @@ class OrderCard extends StatelessWidget {
                         children: [
                           CustomText(
                             text: Utils.formatPrice(
-                                context, orderModel.grandTotal),
+                              context,
+                              orderModel.grandTotal,
+                            ),
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                             color: const Color(0xFFE94222),
                           ),
                           GestureDetector(
                             onTap: () {
-                              context
-                                  .read<OrderCubit>()
-                                  .getOrderDetails(orderModel.id);
+                              context.read<OrderCubit>().getOrderDetails(
+                                orderModel.id,
+                              );
                               showDialog(
                                 context: context,
                                 barrierDismissible: true,
@@ -111,19 +108,23 @@ class OrderCard extends StatelessWidget {
                                     backgroundColor: Colors.white,
                                     child: SizedBox(
                                       height: 400.h,
-                                      child:
-                                          BlocBuilder<OrderCubit, OrderState>(
+                                      child: BlocBuilder<
+                                        OrderCubit,
+                                        OrderState
+                                      >(
                                         builder: (context, state) {
                                           if (state
                                               is OrderDetailsStateLoading) {
                                             return const Center(
-                                                child: LoadingWidget());
+                                              child: LoadingWidget(),
+                                            );
                                           } else if (state
                                               is OrderDetailsStateError) {
                                             return Padding(
                                               padding: const EdgeInsets.all(20),
                                               child: Text(
-                                                  "Error: ${state.message}"),
+                                                "Error: ${state.message}",
+                                              ),
                                             );
                                           } else if (state
                                               is OrderDetailsStateSuccess) {
@@ -137,11 +138,15 @@ class OrderCard extends StatelessWidget {
                                                   Expanded(
                                                     child: ListView.builder(
                                                       shrinkWrap: true,
-                                                      itemCount: orderDetails
-                                                              .items?.length ??
+                                                      itemCount:
+                                                          orderDetails
+                                                              .items
+                                                              ?.length ??
                                                           0,
-                                                      itemBuilder:
-                                                          (context, index) {
+                                                      itemBuilder: (
+                                                        context,
+                                                        index,
+                                                      ) {
                                                         final item =
                                                             orderDetails
                                                                 .items![index];
@@ -149,24 +154,31 @@ class OrderCard extends StatelessWidget {
                                                             item.products!;
                                                         final sizeMap =
                                                             jsonDecode(
-                                                                    item.size)
-                                                                as Map<String,
-                                                                    dynamic>;
+                                                                  item.size,
+                                                                )
+                                                                as Map<
+                                                                  String,
+                                                                  dynamic
+                                                                >;
                                                         final sizeName =
                                                             sizeMap.keys.first;
                                                         final sizePrice =
                                                             sizeMap
-                                                                .values.first;
+                                                                .values
+                                                                .first;
 
                                                         final decodedAddons =
                                                             jsonDecode(
-                                                                item.addons);
+                                                              item.addons,
+                                                            );
 
                                                         Map<String, dynamic>
-                                                            addonMap = {};
+                                                        addonMap = {};
                                                         if (decodedAddons
-                                                            is Map<String,
-                                                                dynamic>) {
+                                                            is Map<
+                                                              String,
+                                                              dynamic
+                                                            >) {
                                                           addonMap =
                                                               decodedAddons;
                                                         } else if (decodedAddons
@@ -174,31 +186,32 @@ class OrderCard extends StatelessWidget {
                                                           addonMap = {
                                                             for (var e
                                                                 in decodedAddons)
-                                                              e.toString(): 1
+                                                              e.toString(): 1,
                                                           };
                                                         }
 
                                                         return Card(
-                                                          margin: EdgeInsets
-                                                              .symmetric(
-                                                                  vertical:
-                                                                      5.h),
+                                                          margin:
+                                                              EdgeInsets.symmetric(
+                                                                vertical: 5.h,
+                                                              ),
                                                           child: ListTile(
                                                             leading: ClipRRect(
                                                               borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          6.r),
-                                                              child:
-                                                                  CustomImage(
-                                                                path: RemoteUrls
-                                                                    .imageUrl(
-                                                                        product
-                                                                            .image),
+                                                                  BorderRadius.circular(
+                                                                    6.r,
+                                                                  ),
+                                                              child: CustomImage(
+                                                                path:
+                                                                    RemoteUrls.imageUrl(
+                                                                      product
+                                                                          .image,
+                                                                    ),
                                                                 width: 50.w,
                                                                 height: 50.h,
-                                                                fit: BoxFit
-                                                                    .cover,
+                                                                fit:
+                                                                    BoxFit
+                                                                        .cover,
                                                               ),
                                                             ),
                                                             title: CustomText(
@@ -218,20 +231,25 @@ class OrderCard extends StatelessWidget {
                                                                       .min,
                                                               children: [
                                                                 CustomText(
-                                                                    text:
-                                                                        "Size: $sizeName"),
+                                                                  text:
+                                                                      "Size: $sizeName",
+                                                                ),
                                                                 CustomText(
-                                                                    text:
-                                                                        "Price: $sizePrice"),
+                                                                  text:
+                                                                      "Price: $sizePrice",
+                                                                ),
                                                                 CustomText(
-                                                                    text:
-                                                                        "Quantity: ${item.qty}"),
+                                                                  text:
+                                                                      "Quantity: ${item.qty}",
+                                                                ),
                                                                 CustomText(
-                                                                    text:
-                                                                        "Delivery Charge: ${orderModel.deliveryCharge}"),
+                                                                  text:
+                                                                      "Delivery Charge: ${orderModel.deliveryCharge}",
+                                                                ),
                                                                 CustomText(
-                                                                    text:
-                                                                        "Vat: ${orderModel.vat}"),
+                                                                  text:
+                                                                      "Vat: ${orderModel.vat}",
+                                                                ),
                                                               ],
                                                             ),
                                                           ),
@@ -246,8 +264,9 @@ class OrderCard extends StatelessWidget {
                                                     children: [
                                                       TextButton(
                                                         onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
+                                                          Navigator.of(
+                                                            context,
+                                                          ).pop();
                                                         },
                                                         child: const CustomText(
                                                           text: 'Close',
@@ -291,58 +310,62 @@ class OrderCard extends StatelessWidget {
                         Utils.horizontalSpace(20.0),
                         Container(
                           padding: EdgeInsets.symmetric(
-                              horizontal: 12.w, vertical: 4.h),
+                            horizontal: 12.w,
+                            vertical: 4.h,
+                          ),
                           decoration: BoxDecoration(
                             color: statusColorMap[orderModel.orderStatus]
                                 ?.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(50),
                           ),
                           child: CustomText(
-                            text: orderStatusMap[orderModel.orderStatus] ??
+                            text:
+                                orderStatusMap[orderModel.orderStatus] ??
                                 'Unknown',
-                            color: statusColorMap[orderModel.orderStatus] ??
+                            color:
+                                statusColorMap[orderModel.orderStatus] ??
                                 Colors.black,
                           ),
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
             ],
           ),
-          orderStatusMap[orderModel.orderStatus] == 'Pending'
-              ? GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, RouteNames.smsScreen);
-                  },
-                  child: Padding(
-                    padding: Utils.only(top: 20.h),
-                    child: Container(
-                      padding: Utils.symmetric(v: 8.w),
-                      decoration: BoxDecoration(
-                          color: blackColor,
-                          borderRadius: BorderRadius.circular(6.r)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CustomImage(
-                            path: KImages.message,
-                            width: 16.w,
-                            height: 16.h,
-                          ),
-                          Utils.horizontalSpace(4),
-                          const CustomText(
-                            text: 'Message',
-                            color: whiteColor,
-                            fontSize: 14,
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-              : const SizedBox()
+          // orderStatusMap[orderModel.orderStatus] == 'Pending'
+          //     ? GestureDetector(
+          //         onTap: () {
+          //           Navigator.pushNamed(context, RouteNames.smsScreen);
+          //         },
+          //         child: Padding(
+          //           padding: Utils.only(top: 20.h),
+          //           child: Container(
+          //             padding: Utils.symmetric(v: 8.w),
+          //             decoration: BoxDecoration(
+          //                 color: blackColor,
+          //                 borderRadius: BorderRadius.circular(6.r)),
+          //             child: Row(
+          //               mainAxisAlignment: MainAxisAlignment.center,
+          //               children: [
+          //                 CustomImage(
+          //                   path: KImages.message,
+          //                   width: 16.w,
+          //                   height: 16.h,
+          //                 ),
+          //                 Utils.horizontalSpace(4),
+          //                 const CustomText(
+          //                   text: 'Message',
+          //                   color: whiteColor,
+          //                   fontSize: 14,
+          //                 )
+          //               ],
+          //             ),
+          //           ),
+          //         ),
+          //       )
+          //     : const SizedBox()
         ],
       ),
     );

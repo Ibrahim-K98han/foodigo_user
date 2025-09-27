@@ -10,11 +10,11 @@ abstract class ResAddonRepository {
   Future<Either<Failure, ResAddonModel>> getAddonList(String token);
 
   Future<Either<Failure, ResAddonModel>> storeAddon(ResAddonStateModel body, String token);
-  Future<Either<Failure, ResAddonModel>> updateAddon(ResAddonStateModel body, String token, String id);
+  Future<Either<Failure, ResAddons>> updateAddon(ResAddonStateModel body, Uri url, String token, String id);
 
   Future<Either<Failure, ResAddonModel>> deleteAddon(String token, String id);
 
-  Future<Either<Failure, ResAddonModel>> editAddon(String token, String id, Uri url);
+  Future<Either<Failure, TranslateAddonModel>> editAddon(String token, String id, Uri url);
 }
 
 class ResAddonRepositoryImpl implements ResAddonRepository {
@@ -62,11 +62,11 @@ class ResAddonRepositoryImpl implements ResAddonRepository {
 
   ///Edit addon
   @override
-  Future<Either<Failure, ResAddonModel>> editAddon(
+  Future<Either<Failure, TranslateAddonModel>> editAddon(
       String token, String id, Uri url) async {
     try {
       final result = await remoteDataSource.editAddon(token, id, url);
-      final data = ResAddonModel.fromMap(result['data']);
+      final data = TranslateAddonModel.fromMap(result['data']);
       return Right(data);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
@@ -76,9 +76,9 @@ class ResAddonRepositoryImpl implements ResAddonRepository {
 
   ///Update Addon
   @override
-  Future<Either<Failure, ResAddonModel>> updateAddon(ResAddonStateModel body, String token, String id) async{
+  Future<Either<Failure, ResAddons>> updateAddon(ResAddonStateModel body, Uri url, String token, String id) async{
     try {
-      final result = await remoteDataSource.updateAddon(body, token, id);
+      final result = await remoteDataSource.updateAddon(body, url, token, id);
       return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));

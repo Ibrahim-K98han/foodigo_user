@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-
-import '../../../../features/restaurant_features/Order/cubit/res_order_cubit.dart';
 import '../../../../features/restaurant_features/Order/model/res_order_model.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
@@ -80,11 +77,12 @@ class ResOrderCard extends StatelessWidget {
           context: context,
           builder: (context) {
             return Dialog(
+              insetPadding:
+                  EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6.r)),
-              child: BlocProvider.value(
-                value: context.read<ResOrderCubit>(),
-                child: OrderDetailsDialog(orderId: order.id.toString()),
+              child: OrderDetailsDialog(
+                orderId: order.id.toString(),
               ),
             );
           },

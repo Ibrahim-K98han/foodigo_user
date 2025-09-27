@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foodigo/presentation/restaurant_screen/my_menu/components/edit_food_screen.dart';
+import 'package:foodigo/presentation/restaurant_screen/my_menu/edit_food_screen.dart';
 import 'package:foodigo/presentation/restaurant_screen/restaurant_profile/edit_restaurant_screen.dart';
 import 'package:foodigo/presentation/screen/all_category/all_category_screen.dart';
 import 'package:foodigo/presentation/screen/all_food_screen/all_food_screen.dart';
@@ -229,14 +229,11 @@ class RouteNames {
         return MaterialPageRoute(
             settings: settings, builder: (_) => const EditRestaurantScreen());
       case RouteNames.editFoodScreen:
-        final args = settings.arguments as Map<String, dynamic>?;
-        final String? productId = args?['id'];
-        final bool isEdit = args?['isEdit'] ?? false;
+        final id = settings.arguments as String;
         return MaterialPageRoute(
             settings: settings,
             builder: (_) => EditFoodScreen(
-                  prdId: productId.toString(),
-                  isEdit: isEdit,
+                  id: id,
                 ));
       case RouteNames.myMenuScreen:
         return MaterialPageRoute(

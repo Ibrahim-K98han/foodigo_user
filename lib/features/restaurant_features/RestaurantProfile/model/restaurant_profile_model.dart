@@ -336,7 +336,7 @@ class Cities extends Equatable {
   final String updatedAt;
   final String image;
   final String name;
-  final CitiesTranslate? citiesTranslate;
+  final List<CitiesTranslate>? citiesTranslate;
 
   const Cities({
     required this.id,
@@ -353,7 +353,7 @@ class Cities extends Equatable {
     String? updatedAt,
     String? image,
     String? name,
-    CitiesTranslate? citiesTranslate,
+    List<CitiesTranslate>? citiesTranslate,
   }) {
     return Cities(
       id: id ?? this.id,
@@ -372,7 +372,7 @@ class Cities extends Equatable {
       'updated_at': updatedAt,
       'image': image,
       'name': name,
-      'cities_translate': citiesTranslate?.toMap(),
+      'cities_translate': citiesTranslate?.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -384,8 +384,9 @@ class Cities extends Equatable {
       image: map['image'] ?? '',
       name: map['name'] ?? '',
       citiesTranslate: map['cities_translate'] != null
-          ? CitiesTranslate.fromMap(
-              map['cities_translate'] as Map<String, dynamic>)
+          ? List<CitiesTranslate>.from(
+              (map['cities_translate'] as List<dynamic>)
+                  .map((x) => CitiesTranslate.fromMap(x)))
           : null,
     );
   }
@@ -399,14 +400,14 @@ class Cities extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
       id,
       createdAt,
       updatedAt,
       image,
       name,
-      citiesTranslate!,
+      citiesTranslate,
     ];
   }
 }
@@ -497,7 +498,7 @@ class Cuisines extends Equatable {
   final String createdAt;
   final String updatedAt;
   final String name;
-  final CuisinesTranslate? cuisinesTranslate;
+  final List<CuisinesTranslate>? cuisinesTranslate;
 
   const Cuisines({
     required this.id,
@@ -518,7 +519,7 @@ class Cuisines extends Equatable {
     String? createdAt,
     String? updatedAt,
     String? name,
-    CuisinesTranslate? cuisinesTranslate,
+    List<CuisinesTranslate>? cuisinesTranslate,
   }) {
     return Cuisines(
       id: id ?? this.id,
@@ -541,7 +542,7 @@ class Cuisines extends Equatable {
       'created_at': createdAt,
       'updated_at': updatedAt,
       'name': name,
-      'cuisines_translate': cuisinesTranslate?.toMap(),
+      'cuisines_translate': cuisinesTranslate?.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -555,8 +556,9 @@ class Cuisines extends Equatable {
       updatedAt: map['updated_at'] ?? '',
       name: map['name'] ?? '',
       cuisinesTranslate: map['cuisines_translate'] != null
-          ? CuisinesTranslate.fromMap(
-              map['cuisines_translate'] as Map<String, dynamic>)
+          ? List<CuisinesTranslate>.from(
+              (map['cuisines_translate'] as List<dynamic>)
+                  .map((x) => CuisinesTranslate.fromMap(x)))
           : null,
     );
   }
@@ -570,7 +572,7 @@ class Cuisines extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
       id,
       slug,
@@ -579,7 +581,7 @@ class Cuisines extends Equatable {
       createdAt,
       updatedAt,
       name,
-      cuisinesTranslate!,
+      cuisinesTranslate,
     ];
   }
 }

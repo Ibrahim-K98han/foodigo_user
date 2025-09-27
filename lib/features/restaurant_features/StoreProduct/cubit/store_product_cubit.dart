@@ -1,8 +1,10 @@
 import 'dart:convert';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/restaurant_features/Login/bloc/restaurant_login_bloc.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_state.dart';
+import 'package:foodigo/features/restaurant_features/StoreProduct/model/edit_product_model.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_response_model.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_state_model.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/repository/store_product_repository.dart';
@@ -20,6 +22,7 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
         super(const StoreProductStateModel());
 
   StoreProductResponseModel? storeProductResponseModel;
+  ProductData? products;
 
   /// ----------------- Form Updaters -----------------
   void productName(String name) => emit(state.copyWith(name: name));
@@ -28,7 +31,7 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
 
   void category(String category) => emit(state.copyWith(categoryId: category));
 
-  void addon(String addon) => emit(state.copyWith(addonId: addon));
+  void addon(List<String> addon) => emit(state.copyWith(addonItems: addon));
 
   void image(String image) => emit(state.copyWith(image: image));
 
@@ -36,10 +39,14 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
 
   void offerPrice(String offerPrice) =>
       emit(state.copyWith(offerPrice: offerPrice));
+
   void translateId(String translateId) =>
       emit(state.copyWith(translateId: translateId));
 
   void size(List<String> sizes) => emit(state.copyWith(size: sizes));
+
+  void specification(List<String> specification) =>
+      emit(state.copyWith(specification: specification));
 
   void sizePrice(List<String> prices) => emit(state.copyWith(price: prices));
 
@@ -47,7 +54,7 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
 
   /// ----------------- Store Product API -----------------
   Future<void> storeProduct() async {
-    emit(state.copyWith(storeProductState: StoreProductLoading()));
+    emit(state.copyWith(storeProductState: const StoreProductLoading()));
     final uri = Utils.tokenWithCode(
       RemoteUrls.storeProduct,
       _loginBloc.userInformation!.token,
@@ -60,21 +67,24 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
         uri,
         _loginBloc.userInformation!.token,
       );
-
       result.fold(
         (failure) {
-          emit(state.copyWith(
-            storeProductState: StoreProductError(
-              failure.message,
-              failure.statusCode,
+          emit(
+            state.copyWith(
+              storeProductState: StoreProductError(
+                failure.message,
+                failure.statusCode,
+              ),
             ),
-          ));
+          );
         },
         (success) {
-          storeProductResponseModel = success;
-          emit(state.copyWith(
-            storeProductState: StoreProductLoaded(success),
-          ));
+          products = success;
+          emit(
+            state.copyWith(
+              storeProductState: StoreProductLoaded(success),
+            ),
+          );
           clear();
         },
       );
@@ -85,35 +95,77 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
     }
   }
 
+  /// ----------------- Update Store Product -----------------
+  Future<void> updateProduct(String productId) async {
+    emit(state.copyWith(storeProductState: const StoreProductLoading()));
+    final uri = Utils.tokenWithCode(
+      RemoteUrls.updateStoreProduct(productId),
+      _loginBloc.userInformation!.token,
+      _loginBloc.state.languageCode,
+    );
+    print('Update product url: $uri');
+    try {
+      final result = await _repository.updateStoreProduct(
+        state,
+        uri,
+        _loginBloc.userInformation!.token,
+      );
+      print('API called successfully');
+      result.fold(
+        (failure) {
+          emit(
+            state.copyWith(
+              storeProductState: StoreProductError(
+                failure.message,
+                failure.statusCode,
+              ),
+            ),
+          );
+        },
+        (success) {
+          final errors = StoreProductSuccess(success.toString());
+          emit(
+            state.copyWith(storeProductState: errors),
+          );
+        },
+      );
+    } catch (e) {
+      emit(state.copyWith(
+        storeProductState: EditProductError(e.toString(), 500),
+      ));
+    }
+  }
+
   /// ----------------- Get Product By ID -----------------
   Future<void> getEditProduct(String id) async {
-    emit(state.copyWith(storeProductState: StoreProductLoading()));
-    final url = RemoteUrls.editProduct(id);
+    emit(state.copyWith(storeProductState: EditProductLoading()));
+    final url = Utils.tokenWithCode(RemoteUrls.editProduct(id),
+        _loginBloc.userInformation!.token, _loginBloc.state.languageCode);
+    print('Get Product $url');
+
     final result = await _repository.getEditProduct(
-        _loginBloc.userInformation!.token, id, Uri.parse(url));
+      url,
+      _loginBloc.userInformation!.token,
+    );
     result.fold((failure) {
-      final errorState = StoreProductError(failure.message, failure.statusCode);
+      final errorState = EditProductError(failure.message, failure.statusCode);
       emit(state.copyWith(storeProductState: errorState));
     }, (success) {
-      storeProductResponseModel = success;
-      if (storeProductResponseModel != null) {
+      products = success;
+      if (products != null) {
         emit(state.copyWith(
-            name: storeProductResponseModel!.name,
-            slug: storeProductResponseModel!.slug,
-            categoryId: storeProductResponseModel!.categoryId,
-            image: storeProductResponseModel!.image,
-            productPrice: storeProductResponseModel!.price,
-            offerPrice: storeProductResponseModel!.offerPrice.toString(),
-            size: storeProductResponseModel!.size['size'] != null
-                ? List<String>.from(storeProductResponseModel!.size['size'])
-                : [],
-            price: storeProductResponseModel!.size['price'] != null
-                ? List<String>.from(storeProductResponseModel!.size['price'])
-                : [],
-            shortDescription: storeProductResponseModel!.shortDescription ?? '',
-            storeProductState: StoreProductLoaded(success)));
+          name: products!.product!.name,
+          slug: products!.product!.slug,
+          categoryId: products!.product!.categoryId.toString(),
+          image: products!.product!.image,
+          productPrice: products!.product!.price.toString(),
+          offerPrice: products!.product!.offerPrice.toString(),
+          size: _parseSize(products!.product!.size),
+          price: _parseSizePrice(products!.product!.price),
+          shortDescription: products!.product!.shortDescription.toString(),
+        ));
       }
-      final successState = StoreProductLoaded(success);
+      final successState = EditProductLoaded(success);
       emit(state.copyWith(storeProductState: successState));
     });
   }
@@ -131,45 +183,28 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
     );
   }
 
-  /// ----------------- Update Store Product -----------------
-  Future<void> updateProduct(String productId) async {
-    print('UpdateProduct call for id: $productId');
-    emit(state.copyWith(storeProductState: StoreProductUpdateLoading()));
-    final uri = Utils.tokenWithCode(
-      RemoteUrls.updateStoreProduct(productId),
-      _loginBloc.userInformation!.token,
-      _loginBloc.state.languageCode,
-    );
-    print('Update product url: $uri');
-
+  List<String> _parseSize(dynamic raw) {
+    if (raw == null) return [];
     try {
-      final result = await _repository.updateStoreProduct(
-        state,
-        uri,
-        _loginBloc.userInformation!.token,
-      );
+      if (raw is String) {
+        return List<String>.from(jsonDecode(raw));
+      } else if (raw is List) {
+        return raw.map((e) => e.toString()).toList();
+      }
+    } catch (_) {}
+    return [];
+  }
 
-      print('API called successfully');
-
-      result.fold(
-        (failure) {
-          emit(state.copyWith(
-            storeProductState: StoreProductUpdateError(
-              failure.message,
-              failure.statusCode,
-            ),
-          ));
-        },
-        (success) {
-          storeProductResponseModel = success;
-          emit(state.copyWith(storeProductState: StoreProductUpdateLoaded(success)));
-        },
-      );
-    } catch (e) {
-      emit(state.copyWith(
-        storeProductState: StoreProductUpdateError(e.toString(), 500),
-      ));
-    }
+  List<String> _parseSizePrice(dynamic raw) {
+    if (raw == null) return [];
+    try {
+      if (raw is String) {
+        return List<String>.from(jsonDecode(raw));
+      } else if (raw is List) {
+        return raw.map((e) => e.toString()).toList();
+      }
+    } catch (_) {}
+    return [];
   }
 
   /// ----------------- Reset Form State -----------------

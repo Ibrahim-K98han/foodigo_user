@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import '../../../../features/restaurant_features/Order/cubit/res_order_cubit.dart';
 import '../../../../features/restaurant_features/Order/cubit/res_order_state.dart';
 import '../../../../utils/constraints.dart';
@@ -50,10 +49,12 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
                       fontWeight: FontWeight.w600,
                       color: textColor,
                     ),
+
+                    /// Close Button
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
                       child: const Icon(Icons.close, color: redColor),
-                    )
+                    ),
                   ],
                 ),
                 Utils.verticalSpace(10),
@@ -65,14 +66,8 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
                   fontWeight: FontWeight.w500,
                   color: textColor,
                 ),
-                Info(
-                  title: "Email: ",
-                  subTitle: order.restaurant.email,
-                ),
-                Info(
-                  title: "Phone: ",
-                  subTitle: order.restaurant.ownerPhone,
-                ),
+                Info(title: "Email: ", subTitle: order.restaurant.email),
+                Info(title: "Phone: ", subTitle: order.restaurant.ownerPhone),
                 Divider(color: Colors.black.withOpacity(0.1)),
 
                 /// Example Food Info
@@ -98,23 +93,11 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
-                Info(
-                  title: "Name",
-                  subTitle: order.user?.name ?? "",
-                ),
-                Info(
-                  title: "Location",
-                  subTitle: order.user?.address ?? "",
-                ),
+                Info(title: "Name", subTitle: order.user?.name ?? ""),
+                Info(title: "Location", subTitle: order.user?.address ?? ""),
 
-                Info(
-                  title: "Phone",
-                  subTitle: order.user?.phone ?? "",
-                ),
-                Info(
-                  title: "Email",
-                  subTitle: order.user?.email ?? "",
-                ),
+                Info(title: "Phone", subTitle: order.user?.phone ?? ""),
+                Info(title: "Email", subTitle: order.user?.email ?? ""),
 
                 Divider(color: Colors.black.withOpacity(0.1)),
 
@@ -132,12 +115,7 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
                     final item = order.items![index];
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Info(
-                          title: "Quantity",
-                          subTitle: item.qty,
-                        ),
-                      ],
+                      children: [Info(title: "Quantity", subTitle: item.qty)],
                     );
                   },
                 ),
@@ -253,48 +231,45 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
                   ),
                 ),
                 Divider(color: Colors.black.withOpacity(0.1)),
-                Row(
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CustomText(
-                      text: 'Foodigo.',
-                      fontWeight: FontWeight.w600,
-                    ),
+                    CustomText(text: 'Foodigo.', fontWeight: FontWeight.w600),
                     CustomText(text: '© Copyright 2024'),
                   ],
                 ),
                 Utils.verticalSpace(20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        padding: Utils.symmetric(h: 20, v: 8),
-                        decoration: BoxDecoration(
-                            color: textColor,
-                            borderRadius: BorderRadius.circular(6.r)),
-                        child: const CustomText(
-                          text: 'Print now',
-                          color: whiteColor,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10.w,
-                    ),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        padding: Utils.symmetric(h: 20, v: 8),
-                        decoration: BoxDecoration(
-                            color: primaryColor,
-                            borderRadius: BorderRadius.circular(6.r)),
-                        child: const CustomText(text: 'Download PDF'),
-                      ),
-                    )
-                  ],
-                )
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     GestureDetector(
+                //       onTap: () {},
+                //       child: Container(
+                //         padding: Utils.symmetric(h: 20, v: 14),
+                //         decoration: BoxDecoration(
+                //             color: textColor,
+                //             borderRadius: BorderRadius.circular(6.r)),
+                //         child: const CustomText(
+                //           text: 'Print now',
+                //           color: whiteColor,
+                //         ),
+                //       ),
+                //     ),
+                //     SizedBox(
+                //       width: 10.w,
+                //     ),
+                //     GestureDetector(
+                //       onTap: () {},
+                //       child: Container(
+                //         padding: Utils.symmetric(h: 20, v: 14),
+                //         decoration: BoxDecoration(
+                //             color: primaryColor,
+                //             borderRadius: BorderRadius.circular(6.r)),
+                //         child: const CustomText(text: 'Download PDF'),
+                //       ),
+                //     )
+                //   ],
+                // )
               ],
             ),
           );
@@ -318,11 +293,7 @@ class ItemDetails extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        CustomText(
-          text: title ?? '',
-          fontSize: 16,
-          color: subTitleTextColor,
-        ),
+        CustomText(text: title ?? '', fontSize: 16, color: subTitleTextColor),
         CustomText(
           text: subTitle ?? '',
           fontSize: 16,
@@ -344,22 +315,10 @@ class OrderInfo extends StatelessWidget {
     return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Info(
-          title: 'Name',
-          subTitle: 'Grilled lemon Chicken',
-        ),
-        Info(
-          title: 'Quantity',
-          subTitle: '2',
-        ),
-        Info(
-          title: 'Variations Size',
-          subTitle: 'Medium',
-        ),
-        Info(
-          title: 'Price',
-          subTitle: '\$${25}',
-        ),
+        Info(title: 'Name', subTitle: 'Grilled lemon Chicken'),
+        Info(title: 'Quantity', subTitle: '2'),
+        Info(title: 'Variations Size', subTitle: 'Medium'),
+        Info(title: 'Price', subTitle: '\$${25}'),
       ],
     );
   }
@@ -375,19 +334,9 @@ class FoodInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Info(
-          title: 'Order ID',
-          subTitle: '#151054',
-          colors: redColor,
-        ),
-        Info(
-          title: 'Delivery Type',
-          subTitle: 'Cash',
-        ),
-        Info(
-          title: 'Time',
-          subTitle: '02 Jan, 2024 - 06:44',
-        ),
+        Info(title: 'Order ID', subTitle: '#151054', colors: redColor),
+        Info(title: 'Delivery Type', subTitle: 'Cash'),
+        Info(title: 'Time', subTitle: '02 Jan, 2024 - 06:44'),
       ],
     );
   }
@@ -403,18 +352,9 @@ class CustomerInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Info(
-          title: 'Name',
-          subTitle: 'Osacar Ramio',
-        ),
-        Info(
-          title: 'Location',
-          subTitle: '2972 Rd. Santa Ana, 85486 ',
-        ),
-        Info(
-          title: 'Phone',
-          subTitle: '+101147774',
-        ),
+        Info(title: 'Name', subTitle: 'Osacar Ramio'),
+        Info(title: 'Location', subTitle: '2972 Rd. Santa Ana, 85486 '),
+        Info(title: 'Phone', subTitle: '+101147774'),
       ],
     );
   }

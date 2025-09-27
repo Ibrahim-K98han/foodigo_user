@@ -11,7 +11,7 @@ abstract class StoreProductRemoteDataSource {
 
   Future updateStoreProduct(StoreProductStateModel body, Uri uri, String token);
 
-  Future getEditProduct(String token, String id, Uri url);
+  Future getEditProduct(Uri url, String token);
 
   Future deleteStoreProduct(String token, String id);
 }
@@ -26,6 +26,10 @@ class StoreProductRemoteDataSourceImpl implements StoreProductRemoteDataSource {
         'Content-Type': 'application/json',
       };
 
+  final postDeleteHeader = {
+    'Accept': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+  };
   @override
   Future storeProduct(
       StoreProductStateModel body, Uri uri, String token) async {
@@ -36,6 +40,8 @@ class StoreProductRemoteDataSourceImpl implements StoreProductRemoteDataSource {
       'Authorization': 'Bearer $token',
       'Accept': 'application/json',
     });
+    request.fields['size'] = jsonEncode(body.size);
+    request.fields['price'] = jsonEncode(body.price);
 
     if (body.image.isNotEmpty) {
       final file = await http.MultipartFile.fromPath('image', body.image);
@@ -49,9 +55,30 @@ class StoreProductRemoteDataSourceImpl implements StoreProductRemoteDataSource {
     return responseJsonBody['data']['product'];
   }
 
+  /// --------- UPDATE PRODUCT -------------
+  @override
+  Future updateStoreProduct(
+      StoreProductStateModel body, Uri uri, String token) async {
+    final request = http.MultipartRequest('POST', uri);
+    request.fields.addAll(body.toMap());
+    
+    request.headers.addAll(authHeader(token));
+
+    if (body.image.isNotEmpty) {
+      final file = await http.MultipartFile.fromPath('image', body.image);
+      request.files.add(file);
+    }
+    print("update product body :${body.toMap()}");
+    http.StreamedResponse response = await request.send();
+    final clientMethod = http.Response.fromStream(response);
+    final responseJsonBody =
+        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    return responseJsonBody['data']['product'];
+  }
+
   /// --------- GET PRODUCT BY ID -------------
   @override
-  Future getEditProduct(String token, String id, Uri url) async {
+  Future getEditProduct(Uri url, String token) async {
     final clientMethod = client.get(url, headers: authHeader(token));
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
@@ -67,73 +94,5 @@ class StoreProductRemoteDataSourceImpl implements StoreProductRemoteDataSource {
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
     return responseJsonBody;
-  }
-
-  /// --------- UPDATE PRODUCT -------------
-  @override
-  Future updateStoreProduct(
-      StoreProductStateModel body, Uri uri, String token) async {
-    final request = http.MultipartRequest('POST', uri);
-
-    // Prepare map
-    final map = body.toMap();
-
-    // Remove empty fields
-    map.removeWhere((k, v) =>
-        v == null ||
-        v.toString().isEmpty ||
-        (v is List && v.isEmpty)); // Remove empty lists
-
-    // Convert list fields to JSON string
-    if (map['size'] is List) map['size'] = json.encode(map['size']);
-    if (map['price'] is List) map['price'] = json.encode(map['price']);
-
-    // Add fields to request
-    request.fields.addAll(map.map((k, v) => MapEntry(k, v.toString())));
-
-    // Debug print fields
-    print('--- Sending fields ---');
-    request.fields.forEach((k, v) => print('$k : $v'));
-
-    // Add image if exists
-    if (body.image.isNotEmpty) {
-      try {
-        final file = await http.MultipartFile.fromPath('image', body.image);
-        request.files.add(file);
-        print('--- Sending files ---');
-        print('Image file: ${file.filename}');
-      } catch (e) {
-        print('Error adding image file: $e');
-      }
-    } else {
-      print('No image attached');
-    }
-
-    // Add headers
-    request.headers.addAll(authHeader(token));
-
-    try {
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-
-      print('--- API Response ---');
-      print('Status Code: ${response.statusCode}');
-      print('Body: ${response.body}');
-
-      final responseJson = json.decode(response.body);
-
-      // Return product if exists
-      if (responseJson['data'] != null &&
-          responseJson['data']['product'] != null) {
-        return responseJson['data']['product'];
-      } else {
-        throw Exception(
-          'API response missing product data: ${response.body}',
-        );
-      }
-    } catch (e) {
-      print('Exception during API call: $e');
-      rethrow;
-    }
   }
 }

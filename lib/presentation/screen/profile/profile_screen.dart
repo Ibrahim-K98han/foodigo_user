@@ -24,117 +24,123 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: "Profile",
-        visibleLeading: false,
-      ),
+      appBar: const CustomAppBar(title: "Profile", visibleLeading: false),
       body: CustomScrollView(
         slivers: [
           const ProfileImage(),
           SliverList(
-              delegate: SliverChildListDelegate([
-            DrawerItem(
-              title: "Personal Info",
-              icon: KImages.profileInActive,
-              onTap: () {
-                Navigator.pushNamed(context, RouteNames.editProfileScreen);
-              },
-            ),
-            DrawerItem(
-              title: "Payment Method",
-              icon: KImages.dollarBag,
-              onTap: () {
-                Navigator.pushNamed(context, RouteNames.paymentMethodScreen,
-                    arguments: '1');
-              },
-            ),
-            // DrawerItem(
-            //     title: "Settings",
-            //     icon: KImages.settingIcon,
-            //     onTap: () {
-            //       Navigator.pushNamed(context, RouteNames.settingScreen);
-            //     }),
-            DrawerItem(
+            delegate: SliverChildListDelegate([
+              DrawerItem(
+                title: "Personal Info",
+                icon: KImages.profileInActive,
+                onTap: () {
+                  Navigator.pushNamed(context, RouteNames.editProfileScreen);
+                },
+              ),
+              // DrawerItem(
+              //   title: "Payment Method",
+              //   icon: KImages.dollarBag,
+              //   onTap: () {
+              //     Navigator.pushNamed(context, RouteNames.paymentMethodScreen,
+              //         arguments: '1');
+              //   },
+              // ),
+              // DrawerItem(
+              //     title: "Settings",
+              //     icon: KImages.settingIcon,
+              //     onTap: () {
+              //       Navigator.pushNamed(context, RouteNames.settingScreen);
+              //     }),
+              DrawerItem(
                 title: "Address",
                 icon: KImages.location,
                 onTap: () {
                   Navigator.pushNamed(context, RouteNames.addressScreen);
-                }),
-            DrawerItem(
+                },
+              ),
+              DrawerItem(
                 title: "Privacy Policy",
                 icon: KImages.help,
                 onTap: () {
                   // Navigator.pushNamed(context, RouteNames.faqScreen);
-                }),
-            // DrawerItem(
-            // title: "Order Status",
-            // icon: KImages.time_square,
-            // onTap: () {
-            //   // Navigator.pushNamed(context, RouteNames.faqScreen);
-            // }),
-            DrawerItem(
+                },
+              ),
+              // DrawerItem(
+              // title: "Order Status",
+              // icon: KImages.time_square,
+              // onTap: () {
+              //   // Navigator.pushNamed(context, RouteNames.faqScreen);
+              // }),
+              DrawerItem(
                 title: "Language",
                 icon: KImages.language,
                 onTap: () {
                   Navigator.pushNamed(context, RouteNames.languageScreen);
-                }),
-            DrawerItem(
+                },
+              ),
+              DrawerItem(
                 title: "Offers & Rewards",
                 icon: KImages.offers,
                 onTap: () {
                   // Navigator.pushNamed(context, RouteNames.languageScreen);
-                }),
-            DrawerItem(
+                },
+              ),
+              DrawerItem(
                 title: "Change Password",
                 icon: KImages.unlock,
                 onTap: () {
                   Navigator.pushNamed(
-                      context, RouteNames.profilePasswordChangeScreen);
-                }),
-            Utils.verticalSpace(40.0),
-            SwitchWidget(
-              text: 'Notification',
-              initialValue: true,
-              onToggle: (bool value) {},
-            ),
-            Utils.verticalSpace(40.0),
-            GestureDetector(
-              onTap: () {
-                showDialog(
+                    context,
+                    RouteNames.profilePasswordChangeScreen,
+                  );
+                },
+              ),
+              Utils.verticalSpace(40.0),
+              // SwitchWidget(
+              //   text: 'Notification',
+              //   initialValue: true,
+              //   onToggle: (bool value) {},
+              // ),
+              Utils.verticalSpace(40.0),
+              GestureDetector(
+                onTap: () {
+                  showDialog(
                     context: context,
                     barrierDismissible: false,
-                    builder: (context) => const LogoutPrompt());
-              },
-              child: Padding(
-                padding: Utils.symmetric(),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6.0),
-                    border: Border.all(
-                      color: const Color(0xFFF01543).withOpacity(0.4),
+                    builder: (context) => const LogoutPrompt(),
+                  );
+                },
+                child: Padding(
+                  padding: Utils.symmetric(),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6.0),
+                      border: Border.all(
+                        color: const Color(0xFFF01543).withOpacity(0.4),
+                      ),
                     ),
-                  ),
-                  child: Padding(
-                    padding: Utils.symmetric(h: 20.0, v: 12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const CustomImage(path: KImages.logout),
-                        Utils.horizontalSpace(8.0),
-                        const CustomText(
-                          text: "Logout",
-                          fontSize: 16,
-                          color: redColor,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ],
+                    child: Padding(
+                      padding: Utils.symmetric(h: 20.0, v: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const CustomImage(path: KImages.logout),
+                          Utils.horizontalSpace(8.0),
+                          const CustomText(
+                            text: "Logout",
+                            fontSize: 16,
+                            color: redColor,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Utils.verticalSpace(10),
-          ])),
+              Utils.verticalSpace(10),
+            ]),
+          ),
         ],
       ),
     );
@@ -196,15 +202,10 @@ class _ProfileImageState extends State<ProfileImage> {
                   Container(
                     height: Utils.vSize(80.0),
                     width: Utils.vSize(80.0),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
+                    decoration: const BoxDecoration(shape: BoxShape.circle),
                     child: ClipRRect(
                       borderRadius: Utils.borderRadius(r: 50.0),
-                      child: CustomImage(
-                        path: image,
-                        fit: BoxFit.cover,
-                      ),
+                      child: CustomImage(path: image, fit: BoxFit.cover),
                     ),
                   ),
                   Positioned(
@@ -234,11 +235,7 @@ class _ProfileImageState extends State<ProfileImage> {
                 ],
               ),
               Utils.verticalSpace(8.0),
-              CustomText(
-                text: name,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
+              CustomText(text: name, fontSize: 16, fontWeight: FontWeight.w500),
               Utils.verticalSpace(16.0),
             ],
           ),
@@ -370,22 +367,22 @@ class DrawerItem extends StatelessWidget {
                 ),
                 version
                     ? const CustomText(
-                        text: '1.0.0',
-                        color: blackColor,
-                        fontSize: 16.0,
-                        fontFamily: bold700,
-                      )
+                      text: '1.0.0',
+                      color: blackColor,
+                      fontSize: 16.0,
+                      fontFamily: bold700,
+                    )
                     : const SizedBox(),
               ],
             ),
           ),
           isVisibleBorder
               ? Container(
-                  height: 1.0,
-                  width: double.infinity,
-                  margin: Utils.only(right: 20.0, top: 20.0),
-                  color: greyColor.withOpacity(0.1),
-                )
+                height: 1.0,
+                width: double.infinity,
+                margin: Utils.only(right: 20.0, top: 20.0),
+                color: greyColor.withOpacity(0.1),
+              )
               : const SizedBox(),
         ],
       ),
@@ -445,10 +442,13 @@ class _SwitchWidgetState extends State<SwitchWidget> {
               height: 30,
               padding: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  // color: isOn ? textColor : Colors.grey.shade400,
-                  border: Border.all(
-                      color: isOn ? redColor : Colors.grey.shade400, width: 2)),
+                borderRadius: BorderRadius.circular(30),
+                // color: isOn ? textColor : Colors.grey.shade400,
+                border: Border.all(
+                  color: isOn ? redColor : Colors.grey.shade400,
+                  width: 2,
+                ),
+              ),
               child: AnimatedAlign(
                 duration: const Duration(milliseconds: 100),
                 alignment: isOn ? Alignment.centerRight : Alignment.centerLeft,
