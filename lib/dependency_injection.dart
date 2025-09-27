@@ -34,6 +34,9 @@ import 'package:foodigo/features/Review/repository/review_repository.dart';
 import 'package:foodigo/features/SingleRestaurant/cubit/single_restaurant_cubit.dart';
 import 'package:foodigo/features/SingleRestaurant/remote/single_restaurant_remote_data_source.dart';
 import 'package:foodigo/features/SingleRestaurant/repository/single_restaurant_repository.dart';
+import 'package:foodigo/features/Splash/cubit/splash_cubit.dart';
+import 'package:foodigo/features/Splash/remote/splash_remote_data_source.dart';
+import 'package:foodigo/features/Splash/repository/splash_repository.dart';
 import 'package:foodigo/features/Subscription/cubit/subscription_cubit.dart';
 import 'package:foodigo/features/Subscription/remote/subscription_remote_data_source.dart';
 import 'package:foodigo/features/Subscription/repository/subscription_repository.dart';
@@ -428,6 +431,16 @@ class DInjector {
         remoteDataSource: context.read(),
       ),
     ),
+    RepositoryProvider<SplashRemoteDataSource>(
+      create: (context) => SplashRemoteDataSourceImpl(
+        client: context.read(),
+      ),
+    ),
+    RepositoryProvider<SplashRepository>(
+      create: (context) => SplashRepositoryImpl(
+        remoteDataSource: context.read(),
+      ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -607,6 +620,11 @@ class DInjector {
         loginBloc: context.read(),
       ),
     ),
-
+    BlocProvider<SplashCubit>(
+      create: (context) => SplashCubit(
+        repository: context.read(),
+        loginBloc: context.read(),
+      ),
+    ),
   ];
 }

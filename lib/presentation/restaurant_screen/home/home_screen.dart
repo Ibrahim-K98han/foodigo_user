@@ -28,6 +28,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late ResDashboardCubit rdCubit;
+
   @override
   void initState() {
     super.initState();
@@ -192,29 +193,29 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                           fontWeight: FontWeight.w700,
                           color: textColor,
                         ),
-                        DropdownButton<String>(
-                          underline: const SizedBox.shrink(),
-                          value: selectedValue,
-                          icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                          elevation: 0,
-                          style: const TextStyle(
-                              color: Colors.black, fontSize: 14),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              selectedValue = newValue!;
-                            });
-                          },
-                          items: items
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: CustomText(
-                                text: value,
-                                color: Colors.black,
-                              ),
-                            );
-                          }).toList(),
-                        ),
+                        // DropdownButton<String>(
+                        //   underline: const SizedBox.shrink(),
+                        //   value: selectedValue,
+                        //   icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                        //   elevation: 0,
+                        //   style: const TextStyle(
+                        //       color: Colors.black, fontSize: 14),
+                        //   onChanged: (String? newValue) {
+                        //     setState(() {
+                        //       selectedValue = newValue!;
+                        //     });
+                        //   },
+                        //   items: items
+                        //       .map<DropdownMenuItem<String>>((String value) {
+                        //     return DropdownMenuItem<String>(
+                        //       value: value,
+                        //       child: CustomText(
+                        //         text: value,
+                        //         color: Colors.black,
+                        //       ),
+                        //     );
+                        //   }).toList(),
+                        // ),
                       ],
                     ),
                   ),
@@ -225,33 +226,28 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                     children: [
                       _buildSingleCard(
                         KImages.totalOrder,
-                        '${widget.resDashboardModel.statistics?.orderStatistics
-                            ?.total ?? 0}',
+                        '${widget.resDashboardModel.statistics?.orderStatistics?.total ?? 0}',
                         'Total Order',
                         orderTotalColor,
                       ),
                       _buildSingleCard(
                           KImages.activeOrder,
-                          '${widget.resDashboardModel.statistics
-                              ?.orderStatistics?.active ?? 0}',
+                          '${widget.resDashboardModel.statistics?.orderStatistics?.active ?? 0}',
                           'Active Order',
                           orderActiveColor),
                       _buildSingleCard(
                           KImages.cancelOrder,
-                          '${widget.resDashboardModel.statistics
-                              ?.orderStatistics?.cancelled ?? 0}',
+                          '${widget.resDashboardModel.statistics?.orderStatistics?.cancelled ?? 0}',
                           'Cancelled ',
                           orderCancelledColor.withOpacity(0.2)),
                       _buildSingleCard(
                           KImages.completeOrder,
-                          '${widget.resDashboardModel.statistics
-                              ?.orderStatistics?.completed ?? 0}',
+                          '${widget.resDashboardModel.statistics?.orderStatistics?.completed ?? 0}',
                           'Complete',
                           orderCompleteColor),
                       _buildSingleCard(
                           KImages.cancelOrder,
-                          '${widget.resDashboardModel.statistics
-                              ?.orderStatistics?.pending ?? 0}',
+                          '${widget.resDashboardModel.statistics?.orderStatistics?.pending ?? 0}',
                           'Pending',
                           orderCancelledColor.withOpacity(0.2)),
                     ],
@@ -293,22 +289,23 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                       itemCount: widget.resDashboardModel.recentOrder!.length,
                       itemBuilder: (context, index) {
                         final item =
-                        widget.resDashboardModel.recentOrder![index];
+                            widget.resDashboardModel.recentOrder![index];
                         return GestureDetector(
                           onTap: () {
                             showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return Dialog(
-                                      insetPadding: EdgeInsets.symmetric(
-                                          horizontal: 16.w, vertical: 12.h),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                          BorderRadius.circular(6.r)),
-                                      child:  OrderDetailsDialog(
-                                        orderId: item.id.toString(),
-                                      ));
-                                });
+                              context: context,
+                              builder: (context) {
+                                return Dialog(
+                                  insetPadding: EdgeInsets.symmetric(
+                                      horizontal: 16.w, vertical: 12.h),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6.r)),
+                                  child: OrderDetailsDialog(
+                                    orderId: item.id.toString(),
+                                  ),
+                                );
+                              },
+                            );
                           },
                           child: Padding(
                             padding: EdgeInsets.only(bottom: 10.h),
@@ -321,7 +318,7 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                               ),
                               child: Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   // Container(
                                   //   width: 80.0,
@@ -345,7 +342,7 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                                     padding: Utils.symmetric(h: 4.0, v: 8.0),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           children: [
@@ -365,7 +362,7 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                                             Container(
                                               decoration: BoxDecoration(
                                                 borderRadius:
-                                                BorderRadius.circular(20.r),
+                                                    BorderRadius.circular(20.r),
                                                 color: getOrderStatusBgColor(
                                                     item.orderStatus),
                                               ),
@@ -394,8 +391,8 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                                             ),
                                             Padding(
                                               padding:
-                                              const EdgeInsets.symmetric(
-                                                  horizontal: 4),
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 4),
                                               child: Container(
                                                 height: 5,
                                                 width: 5,
@@ -441,8 +438,8 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
     );
   }
 
-  Widget _buildSingleCard(String icon, String count, String title,
-      Color bgColor) {
+  Widget _buildSingleCard(
+      String icon, String count, String title, Color bgColor) {
     return Container(
       padding: Utils.symmetric(v: 10.0, h: 8.0),
       height: Utils.vSize(80.0),

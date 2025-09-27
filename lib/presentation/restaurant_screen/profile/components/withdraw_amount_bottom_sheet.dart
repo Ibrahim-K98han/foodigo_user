@@ -9,7 +9,6 @@ import 'package:foodigo/widget/primary_button.dart';
 
 import '../../../../features/restaurant_features/WithdrawData/cubit/withdraw_state.dart';
 import '../../../../features/restaurant_features/WithdrawData/model/withdraw_store_state_model.dart';
-import '../../../../utils/constraints.dart';
 
 class WithdrawAmountBottomSheet extends StatefulWidget {
   const WithdrawAmountBottomSheet({super.key});
@@ -115,62 +114,16 @@ class _WithdrawAmountBottomSheetState extends State<WithdrawAmountBottomSheet> {
               );
             },
           ),
-
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //   children: [
-          //     _buildAmountButton('\$10.00'),
-          //     _buildAmountButton('\$50.00'),
-          //     _buildAmountButton('\$100.00'),
-          //   ],
-          // ),
           Utils.verticalSpace(30),
           PrimaryButton(
             text: 'Withdraw',
             onPressed: () {
               withdrawCubit.addNewWithdraw();
-              // showModalBottomSheet(
-              //   context: context,
-              //   showDragHandle: true,
-              //   backgroundColor: const Color(0xFFFDFDFD),
-              //   constraints: BoxConstraints.loose(
-              //     Size(
-              //       Utils.mediaQuery(context).width,
-              //       Utils.mediaQuery(context).height * 0.9,
-              //     ),
-              //   ),
-              //   isScrollControlled: false,
-              //   shape: RoundedRectangleBorder(
-              //     borderRadius: BorderRadius.only(
-              //       topLeft: Radius.circular(Utils.radius(32.0)),
-              //       topRight: Radius.circular(Utils.radius(32.0)),
-              //     ),
-              //   ),
-              //   builder: (context) => DraggableScrollableSheet(
-              //     initialChildSize: 0.85,
-              //     minChildSize: 0.5,
-              //     maxChildSize: 0.95,
-              //     expand: false,
-              //     builder: (context, scrollController) {
-              //       return SingleChildScrollView(
-              //         controller: scrollController,
-              //         child: const AddBankAccountBottomSheet(),
-              //       );
-              //     },
-              //   ),
-              // );
+              Navigator.pop(context);
             },
           )
         ],
       ),
     );
-  }
-
-  Widget _buildAmountButton(String label) {
-    return Container(
-        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-        decoration: BoxDecoration(
-            color: textColor, borderRadius: BorderRadius.circular(16.r)),
-        child: CustomText(text: label));
   }
 }

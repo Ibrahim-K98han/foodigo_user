@@ -28,31 +28,32 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     return const Scaffold(
-        extendBodyBehindAppBar: true,
-        extendBody: true,
-        body: Stack(
-          children: [
-            Center(
-              child: SizedBox(
-                height: double.maxFinite,
-                width: double.maxFinite,
-                child: CustomImage(
-                  path: KImages.splashBg,
-                  fit: BoxFit.fill,
-                ),
+      extendBodyBehindAppBar: true,
+      extendBody: true,
+      body: Stack(
+        children: [
+          Center(
+            child: SizedBox(
+              height: double.maxFinite,
+              width: double.maxFinite,
+              child: CustomImage(
+                path: KImages.splashBg,
+                fit: BoxFit.fill,
               ),
             ),
-            Center(
-              child: SizedBox(
-                height: 50,
-                width: 220,
-                child: CustomImage(
-                  path: KImages.logo,
-                  fit: BoxFit.fill,
-                ),
+          ),
+          Center(
+            child: SizedBox(
+              height: 50,
+              width: 220,
+              child: CustomImage(
+                path: KImages.logo,
+                fit: BoxFit.fill,
               ),
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }

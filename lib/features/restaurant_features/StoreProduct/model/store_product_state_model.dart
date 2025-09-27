@@ -68,7 +68,7 @@ class StoreProductStateModel extends Equatable {
   }
 
   /// 🔹 API body বানানোর জন্য
-  Map<String, dynamic> toMap() {
+  Map<String, String> toMap() {
     return {
       'name': name,
       'slug': slug,

@@ -16,18 +16,19 @@ class GetProfileRemoteDataSourceImpl implements GetProfileRemoteDataSource {
   GetProfileRemoteDataSourceImpl({required this.client});
 
   authHeader(String token) => {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-        // 'Accept': "x-www-form-urlencoded/application"
-      };
+    'Authorization': 'Bearer $token',
+    'Content-Type': 'application/json',
+    // 'Accept': "x-www-form-urlencoded/application"
+  };
 
   @override
   Future getProfileData(String token) async {
     final uri = Uri.parse(RemoteUrls.getProfile);
     // print('profile$uri');
     final clientMethod = client.get(uri, headers: authHeader(token));
-    final responseJsonBody =
-        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    final responseJsonBody = await NetworkParser.callClientWithCatchException(
+      () => clientMethod,
+    );
     return responseJsonBody;
   }
 
@@ -38,14 +39,15 @@ class GetProfileRemoteDataSourceImpl implements GetProfileRemoteDataSource {
     print("Update Profile API => $uri");
     print("Update Profile Body => $body");
 
-    final clientMethod = client.put(
+    final clientMethod = client.post(
       uri,
       headers: authHeader(token),
       body: jsonEncode(body),
     );
 
-    final responseJsonBody =
-        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    final responseJsonBody = await NetworkParser.callClientWithCatchException(
+      () => clientMethod,
+    );
 
     return responseJsonBody;
   }

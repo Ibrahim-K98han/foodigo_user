@@ -52,8 +52,8 @@ class RemoteUrls {
   static const String forgotPassword = '${baseUrl}auth/forgot-password';
   static const String resetPassword = '${baseUrl}auth/reset-password';
   static const String applyCoupon = '${baseUrl}cart/coupon/apply';
-  static const String getAllPaymentMethod =
-      '${baseUrl}checkout/payment-methods';
+  static const String getAllPaymentMethod = '${baseUrl}checkout/payment-methods';
+  static const String splashScreen = '${baseUrl}home/splash-screen';
   static const String changeProfilePass = '${baseUrl}auth/change-password';
 
   static const String payWithBank = '${baseUrl}payment/bank';

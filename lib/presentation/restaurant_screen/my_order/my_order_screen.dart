@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foodigo/features/Order/cubit/order_state.dart';
 import 'package:foodigo/features/restaurant_features/Order/cubit/res_order_cubit.dart';
 import 'package:foodigo/features/restaurant_features/Order/cubit/res_order_state.dart';
 import 'package:foodigo/features/restaurant_features/Order/model/res_order_model.dart';
@@ -9,10 +8,8 @@ import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/fetch_error_text.dart';
 import 'package:foodigo/widget/loading_widget.dart';
 import 'package:foodigo/widget/page_refresh.dart';
-import 'package:intl/intl.dart';
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
-import '../../../utils/utils.dart';
 import '../../../widget/custom_image.dart';
 import '../../../widget/custom_text_style.dart';
 import 'components/res_order_card.dart';
@@ -92,7 +89,7 @@ class LoadedAllOrderData extends StatelessWidget {
     return Column(
       children: [
         TabBar(
-          overlayColor: MaterialStateProperty.all(Colors.transparent),
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
           controller: tabController,
           isScrollable: true,
           indicatorSize: TabBarIndicatorSize.tab,

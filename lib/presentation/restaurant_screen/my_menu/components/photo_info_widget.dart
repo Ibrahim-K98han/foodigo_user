@@ -81,6 +81,15 @@ class _PhotoInfoWidgetState extends State<PhotoInfoWidget> {
         children: [
           BlocBuilder<StoreProductCubit, StoreProductStateModel>(
             builder: (context, state) {
+              final stCubit = context.read<StoreProductCubit>();
+
+              final imagePath = (stCubit.products != null &&
+                      stCubit.products!.product != null &&
+                      stCubit.products!.product!.image.isNotEmpty)
+                  ? RemoteUrls.imageUrl(
+                      stCubit.products!.product!.image.toString())
+                  : KImages.foodImage1;
+
               return ClipRRect(
                 borderRadius: BorderRadius.circular(6.r),
                 child: _foodImage != null
@@ -91,10 +100,7 @@ class _PhotoInfoWidgetState extends State<PhotoInfoWidget> {
                         fit: BoxFit.cover,
                       )
                     : CustomImage(
-                        path: stCubit.products!.image!.isNotEmpty
-                            ? RemoteUrls.imageUrl(
-                                stCubit.products!.image.toString())
-                            : KImages.foodImage1,
+                        path: imagePath,
                         width: 250.w,
                         height: 110.h,
                         fit: BoxFit.cover,

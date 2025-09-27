@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/restaurant_features/Addons/model/res_addon_state_model.dart';
 import 'package:foodigo/utils/utils.dart';
+
 import '../../../../data/remote_url.dart';
 import '../../Login/bloc/restaurant_login_bloc.dart';
 import '../model/res_addon_model.dart';
@@ -14,9 +15,9 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
   ResAddonsCubit({
     required ResAddonRepository repository,
     required RestaurantLoginBloc loginBloc,
-  })  : _repository = repository,
-        _loginBloc = loginBloc,
-        super(const ResAddonStateModel());
+  }) : _repository = repository,
+       _loginBloc = loginBloc,
+       super(const ResAddonStateModel());
 
   ResAddonModel? resAddonModel;
   ResAddons? addons;
@@ -26,19 +27,23 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
 
   void price(String price) => emit(state.copyWith(price: price));
 
-  void translateId(String translateId) => emit(state.copyWith(translateId: translateId));
-
+  void translateId(String translateId) =>
+      emit(state.copyWith(translateId: translateId));
 
   /// Get Addon List
   Future<void> getAddon() async {
     print("call get addon");
     emit(state.copyWith(resAddonsState: const ResAddonsLoading()));
-    final result =
-        await _repository.getAddonList(_loginBloc.userInformation!.token);
+    final result = await _repository.getAddonList(
+      _loginBloc.userInformation!.token,
+    );
 
     result.fold(
-      (failure) => emit(state.copyWith(
-          resAddonsState: ResAddonsError(failure.message, failure.statusCode))),
+      (failure) => emit(
+        state.copyWith(
+          resAddonsState: ResAddonsError(failure.message, failure.statusCode),
+        ),
+      ),
       (success) {
         resAddonModel = success;
         emit(state.copyWith(resAddonsState: ResAddonsLoaded(success)));
@@ -52,16 +57,20 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
 
     try {
       final result = await _repository.storeAddon(
-          state, _loginBloc.userInformation!.token);
+        state,
+        _loginBloc.userInformation!.token,
+      );
       await getAddon();
       result.fold(
-        (failure) => emit(state.copyWith(
-            resAddonsState:
-                ResAddonsError(failure.message, failure.statusCode))),
+        (failure) => emit(
+          state.copyWith(
+            resAddonsState: ResAddonsError(failure.message, failure.statusCode),
+          ),
+        ),
         (success) {
-          final updatedList =
-              List<ResAddons>.from(resAddonModel?.resAddons ?? [])
-                ..addAll(success.resAddons ?? []);
+          final updatedList = List<ResAddons>.from(
+            resAddonModel?.resAddons ?? [],
+          )..addAll(success.resAddons ?? []);
           resAddonModel = ResAddonModel(resAddons: updatedList);
 
           emit(state.copyWith(resAddonsState: ResAddonsLoaded(resAddonModel!)));
@@ -91,18 +100,26 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
       );
       print('API Call Success');
       result.fold(
-        (failure) => emit(state.copyWith(
-            resAddonsState:
-                UpdateAddonsError(failure.message, failure.statusCode))),
+        (failure) => emit(
+          state.copyWith(
+            resAddonsState: UpdateAddonsError(
+              failure.message,
+              failure.statusCode,
+            ),
+          ),
+        ),
         (success) {
           addons = success;
-          emit(state.copyWith(
-              resAddonsState: UpdateAddonsLoaded(resAddonModel!)));
+          emit(
+            state.copyWith(resAddonsState: UpdateAddonsLoaded(resAddonModel!)),
+          );
+          clear();
         },
       );
     } catch (e) {
       emit(
-          state.copyWith(resAddonsState: UpdateAddonsError(e.toString(), 500)));
+        state.copyWith(resAddonsState: UpdateAddonsError(e.toString(), 500)),
+      );
     }
   }
 
@@ -110,14 +127,23 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
   Future<void> deleteAddon(String productId) async {
     emit(state.copyWith(resAddonsState: const DeleteAddonLoading()));
     final result = await _repository.deleteAddon(
-        _loginBloc.userInformation!.token, productId);
+      _loginBloc.userInformation!.token,
+      productId,
+    );
     result.fold(
-        (l) => emit(state.copyWith(
-            resAddonsState: DeleteAddonError(l.message, l.statusCode))),
-        (success) async {
-      emit(state.copyWith(
-          resAddonsState: DeleteAddonSuccess(success.toString())));
-    });
+      (l) => emit(
+        state.copyWith(
+          resAddonsState: DeleteAddonError(l.message, l.statusCode),
+        ),
+      ),
+      (success) async {
+        emit(
+          state.copyWith(
+            resAddonsState: DeleteAddonSuccess(success.toString()),
+          ),
+        );
+      },
+    );
   }
 
   /// ----------------- Edit Addon -----------------
@@ -137,9 +163,11 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
     );
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        resAddonsState: EditAddonsError(failure.message, failure.statusCode),
-      )),
+      (failure) => emit(
+        state.copyWith(
+          resAddonsState: EditAddonsError(failure.message, failure.statusCode),
+        ),
+      ),
       (success) {
         editAddons = success;
         if (editAddons != null) {

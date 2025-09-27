@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:foodigo/features/add_to_cart/model/add_cart_response_model.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_response_model.dart';
 import '../../../../data/errors/errors_model.dart';
+import '../model/edit_product_model.dart';
 
 @immutable
 abstract class StoreProductState extends Equatable {
@@ -24,7 +25,7 @@ class StoreProductLoading extends StoreProductState {
 }
 
 class StoreProductLoaded extends StoreProductState {
-  final StoreProductResponseModel response;
+  final ProductData response;
 
   const StoreProductLoaded(this.response);
 
@@ -43,12 +44,12 @@ class StoreProductError extends StoreProductState {
 }
 
 class StoreProductSuccess extends StoreProductState {
-  final StoreProductResponseModel response;
-
-  const StoreProductSuccess(this.response);
+  // final StoreProductResponseModel response;
+  final String message;
+  const StoreProductSuccess(this.message);
 
   @override
-  List<Object> get props => [response];
+  List<Object> get props => [message];
 }
 
 class StoreProductFormValidate extends StoreProductState {
@@ -69,7 +70,7 @@ class EditProductInitial extends StoreProductState {
 class EditProductLoading extends StoreProductState {}
 
 class EditProductLoaded extends StoreProductState {
-  final ProductList response;
+  final ProductData response;
 
   const EditProductLoaded(this.response);
 
@@ -88,12 +89,13 @@ class EditProductError extends StoreProductState {
 }
 
 class EditProductSuccess extends StoreProductState {
-  final Products response;
+  // final Products response;
+  final String message;
 
-  const EditProductSuccess(this.response);
+  const EditProductSuccess(this.message);
 
   @override
-  List<Object> get props => [response];
+  List<Object> get props => [message];
 }
 
 class EditProductFormValidate extends StoreProductState {
@@ -114,7 +116,7 @@ class StoreProductUpdateInitial extends StoreProductState {
 class StoreProductUpdateLoading extends StoreProductState {}
 
 class StoreProductUpdateLoaded extends StoreProductState {
-  final ProductList response;
+  final ProductData response;
 
   const StoreProductUpdateLoaded(this.response);
 

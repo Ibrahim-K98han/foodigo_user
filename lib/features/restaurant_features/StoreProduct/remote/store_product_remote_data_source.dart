@@ -26,6 +26,10 @@ class StoreProductRemoteDataSourceImpl implements StoreProductRemoteDataSource {
         'Content-Type': 'application/json',
       };
 
+  final postDeleteHeader = {
+    'Accept': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+  };
   @override
   Future storeProduct(
       StoreProductStateModel body, Uri uri, String token) async {
@@ -56,17 +60,14 @@ class StoreProductRemoteDataSourceImpl implements StoreProductRemoteDataSource {
   Future updateStoreProduct(
       StoreProductStateModel body, Uri uri, String token) async {
     final request = http.MultipartRequest('POST', uri);
-    request.fields.addAll(
-        body.toMap().map((key, value) => MapEntry(key, value.toString())));
-    request.headers.addAll({
-      'Authorization': 'Bearer $token',
-      'Accept': 'application/json',
-    });
+    request.fields.addAll(body.toMap());
+    
+    request.headers.addAll(authHeader(token));
+
     if (body.image.isNotEmpty) {
       final file = await http.MultipartFile.fromPath('image', body.image);
       request.files.add(file);
     }
-    request.fields['translate_id'] = body.translateId;
     print("update product body :${body.toMap()}");
     http.StreamedResponse response = await request.send();
     final clientMethod = http.Response.fromStream(response);

@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/restaurant_features/Addons/cubit/res_addons_cubit.dart';
 import 'package:foodigo/features/restaurant_features/Category/cubit/res_categories_cubit.dart';
-import 'package:foodigo/features/restaurant_features/Products/cubit/product_state.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_cubit.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_state.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_state_model.dart';
-import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/presentation/restaurant_screen/my_menu/components/category_info_widget.dart';
 import 'package:foodigo/presentation/restaurant_screen/my_menu/components/photo_info_widget.dart';
 import 'package:foodigo/presentation/restaurant_screen/my_menu/components/price_info_widget.dart';
@@ -93,18 +91,19 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
             if (update is StoreProductLoading) {
               Utils.loadingDialog(context);
             } else {
-              Future.delayed(const Duration(seconds: 1), () {
-                if (mounted) {
-                  // Check if the widget is still mounted
-                  Utils.closeDialog(context); // Close the dialog after 2 seconds
-                }
-              }
+              Future.delayed(
+                const Duration(seconds: 2),
+                () {
+                  if (mounted) {
+                    Utils.closeDialog(context);
+                  }
+                },
               );
-              if(update is StoreProductError){
+              if (update is StoreProductError) {
                 Utils.errorSnackBar(context, update.message);
-              }else if(update is StoreProductSuccess){
-                Utils.showSnackBar(context, update.response.message);
-                Future.delayed(const Duration(seconds: 1),(){
+              } else if (update is StoreProductSuccess) {
+                Utils.showSnackBar(context, update.message);
+                Future.delayed(const Duration(seconds: 1), () {
                   Navigator.of(context).pop(true);
                 });
               }
@@ -116,10 +115,10 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
               onPressed: () {
                 if (widget.id.isNotEmpty) {
                   stCubit.updateProduct(widget.id.toString());
-                  Navigator.pushNamed(context, RouteNames.myMenuScreen);
+                  // Navigator.pushNamed(context, RouteNames.myMenuScreen);
                 } else {
                   stCubit.storeProduct();
-                  Navigator.pushNamed(context, RouteNames.myMenuScreen);
+                  // Navigator.pushNamed(context, RouteNames.myMenuScreen);
                 }
               },
             );
@@ -153,14 +152,13 @@ class _LoadEditDataState extends State<LoadEditData> {
     resAddonCubit = context.read<ResAddonsCubit>();
     resAddonCubit.getAddon();
     stCubit = context.read<StoreProductCubit>();
-    // stCubit.getEditProduct(widget.id);
   }
 
   @override
   Widget build(BuildContext context) {
-    // if (widget.id.isNotEmpty) {
-    //   stCubit.translateId(stCubit.translateProduct!.id.toString());
-    // }
+    if (widget.id.isNotEmpty) {
+      stCubit.translateId(stCubit.products!.productTranslate!.id.toString());
+    }
     return Padding(
       padding: Utils.symmetric(),
       child: SingleChildScrollView(
