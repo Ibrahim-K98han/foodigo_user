@@ -1,13 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:foodigo/data/errors/exception.dart';
 import 'package:foodigo/data/errors/failure.dart';
-import 'package:foodigo/features/restaurant_features/Order/model/res_order_model.dart';
 
 import '../model/order_status_model.dart';
 import '../remote/order_status_remote_data_source.dart';
 
 abstract class OrderStatusRepository {
- 
   Future<Either<Failure, OrderStatusModel>> chageOrderStatus(
     String token,
     String orderId,
@@ -27,8 +25,13 @@ class OrderStatusRepositoryImpl implements OrderStatusRepository {
     String statusId,
   ) async {
     try {
-      final result = await remoteDataSource.changeOrderStatus(token, orderId, statusId);
-      final order = OrderStatusModel.fromMap(result['data']['order']);
+      final result =
+          await remoteDataSource.changeOrderStatus(token, orderId, statusId);
+
+      print('Repository Result: $result');
+
+      final order = OrderStatusModel.fromMap(result['data']);
+
       return Right(order);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));

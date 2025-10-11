@@ -11,7 +11,10 @@ import '../../../../widget/custom_text_style.dart';
 import 'order_details_screen.dart';
 
 class ResOrderCard extends StatefulWidget {
-  const ResOrderCard({super.key, required this.order});
+  const ResOrderCard({
+    super.key,
+    required this.order,
+  });
 
   final ResOrderModel order;
 
@@ -22,7 +25,6 @@ class ResOrderCard extends StatefulWidget {
 class _ResOrderCardState extends State<ResOrderCard> {
   String? selectedStatus;
   late OrderStatusCubit orderStatusCubit;
-
 
   final List<String> statusList = [
     'Pending',
@@ -143,7 +145,6 @@ class _ResOrderCardState extends State<ResOrderCard> {
                         fontSize: 13,
                         color: textColor,
                       ),
-
                       CustomText(
                         text: '${order.id}',
                         fontWeight: FontWeight.w400,
@@ -172,9 +173,8 @@ class _ResOrderCardState extends State<ResOrderCard> {
                   Row(
                     children: [
                       CustomText(
-                        text: DateFormat(
-                          'hh:mm a',
-                        ).format(order.createdAt ?? DateTime.now()),
+                        text: DateFormat('hh:mm a')
+                            .format(order.createdAt ?? DateTime.now()),
                         color: textColor,
                         fontSize: 12,
                       ),
@@ -224,24 +224,33 @@ class _ResOrderCardState extends State<ResOrderCard> {
                           vertical: 6,
                         ),
                       ),
-                      items:
-                          statusList.map((item) {
-                            return DropdownMenuItem(
-                              value: item,
-                              child: Text(
-                                item,
-                                style: const TextStyle(fontSize: 13),
-                              ),
-                            );
-                          }).toList(),
-                      onChanged: (value) {
-                        orderStatusCubit.changeStatus(value!);
-                        String statusId =
-                            (statusList.indexOf(value) + 1).toString();
-                        context.read<OrderStatusCubit>().changeOrderStatus(
-                          order.id.toString(),
-                          statusId,
+                      items: statusList.map((item) {
+                        return DropdownMenuItem(
+                          value: item,
+                          child: Text(
+                            item,
+                            style: const TextStyle(fontSize: 13),
+                          ),
                         );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            selectedStatus = value;
+                          });
+
+                          String statusId =
+                          (statusList.indexOf(value) + 1).toString();
+
+                          // Update the status in cubit with the status text
+                          orderStatusCubit.changeStatus(value);
+
+                          // Call API to change order status
+                          orderStatusCubit.changeOrderStatus(
+                            order.id.toString(),
+                            statusId,
+                          );
+                        }
                       },
                     ),
                   ),
