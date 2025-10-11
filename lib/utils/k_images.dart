@@ -81,6 +81,7 @@ class KImages {
   static const String splashBg = 'assets/images/splash_bg.png';
   static const String notFound = 'assets/images/not_found.png';
   static const String cartNotFound = 'assets/images/cart_not_found.png';
+  static const String notImage = 'assets/images/not_image.png';
 
 
   ///Food Image

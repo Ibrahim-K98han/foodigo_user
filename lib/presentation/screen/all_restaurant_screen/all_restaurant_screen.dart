@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/AllRestaurant/cubit/all_restaurant_cubit.dart';
 import 'package:foodigo/presentation/screen/home/components/top_restaurant.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
+
 import '../../../features/AllRestaurant/cubit/all_restaurant_state.dart';
 import '../../../utils/utils.dart';
 import '../../../widget/fetch_error_text.dart';
@@ -10,9 +11,7 @@ import '../../../widget/loading_widget.dart';
 import '../../core/routes/route_names.dart';
 
 class AllRestaurantScreen extends StatefulWidget {
-  const AllRestaurantScreen({
-    super.key,
-  });
+  const AllRestaurantScreen({super.key});
 
   @override
   State<AllRestaurantScreen> createState() => _AllRestaurantScreenState();
@@ -53,7 +52,7 @@ class _AllRestaurantScreenState extends State<AllRestaurantScreen> {
                     blurRadius: 40,
                     offset: Offset(0, 2),
                     spreadRadius: 10,
-                  )
+                  ),
                 ],
               ),
               child: ListView.builder(

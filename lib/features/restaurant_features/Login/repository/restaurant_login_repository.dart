@@ -14,7 +14,7 @@ abstract class RestaurantLoginRepository {
   Future<Either<dynamic, RestaurantLoginResponse>> restaurantLogin(
       RestaurantLoginStateModel body);
 
-Future<Either<Failure, String>> restaurantLogout(Uri uri);
+Future<Either<Failure, String>> restaurantLogout(Uri uri, String token);
 
 Either<Failure, RestaurantLoginResponse> getExistingRestaurantInfo();
 
@@ -70,9 +70,9 @@ class RestaurantLoginRepositoryImpl implements RestaurantLoginRepository {
   }
 
 @override
-Future<Either<Failure, String>> restaurantLogout(Uri uri) async {
+Future<Either<Failure, String>> restaurantLogout(Uri uri, String token) async {
   try {
-    final logout = await remoteDataSources.restaurantLogout(uri);
+    final logout = await remoteDataSources.restaurantLogout(uri, token);
     localDataSources.clearUserResponse();
     return Right(logout['message']);
   } on ServerException catch (e) {

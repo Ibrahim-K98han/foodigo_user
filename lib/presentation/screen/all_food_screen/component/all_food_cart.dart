@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/features/AllFood/model/all_food_model.dart';
-import 'package:foodigo/features/HomeData/restaurant_model.dart';
 
 import '../../../../data/remote_url.dart';
 import '../../../../features/WishList/cubit/wish_list_cubit.dart';
@@ -14,10 +13,7 @@ import '../../../../widget/custom_text_style.dart';
 import '../../product_details/product_details_screen.dart';
 
 class AllFoodCart extends StatefulWidget {
-  const AllFoodCart({
-    super.key,
-    required this.foods,
-  });
+  const AllFoodCart({super.key, required this.foods});
 
   final Foods foods;
 
@@ -33,8 +29,10 @@ class _AllFoodCartState extends State<AllFoodCart> {
   void initState() {
     super.initState();
     wishList = context.read<WishListCubit>();
-    isFavorite = wishList.wishListModel?.data?.wishlistItems
-            ?.any((item) => item.product?.id == widget.foods.id) ??
+    isFavorite =
+        wishList.wishListModel?.data?.wishlistItems?.any(
+          (item) => item.product?.id == widget.foods.id,
+        ) ??
         false;
   }
 
@@ -60,20 +58,19 @@ class _AllFoodCartState extends State<AllFoodCart> {
               topRight: Radius.circular(Utils.radius(10.0)),
             ),
           ),
-          builder: (context) => DraggableScrollableSheet(
-            initialChildSize: 0.85,
-            minChildSize: 0.5,
-            maxChildSize: 0.95,
-            expand: false,
-            builder: (context, scrollController) {
-              return SingleChildScrollView(
-                controller: scrollController,
-                child: ProductDetailsScreen(
-                  id: widget.foods.id,
-                ),
-              );
-            },
-          ),
+          builder:
+              (context) => DraggableScrollableSheet(
+                initialChildSize: 0.85,
+                minChildSize: 0.5,
+                maxChildSize: 0.95,
+                expand: false,
+                builder: (context, scrollController) {
+                  return SingleChildScrollView(
+                    controller: scrollController,
+                    child: ProductDetailsScreen(id: widget.foods.id),
+                  );
+                },
+              ),
         );
       },
       child: Container(
@@ -99,8 +96,9 @@ class _AllFoodCartState extends State<AllFoodCart> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10.0.r),
-                      topRight: Radius.circular(10.0.r)),
+                    topLeft: Radius.circular(10.0.r),
+                    topRight: Radius.circular(10.0.r),
+                  ),
                   child: CustomImage(
                     path: RemoteUrls.imageUrl(widget.foods.image),
                     fit: BoxFit.cover,
@@ -118,12 +116,16 @@ class _AllFoodCartState extends State<AllFoodCart> {
                       if (isFavorite) {
                         // Remove from wishlist
                         final wishlistItem = wishList
-                            .wishListModel?.data?.wishlistItems
+                            .wishListModel
+                            ?.data
+                            ?.wishlistItems
                             ?.firstWhere(
-                                (item) => item.product?.id == productId);
+                              (item) => item.product?.id == productId,
+                            );
                         if (wishlistItem != null) {
-                          await wishList
-                              .removeFromWishList(wishlistItem.wishlistId);
+                          await wishList.removeFromWishList(
+                            wishlistItem.wishlistId,
+                          );
                         }
                       } else {
                         // Add to wishlist
@@ -154,7 +156,7 @@ class _AllFoodCartState extends State<AllFoodCart> {
                       ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
             Padding(
@@ -168,7 +170,10 @@ class _AllFoodCartState extends State<AllFoodCart> {
                     // Add space between price and rating
                     children: [
                       CustomText(
-                        text: Utils.formatPrice(context, widget.foods.price),
+                        text: Utils.formatPrice(
+                          context,
+                          widget.foods.offerPrice,
+                        ),
                         fontSize: 16.sp,
                         color: redColor,
                         fontWeight: FontWeight.w700,

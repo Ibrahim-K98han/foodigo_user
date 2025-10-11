@@ -41,26 +41,34 @@ class ResDashboardModel extends Equatable {
 
   factory ResDashboardModel.fromMap(Map<String, dynamic> map) {
     return ResDashboardModel(
-      restaurantDisplay: map['restaurant'] != null
-          ? RestaurantDisplay.fromMap(map['restaurant'] as Map<String, dynamic>)
-          : null,
-      statistics: map['statistics'] != null
-          ? Statistics.fromMap(map['statistics'] as Map<String, dynamic>)
-          : null,
-      recentOrder: map['recent_orders'] != null
-          ? List<RecentOrder>.from(
-              (map['recent_orders']['data'] as List<dynamic>).map<RecentOrder?>(
-                (x) => RecentOrder.fromMap(x as Map<String, dynamic>),
-              ),
-            )
-          : null,
-      withdrawHistory: map['withdraw_history'] != null
-          ? List<WithdrawHistory>.from(
-              (map['withdraw_history'] as List<dynamic>).map<WithdrawHistory?>(
-                (x) => WithdrawHistory.fromMap(x as Map<String, dynamic>),
-              ),
-            )
-          : null,
+      restaurantDisplay:
+          map['restaurant'] != null
+              ? RestaurantDisplay.fromMap(
+                map['restaurant'] as Map<String, dynamic>,
+              )
+              : null,
+      statistics:
+          map['statistics'] != null
+              ? Statistics.fromMap(map['statistics'] as Map<String, dynamic>)
+              : null,
+      recentOrder:
+          map['recent_orders'] != null
+              ? List<RecentOrder>.from(
+                (map['recent_orders']['data'] as List<dynamic>)
+                    .map<RecentOrder?>(
+                      (x) => RecentOrder.fromMap(x as Map<String, dynamic>),
+                    ),
+              )
+              : null,
+      withdrawHistory:
+          map['withdraw_history'] != null
+              ? List<WithdrawHistory>.from(
+                (map['withdraw_history'] as List<dynamic>)
+                    .map<WithdrawHistory?>(
+                      (x) => WithdrawHistory.fromMap(x as Map<String, dynamic>),
+                    ),
+              )
+              : null,
     );
   }
 
@@ -73,8 +81,12 @@ class ResDashboardModel extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object?> get props =>
-      [restaurantDisplay, statistics, recentOrder, withdrawHistory];
+  List<Object?> get props => [
+    restaurantDisplay,
+    statistics,
+    recentOrder,
+    withdrawHistory,
+  ];
 }
 
 class RestaurantDisplay extends Equatable {
@@ -167,17 +179,22 @@ class Statistics extends Equatable {
 
   factory Statistics.fromMap(Map<String, dynamic> map) {
     return Statistics(
-      orderStatistics: map['orders'] != null
-          ? OrderStatistics.fromMap(map['orders'] as Map<String, dynamic>)
-          : null,
-      financialStatistics: map['financial'] != null
-          ? FinancialStatistics.fromMap(
-              map['financial'] as Map<String, dynamic>)
-          : null,
-      commissionStatistics: map['commission'] != null
-          ? CommissionStatistics.fromMap(
-              map['commission'] as Map<String, dynamic>)
-          : null,
+      orderStatistics:
+          map['orders'] != null
+              ? OrderStatistics.fromMap(map['orders'] as Map<String, dynamic>)
+              : null,
+      financialStatistics:
+          map['financial'] != null
+              ? FinancialStatistics.fromMap(
+                map['financial'] as Map<String, dynamic>,
+              )
+              : null,
+      commissionStatistics:
+          map['commission'] != null
+              ? CommissionStatistics.fromMap(
+                map['commission'] as Map<String, dynamic>,
+              )
+              : null,
     );
   }
 
@@ -190,8 +207,11 @@ class Statistics extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props =>
-      [orderStatistics!, financialStatistics!, commissionStatistics!];
+  List<Object> get props => [
+    orderStatistics!,
+    financialStatistics!,
+    commissionStatistics!,
+  ];
 }
 
 class OrderStatistics extends Equatable {
@@ -255,13 +275,7 @@ class OrderStatistics extends Equatable {
 
   @override
   List<Object> get props {
-    return [
-      active,
-      pending,
-      completed,
-      cancelled,
-      total,
-    ];
+    return [active, pending, completed, cancelled, total];
   }
 }
 
@@ -347,15 +361,9 @@ class CommissionStatistics extends Equatable {
   final String type;
   final String rate;
 
-  const CommissionStatistics({
-    required this.type,
-    required this.rate,
-  });
+  const CommissionStatistics({required this.type, required this.rate});
 
-  CommissionStatistics copyWith({
-    String? type,
-    String? rate,
-  }) {
+  CommissionStatistics copyWith({String? type, String? rate}) {
     return CommissionStatistics(
       type: type ?? this.type,
       rate: rate ?? this.rate,
@@ -363,10 +371,7 @@ class CommissionStatistics extends Equatable {
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'type': type,
-      'rate': rate,
-    };
+    return <String, dynamic>{'type': type, 'rate': rate};
   }
 
   factory CommissionStatistics.fromMap(Map<String, dynamic> map) {
@@ -574,30 +579,37 @@ class RecentOrder extends Equatable {
       orderStatus: map['order_status'] ?? '',
       isGuest: map['is_guest'] ?? '',
       tnxInfo: map['tnx_info'] ?? '',
-      deliveryAddress: map['delivery_address'] != null
-          ? DeliveryAddress.fromMap(
-              jsonDecode(map['delivery_address'] as String))
-          : null,
-      createdAt: map['created_at'] != null
-          ? DateTime.parse(map['created_at'])
-          : DateTime.now(),
+      deliveryAddress:
+          map['delivery_address'] != null
+              ? DeliveryAddress.fromMap(
+                jsonDecode(map['delivery_address'] as String),
+              )
+              : null,
+      createdAt:
+          map['created_at'] != null
+              ? DateTime.parse(map['created_at'])
+              : DateTime.now(),
       // or any default
-      updatedAt: map['updated_at'] != null
-          ? DateTime.parse(map['updated_at'])
-          : DateTime.now(),
+      updatedAt:
+          map['updated_at'] != null
+              ? DateTime.parse(map['updated_at'])
+              : DateTime.now(),
       deliveryManId: map['delivery_man_id'] ?? '',
       orderRequest: map['order_request'] ?? '',
       orderReqDate: map['order_req_date'] ?? '',
       orderReqAcceptDate: map['order_req_accept_date'] ?? '',
       restaurant: Restaurant.fromMap(map['restaurant'] as Map<String, dynamic>),
       address: map['address'] as dynamic,
-      user: map['user'] != null
-          ? User.fromMap(map['user'] as Map<String, dynamic>)
-          : null,
-      items: map['items'] != null
-          ? List<Item>.from(
-              (map['items'] as List<dynamic>).map((x) => Item.fromMap(x)))
-          : [],
+      user:
+          map['user'] != null
+              ? User.fromMap(map['user'] as Map<String, dynamic>)
+              : null,
+      items:
+          map['items'] != null
+              ? List<Item>.from(
+                (map['items'] as List<dynamic>).map((x) => Item.fromMap(x)),
+              )
+              : [],
       deliveryman: map['deliveryman'] as dynamic,
     );
   }
@@ -609,37 +621,37 @@ class RecentOrder extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        userId,
-        restaurantId,
-        addressId,
-        timeSlotId,
-        orderType,
-        deliveryDay,
-        coupon,
-        discountAmount,
-        deliveryCharge,
-        vat,
-        total,
-        grandTotal,
-        paymentMethod,
-        paymentStatus,
-        orderStatus,
-        isGuest,
-        tnxInfo,
-        deliveryAddress,
-        createdAt,
-        updatedAt,
-        deliveryManId,
-        orderRequest,
-        orderReqDate,
-        orderReqAcceptDate,
-        restaurant,
-        address,
-        user,
-        items,
-        deliveryman,
-      ];
+    id,
+    userId,
+    restaurantId,
+    addressId,
+    timeSlotId,
+    orderType,
+    deliveryDay,
+    coupon,
+    discountAmount,
+    deliveryCharge,
+    vat,
+    total,
+    grandTotal,
+    paymentMethod,
+    paymentStatus,
+    orderStatus,
+    isGuest,
+    tnxInfo,
+    deliveryAddress,
+    createdAt,
+    updatedAt,
+    deliveryManId,
+    orderRequest,
+    orderReqDate,
+    orderReqAcceptDate,
+    restaurant,
+    address,
+    user,
+    items,
+    deliveryman,
+  ];
 }
 
 class DeliveryAddress extends Equatable {
@@ -732,13 +744,15 @@ class DeliveryAddress extends Equatable {
 
       isGuest: map['is_guest']?.toString() ?? '',
 
-      createdAt: map['created_at'] != null
-          ? DateTime.parse(map['created_at'])
-          : DateTime.now(),
+      createdAt:
+          map['created_at'] != null
+              ? DateTime.parse(map['created_at'])
+              : DateTime.now(),
       // or any default
-      updatedAt: map['updated_at'] != null
-          ? DateTime.parse(map['updated_at'])
-          : DateTime.now(),
+      updatedAt:
+          map['updated_at'] != null
+              ? DateTime.parse(map['updated_at'])
+              : DateTime.now(),
     );
   }
 
@@ -749,19 +763,19 @@ class DeliveryAddress extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        userId,
-        name,
-        lat,
-        lon,
-        email,
-        phone,
-        address,
-        deliveryType,
-        isGuest,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    userId,
+    name,
+    lat,
+    lon,
+    email,
+    phone,
+    address,
+    deliveryType,
+    isGuest,
+    createdAt,
+    updatedAt,
+  ];
 }
 
 class Restaurant extends Equatable {
@@ -976,16 +990,19 @@ class Restaurant extends Equatable {
       isDeliveryOrder: map['is_delivery_order'] ?? '',
       adminApproval: map['admin_approval'] ?? '',
       isBanned: map['is_banned'] ?? '',
-      forgetPasswordToken: map['forget_password_token'] != null
-          ? map['forget_password_token'] as String
-          : null,
-      createdAt: map['created_at'] != null
-          ? DateTime.parse(map['created_at'])
-          : DateTime.now(),
+      forgetPasswordToken:
+          map['forget_password_token'] != null
+              ? map['forget_password_token'] as String
+              : null,
+      createdAt:
+          map['created_at'] != null
+              ? DateTime.parse(map['created_at'])
+              : DateTime.now(),
       // or any default
-      updatedAt: map['updated_at'] != null
-          ? DateTime.parse(map['updated_at'])
-          : DateTime.now(),
+      updatedAt:
+          map['updated_at'] != null
+              ? DateTime.parse(map['updated_at'])
+              : DateTime.now(),
       isTrusted: map['is_trusted'] ?? '',
     );
   }
@@ -997,40 +1014,40 @@ class Restaurant extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        logo,
-        coverImage,
-        restaurantName,
-        slug,
-        cityId,
-        cuisines,
-        whatsapp,
-        address,
-        latitude,
-        longitude,
-        maxDeliveryDistance,
-        ownerName,
-        ownerEmail,
-        ownerPhone,
-        name,
-        email,
-        password,
-        openingHour,
-        closingHour,
-        minProcessingTime,
-        maxProcessingTime,
-        timeSlotSeparate,
-        tags,
-        isFeatured,
-        isPickupOrder,
-        isDeliveryOrder,
-        adminApproval,
-        isBanned,
-        forgetPasswordToken,
-        createdAt,
-        updatedAt,
-        isTrusted,
-      ];
+    id,
+    logo,
+    coverImage,
+    restaurantName,
+    slug,
+    cityId,
+    cuisines,
+    whatsapp,
+    address,
+    latitude,
+    longitude,
+    maxDeliveryDistance,
+    ownerName,
+    ownerEmail,
+    ownerPhone,
+    name,
+    email,
+    password,
+    openingHour,
+    closingHour,
+    minProcessingTime,
+    maxProcessingTime,
+    timeSlotSeparate,
+    tags,
+    isFeatured,
+    isPickupOrder,
+    isDeliveryOrder,
+    adminApproval,
+    isBanned,
+    forgetPasswordToken,
+    createdAt,
+    updatedAt,
+    isTrusted,
+  ];
 }
 
 class User extends Equatable {
@@ -1124,17 +1141,20 @@ class User extends Equatable {
       id: map['id'] ?? 0,
       name: map['name'] ?? '',
       email: map['email'] ?? '',
-      emailVerifiedAt: map['email_verified_at'] != null
-          ? DateTime.parse(map['email_verified_at'])
-          : DateTime.now(),
+      emailVerifiedAt:
+          map['email_verified_at'] != null
+              ? DateTime.parse(map['email_verified_at'])
+              : DateTime.now(),
 
-      createdAt: map['created_at'] != null
-          ? DateTime.parse(map['created_at'])
-          : DateTime.now(),
+      createdAt:
+          map['created_at'] != null
+              ? DateTime.parse(map['created_at'])
+              : DateTime.now(),
       // or any default
-      updatedAt: map['updated_at'] != null
-          ? DateTime.parse(map['updated_at'])
-          : DateTime.now(),
+      updatedAt:
+          map['updated_at'] != null
+              ? DateTime.parse(map['updated_at'])
+              : DateTime.now(),
       status: map['status'] ?? '',
       image: map['image'] ?? '',
       phone: map['phone'] ?? '',
@@ -1180,11 +1200,12 @@ class Item extends Equatable {
   final String orderId;
   final String productId;
   final Map<String, String> size;
-  final List<dynamic> addons;
+  final Map<String, String> addons;
   final String qty;
   final String total;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final Product? product;
 
   const Item({
     required this.id,
@@ -1196,6 +1217,7 @@ class Item extends Equatable {
     required this.total,
     required this.createdAt,
     required this.updatedAt,
+    this.product,
   });
 
   Item copyWith({
@@ -1203,11 +1225,12 @@ class Item extends Equatable {
     String? orderId,
     String? productId,
     Map<String, String>? size,
-    List<dynamic>? addons,
+    Map<String, String>? addons,
     String? qty,
     String? total,
     DateTime? createdAt,
     DateTime? updatedAt,
+    Product? product,
   }) {
     return Item(
       id: id ?? this.id,
@@ -1219,6 +1242,7 @@ class Item extends Equatable {
       total: total ?? this.total,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      product: product ?? this.product,
     );
   }
 
@@ -1227,43 +1251,50 @@ class Item extends Equatable {
       'id': id,
       'order_id': orderId,
       'product_id': productId,
-      'size': size,
-      'addons': addons,
+      'size': jsonEncode(size),
+      'addons': jsonEncode(addons),
       'qty': qty,
       'total': total,
-      'created_at': createdAt.millisecondsSinceEpoch,
-      'updated_at': updatedAt.millisecondsSinceEpoch,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+      'products': product?.toMap(),
     };
   }
 
   factory Item.fromMap(Map<String, dynamic> map) {
+    // Safe JSON decoding helper
+    Map<String, String> decodeStringMap(dynamic jsonStr) {
+      if (jsonStr == null || jsonStr.toString().isEmpty) return {};
+      try {
+        final decoded = jsonDecode(jsonStr);
+        if (decoded is Map) {
+          return decoded.map(
+            (key, value) => MapEntry(key.toString(), value.toString()),
+          );
+        }
+        return {};
+      } catch (_) {
+        return {};
+      }
+    }
+
     return Item(
-      id: map['id'] ?? 0,
-      orderId: map['order_id'] ?? '',
-      productId: map['product_id'] ?? '',
-      size: map['size'] != null
-          ? Map<String, String>.from(
-              jsonDecode(map['size'] as String)
-                  .map((k, v) => MapEntry(k.toString(), v.toString())),
-            )
-          : {},
-      addons: map['addons'] != null
-          ? () {
-              final decoded = jsonDecode(map['addons'] as String);
-              if (decoded is List) {
-                return List<dynamic>.from(decoded);
-              } else if (decoded is Map) {
-                // If API sometimes sends a Map, convert to List of values
-                return decoded.values.toList();
-              } else {
-                return [];
-              }
-            }()
-          : [],
-      qty: map['qty'] ?? '',
-      total: map['total'] ?? '',
-      createdAt: DateTime.parse(map['created_at']),
-      updatedAt: DateTime.parse(map['updated_at']),
+      id:
+          map['id'] is int
+              ? map['id']
+              : int.tryParse(map['id'].toString()) ?? 0,
+      orderId: map['order_id']?.toString() ?? '',
+      productId: map['product_id']?.toString() ?? '',
+      size: decodeStringMap(map['size']),
+      addons: decodeStringMap(map['addons']),
+      qty: map['qty']?.toString() ?? '',
+      total: map['total']?.toString() ?? '',
+      createdAt: DateTime.tryParse(map['created_at'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(map['updated_at'] ?? '') ?? DateTime.now(),
+      product:
+          map['products'] != null && map['products'] is Map<String, dynamic>
+              ? Product.fromMap(map['products'])
+              : null,
     );
   }
 
@@ -1273,22 +1304,18 @@ class Item extends Equatable {
       Item.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  bool get stringify => true;
-
-  @override
-  List<Object> get props {
-    return [
-      id,
-      orderId,
-      productId,
-      size,
-      addons,
-      qty,
-      total,
-      createdAt,
-      updatedAt,
-    ];
-  }
+  List<Object?> get props => [
+    id,
+    orderId,
+    productId,
+    size,
+    addons,
+    qty,
+    total,
+    createdAt,
+    updatedAt,
+    product,
+  ];
 }
 
 class Product extends Equatable {
@@ -1305,9 +1332,8 @@ class Product extends Equatable {
   final DateTime updatedAt;
   final String isFeatured;
   final String name;
-  final String? shortDescription;
+  final String shortDescription;
   final Map<String, String> size;
-
   const Product({
     required this.id,
     required this.slug,
@@ -1322,32 +1348,48 @@ class Product extends Equatable {
     required this.updatedAt,
     required this.isFeatured,
     required this.name,
-    this.shortDescription,
+    required this.shortDescription,
     required this.size,
   });
 
-  factory Product.fromJson(Map<String, dynamic> json) {
+  Product copyWith({
+    int? id,
+    String? slug,
+    String? image,
+    String? categoryId,
+    String? restaurantId,
+    String? price,
+    String? offerPrice,
+    String? status,
+    List<String>? addonItems,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? isFeatured,
+    String? name,
+    String? shortDescription,
+    Map<String, String>? size,
+  }) {
     return Product(
-      id: json['id'],
-      slug: json['slug'],
-      image: json['image'],
-      categoryId: json['category_id'],
-      restaurantId: json['restaurant_id'],
-      price: json['price'],
-      offerPrice: json['offer_price'],
-      status: json['status'],
-      addonItems: List<String>.from(jsonDecode(json['addon_items'])),
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
-      isFeatured: json['is_featured'],
-      name: json['name'],
-      shortDescription: json['short_description'],
-      size: Map<String, String>.from(jsonDecode(json['size'])),
+      id: id ?? this.id,
+      slug: slug ?? this.slug,
+      image: image ?? this.image,
+      categoryId: categoryId ?? this.categoryId,
+      restaurantId: restaurantId ?? this.restaurantId,
+      price: price ?? this.price,
+      offerPrice: offerPrice ?? this.offerPrice,
+      status: status ?? this.status,
+      addonItems: addonItems ?? this.addonItems,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      isFeatured: isFeatured ?? this.isFeatured,
+      name: name ?? this.name,
+      shortDescription: shortDescription ?? this.shortDescription,
+      size: size ?? this.size,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
       'id': id,
       'slug': slug,
       'image': image,
@@ -1356,34 +1398,110 @@ class Product extends Equatable {
       'price': price,
       'offer_price': offerPrice,
       'status': status,
-      'addon_items': jsonEncode(addonItems),
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+      'addon_items': addonItems,
+      'created_at': createdAt.millisecondsSinceEpoch,
+      'updated_at': updatedAt.millisecondsSinceEpoch,
       'is_featured': isFeatured,
       'name': name,
       'short_description': shortDescription,
-      'size': jsonEncode(size),
+      'size': size,
     };
   }
 
+  factory Product.fromMap(Map<String, dynamic> map) {
+    return Product(
+      id: map['id'] ?? 0,
+      slug: map['slug'] ?? '',
+      image: map['image'] ?? '',
+      categoryId: map['category_id'] ?? '',
+      restaurantId: map['restaurant_id'] ?? '',
+      price: map['price'] ?? '',
+      offerPrice: map['offer_price'] ?? '',
+      status: map['status'] ?? '',
+      addonItems: () {
+        final raw = map['addon_items'];
+        if (raw == null) return <String>[];
+        if (raw is String) {
+          try {
+            final decoded = jsonDecode(raw);
+            if (decoded is List) {
+              return List<String>.from(decoded.map((e) => e.toString()));
+            }
+            return <String>[];
+          } catch (_) {
+            return <String>[];
+          }
+        }
+        if (raw is List) {
+          return List<String>.from(raw.map((e) => e.toString()));
+        }
+        return <String>[];
+      }(),
+      createdAt:
+          map['created_at'] != null
+              ? DateTime.tryParse(map['created_at']) ?? DateTime.now()
+              : DateTime.now(),
+      updatedAt:
+          map['updated_at'] != null
+              ? DateTime.tryParse(map['updated_at']) ?? DateTime.now()
+              : DateTime.now(),
+      isFeatured: map['is_featured']?.toString() ?? '0',
+      name: map['name'] ?? '',
+      shortDescription: map['short_description'] ?? '',
+      size: () {
+        final raw = map['size'];
+        if (raw == null) return <String, String>{};
+        if (raw is String) {
+          try {
+            final decoded = jsonDecode(raw);
+            if (decoded is Map) {
+              return Map<String, String>.from(
+                decoded.map((k, v) => MapEntry(k.toString(), v.toString())),
+              );
+            }
+            return <String, String>{};
+          } catch (_) {
+            return <String, String>{};
+          }
+        }
+        if (raw is Map) {
+          return Map<String, String>.from(
+            raw.map((k, v) => MapEntry(k.toString(), v.toString())),
+          );
+        }
+        return <String, String>{};
+      }(),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Product.fromJson(String source) =>
+      Product.fromMap(json.decode(source) as Map<String, dynamic>);
+
   @override
-  List<Object?> get props => [
-        id,
-        slug,
-        image,
-        categoryId,
-        restaurantId,
-        price,
-        offerPrice,
-        status,
-        addonItems,
-        createdAt,
-        updatedAt,
-        isFeatured,
-        name,
-        shortDescription,
-        size,
-      ];
+  bool get stringify => true;
+
+  @override
+  List<Object> get props {
+    return [
+      id,
+      slug,
+      image,
+      categoryId,
+      restaurantId,
+      price,
+      offerPrice,
+      status,
+      addonItems,
+      createdAt,
+      updatedAt,
+      isFeatured,
+      name,
+      shortDescription,
+      size,
+    ];
+  }
 }
 
 class WithdrawHistory extends Equatable {
@@ -1433,9 +1551,10 @@ class WithdrawHistory extends Equatable {
       amount: map['amount'] ?? '',
       status: map['status'] ?? '',
       method: map['method'] ?? '',
-      createdAt: map['created_at'] != null
-          ? DateTime.parse(map['created_at'])
-          : DateTime.now(),
+      createdAt:
+          map['created_at'] != null
+              ? DateTime.parse(map['created_at'])
+              : DateTime.now(),
     );
   }
 
@@ -1449,12 +1568,6 @@ class WithdrawHistory extends Equatable {
 
   @override
   List<Object> get props {
-    return [
-      id,
-      amount,
-      status,
-      method,
-      createdAt,
-    ];
+    return [id, amount, status, method, createdAt];
   }
 }

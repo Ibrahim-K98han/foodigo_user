@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +9,7 @@ import 'package:foodigo/features/HomeData/restaurant_model.dart';
 import 'package:foodigo/utils/k_images.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_image.dart';
+import 'package:foodigo/widget/custom_text_style.dart';
 import '../../../features/AllFood/cubit/all_food_state_model.dart';
 import '../../../features/HomeData/cubit/home_data_cubit.dart';
 import '../../../utils/utils.dart';
@@ -20,9 +20,7 @@ import 'component/all_food_cart.dart';
 import 'component/filter_bottom_sheet.dart';
 
 class AllFoodScreen extends StatefulWidget {
-  const AllFoodScreen({
-    super.key,
-  });
+  const AllFoodScreen({super.key});
 
   @override
   State<AllFoodScreen> createState() => _AllFoodScreenState();
@@ -79,13 +77,15 @@ class _AllFoodScreenState extends State<AllFoodScreen> {
                   isScrollControlled: true,
                   backgroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(16.r)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(16.r),
+                    ),
                   ),
-                  builder: (_) => SizedBox(
-                    height: 450.h,
-                    child: const FilterBottomSheet(),
-                  ),
+                  builder:
+                      (_) => SizedBox(
+                        height: 450.h,
+                        child: const FilterBottomSheet(),
+                      ),
                 );
               },
               child: CustomImage(
@@ -141,11 +141,12 @@ class _AllFoodScreenState extends State<AllFoodScreen> {
 }
 
 class LoadFoodData extends StatefulWidget {
-  const LoadFoodData(
-      {super.key,
-      required this.food,
-      required this.res,
-      required this.controller});
+  const LoadFoodData({
+    super.key,
+    required this.food,
+    required this.res,
+    required this.controller,
+  });
 
   final List<Foods> food;
   final List<Restaurants> res;
@@ -212,19 +213,26 @@ class _LoadFoodDataState extends State<LoadFoodData> {
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            itemCount: widget.food.length,
-            padding: Utils.symmetric(),
-            itemBuilder: (BuildContext context, int index) {
-              final item = widget.food[index];
-              return Padding(
-                padding: Utils.only(bottom: 16.0),
-                child: AllFoodCart(
-                  foods: item,
-                ),
-              );
-            },
-          ),
+          child:
+              widget.food.isEmpty
+                  ? const Center(
+                    child: CustomText(
+                      text: 'No Food Available',
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                  : ListView.builder(
+                    itemCount: widget.food.length,
+                    padding: Utils.symmetric(),
+                    itemBuilder: (BuildContext context, int index) {
+                      final item = widget.food[index];
+                      return Padding(
+                        padding: Utils.only(bottom: 16.0),
+                        child: AllFoodCart(foods: item),
+                      );
+                    },
+                  ),
         ),
       ],
     );

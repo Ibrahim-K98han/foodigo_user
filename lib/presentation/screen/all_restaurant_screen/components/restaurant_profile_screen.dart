@@ -45,170 +45,189 @@ class _RestaurantProfileScreenState extends State<RestaurantProfileScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-        body: BlocConsumer<SingleRestaurantCubit, SingleRestaurantState>(
-      listener: (context, state) {
-        if (state is SingleRestaurantError) {
-          FetchErrorText(text: state.message);
-        }
-      },
-      builder: (context, state) {
-        if (state is SingleRestaurantLoading) {
-          return const LoadingWidget();
-        } else if (state is SingleRestaurantError) {
-          return FetchErrorText(text: state.message);
-        } else if (state is SingleRestaurantLoaded) {
-          final restaurant = state.restaurantDetailsModel;
-          return Column(
-            children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  CustomImage(
-                    path: RemoteUrls.imageUrl(restaurant.restaurant.coverImage),
-                    fit: BoxFit.cover,
-                    height: size.height * 0.20,
-                    width: double.infinity,
-                  ),
-                  Positioned(
-                    top: 45,
-                    left: 20,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(
-                        Icons.arrow_back_sharp,
-                        size: 30,
-                        color: whiteColor,
+      body: BlocConsumer<SingleRestaurantCubit, SingleRestaurantState>(
+        listener: (context, state) {
+          if (state is SingleRestaurantError) {
+            FetchErrorText(text: state.message);
+          }
+        },
+        builder: (context, state) {
+          if (state is SingleRestaurantLoading) {
+            return const LoadingWidget();
+          } else if (state is SingleRestaurantError) {
+            return FetchErrorText(text: state.message);
+          } else if (state is SingleRestaurantLoaded) {
+            final restaurant = state.restaurantDetailsModel;
+            return Column(
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    CustomImage(
+                      path: RemoteUrls.imageUrl(
+                        restaurant.restaurant.coverImage,
+                      ),
+                      fit: BoxFit.cover,
+                      height: size.height * 0.20,
+                      width: double.infinity,
+                    ),
+                    Positioned(
+                      top: 45,
+                      left: 20,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Icon(
+                          Icons.arrow_back_sharp,
+                          size: 30,
+                          color: whiteColor,
+                        ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    top: 45,
-                    right: 20,
-                    child: GestureDetector(
-                        onTap: () {},
-                        child: const CustomImage(
-                          path: KImages.loveIcon,
-                          color: whiteColor,
-                          width: 24,
-                          height: 24,
-                        )),
-                  ),
-                  Positioned(
-                    bottom: -40,
-                    left: 0,
-                    right: 0,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.transparent,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50.0),
-                          child: CustomImage(
-                            path:
-                                RemoteUrls.imageUrl(restaurant.restaurant.logo),
-                            fit: BoxFit.cover,
-                            height: 100,
+                    // Positioned(
+                    //   top: 45,
+                    //   right: 20,
+                    //   child: GestureDetector(
+                    //     onTap: () {},
+                    //     child: const CustomImage(
+                    //       path: KImages.loveIcon,
+                    //       color: whiteColor,
+                    //       width: 24,
+                    //       height: 24,
+                    //     ),
+                    //   ),
+                    // ),
+                    Positioned(
+                      bottom: -40,
+                      left: 0,
+                      right: 0,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: CircleAvatar(
+                          radius: 40,
+                          backgroundColor: Colors.transparent,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50.0),
+                            child: CustomImage(
+                              path: RemoteUrls.imageUrl(
+                                restaurant.restaurant.logo,
+                              ),
+                              fit: BoxFit.cover,
+                              height: 100,
+                            ),
                           ),
                         ),
                       ),
                     ),
+                  ],
+                ),
+                Padding(
+                  padding: Utils.only(
+                    top: 40.0,
+                    bottom: 6.0,
+                    right: 10.0,
+                    left: 10.0,
                   ),
-                ],
-              ),
-              Padding(
-                padding:
-                    Utils.only(top: 40.0, bottom: 6.0, right: 10.0, left: 10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CustomText(
-                          text: restaurant.restaurant.name,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          maxLine: 1,
-                        ),
-                        Utils.horizontalSpace(4.0),
-                        const CustomImage(path: KImages.rating),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            CustomImage(
-                              path: KImages.location,
-                              height: 20,
-                              color: blackColor.withOpacity(0.4),
-                            ),
-                            Utils.horizontalSpace(6.0),
-                            CustomText(
-                              text: restaurant.restaurant.address,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                              color: blackColor.withOpacity(0.4),
-                            ),
-                          ],
-                        ),
-                        Utils.horizontalSpace(10.0),
-                        Container(
-                          height: 5,
-                          width: 5,
-                          decoration: const BoxDecoration(
-                              color: Color(0xFFF98C3B), shape: BoxShape.circle),
-                        ),
-                        Utils.horizontalSpace(10.0),
-                        GestureDetector(
-                          onTap: () {
-                            _showReviewDialog(context);
-                          },
-                          child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomText(
+                            text: restaurant.restaurant.restaurantName,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            maxLine: 1,
+                          ),
+                          Utils.horizontalSpace(4.0),
+                          const CustomImage(path: KImages.rating),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              const CustomImage(path: KImages.star),
+                              CustomImage(
+                                path: KImages.location,
+                                height: 20,
+                                color: blackColor.withOpacity(0.4),
+                              ),
                               Utils.horizontalSpace(6.0),
-                              Row(
-                                children: [
-                                  CustomText(
-                                    text:
-                                        restaurant.restaurant.reviewsAvgRating,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                  ),
-                                  CustomText(
-                                    text:
-                                        ' (${restaurant.restaurant.reviewsCount})',
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                    color: blackColor.withOpacity(0.4),
-                                  ),
-                                ],
+                              SizedBox(
+                                width: 200.w,
+                                child: CustomText(
+                                  text: restaurant.restaurant.address,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                  maxLine: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  color: blackColor.withOpacity(0.4),
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                    Utils.verticalSpace(10.0),
-                  ],
+                          Utils.horizontalSpace(10.0),
+                          Container(
+                            height: 5,
+                            width: 5,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFF98C3B),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          Utils.horizontalSpace(10.0),
+                          GestureDetector(
+                            onTap: () {
+                              _showReviewDialog(context);
+                            },
+                            child: Row(
+                              children: [
+                                const CustomImage(path: KImages.star),
+                                Utils.horizontalSpace(6.0),
+                                Row(
+                                  children: [
+                                    CustomText(
+                                      text:
+                                          restaurant
+                                              .restaurant
+                                              .reviewsAvgRating,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
+                                    CustomText(
+                                      text:
+                                          ' (${restaurant.restaurant.reviewsCount})',
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                      color: blackColor.withOpacity(0.4),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Utils.verticalSpace(10.0),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                child: RestaurantTabContents(
-                  restaurantDetailsModel: restaurant,
+                Expanded(
+                  child: RestaurantTabContents(
+                    restaurantDetailsModel: restaurant,
+                  ),
                 ),
-              ),
-            ],
-          );
-        }
-        return const Center(child: Text("Something went wrong"));
-      },
-    ));
+              ],
+            );
+          }
+          return const Center(child: Text("Something went wrong"));
+        },
+      ),
+    );
   }
 }
 
@@ -221,47 +240,50 @@ void _showReviewDialog(BuildContext context) {
   showDialog(
     context: context,
     builder: (context) {
-      return BlocConsumer<ReviewCubit, ReviewState>(listener: (context, state) {
-        if (state is ReviewError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        }
-      }, builder: (context, state) {
-        if (state is ReviewLoading || state is ReviewInitial) {
-          return const Dialog(
-            child: SizedBox(
-              height: 120,
-              child: Center(child: CircularProgressIndicator()),
-            ),
-          );
-        } else if (state is ReviewLoaded) {
-          final reviews = state.reviewModel.review ?? [];
-          if (reviews.isEmpty) {
+      return BlocConsumer<ReviewCubit, ReviewState>(
+        listener: (context, state) {
+          if (state is ReviewError) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
+          }
+        },
+        builder: (context, state) {
+          if (state is ReviewLoading || state is ReviewInitial) {
             return const Dialog(
               child: SizedBox(
                 height: 120,
-                child: Center(child: Text("No reviews yet")),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            );
+          } else if (state is ReviewLoaded) {
+            final reviews = state.reviewModel.review ?? [];
+            if (reviews.isEmpty) {
+              return const Dialog(
+                child: SizedBox(
+                  height: 120,
+                  child: Center(child: Text("No reviews yet")),
+                ),
+              );
+            }
+            return LoadReviewDialog(reviewModel: state.reviewModel);
+          } else if (state is ReviewError) {
+            return Dialog(
+              child: SizedBox(
+                height: 120,
+                child: Center(child: Text(state.message)),
+              ),
+            );
+          } else {
+            return const Dialog(
+              child: SizedBox(
+                height: 120,
+                child: Center(child: Text("Something went wrong")),
               ),
             );
           }
-          return LoadReviewDialog(reviewModel: state.reviewModel);
-        } else if (state is ReviewError) {
-          return Dialog(
-            child: SizedBox(
-              height: 120,
-              child: Center(child: Text(state.message)),
-            ),
-          );
-        } else {
-          return const Dialog(
-            child: SizedBox(
-              height: 120,
-              child: Center(child: Text("Something went wrong")),
-            ),
-          );
-        }
-      });
+        },
+      );
     },
   );
 }
@@ -341,12 +363,9 @@ Widget _dialogHeader(BuildContext context, String? text) {
             const Spacer(),
             IconButton(
               padding: EdgeInsets.zero,
-              icon: const Icon(
-                Icons.close,
-                color: Colors.red,
-              ),
+              icon: const Icon(Icons.close, color: Colors.red),
               onPressed: () => Navigator.of(context).pop(),
-            )
+            ),
           ],
         ),
         Row(
@@ -365,21 +384,27 @@ Widget _dialogHeader(BuildContext context, String? text) {
               fontWeight: FontWeight.w600,
             ),
             const Spacer(),
-            const Icon(Icons.location_on_outlined,
-                color: Colors.grey, size: 18),
+            const Icon(
+              Icons.location_on_outlined,
+              color: Colors.grey,
+              size: 18,
+            ),
             GestureDetector(
               onTap: () {
                 _showMapDialog(context);
               },
               child: CustomText(
-                text: singleRestaurantCubit
-                    .restaurantDetailsModel!.restaurant.address,
+                text:
+                    singleRestaurantCubit
+                        .restaurantDetailsModel!
+                        .restaurant
+                        .address,
                 fontWeight: FontWeight.w500,
                 color: const Color(0xFF475569),
               ),
-            )
+            ),
           ],
-        )
+        ),
       ],
     ),
   );
@@ -421,8 +446,11 @@ void _showMapDialog(BuildContext context) {
                               child: const Row(
                                 children: [
                                   Expanded(
-                                    child: Icon(Icons.location_on_outlined,
-                                        color: Colors.amber, size: 18),
+                                    child: Icon(
+                                      Icons.location_on_outlined,
+                                      color: Colors.amber,
+                                      size: 18,
+                                    ),
                                   ),
                                   Expanded(
                                     flex: 3,
@@ -440,11 +468,11 @@ void _showMapDialog(BuildContext context) {
                                         size: 16,
                                       ),
                                     ),
-                                  )
+                                  ),
                                 ],
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                       Utils.verticalSpace(16),
@@ -454,7 +482,7 @@ void _showMapDialog(BuildContext context) {
                           Navigator.pushNamed(context, RouteNames.mainScreen);
                         },
                         fontSize: 14,
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -472,16 +500,21 @@ Widget _ratingSummary(BuildContext context) {
   return Container(
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
-        color: whiteColor, borderRadius: BorderRadius.circular(12)),
+      color: whiteColor,
+      borderRadius: BorderRadius.circular(12),
+    ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             CustomText(
-              text: singleRestaurantCubit
-                  .restaurantDetailsModel!.restaurant.reviewsCount
-                  .toString(),
+              text:
+                  singleRestaurantCubit
+                      .restaurantDetailsModel!
+                      .restaurant
+                      .reviewsCount
+                      .toString(),
               fontSize: 20,
               fontWeight: FontWeight.w600,
             ),
@@ -496,23 +529,25 @@ Widget _ratingSummary(BuildContext context) {
                   direction: Axis.horizontal,
                   allowHalfRating: true,
                   itemCount: 5,
-                  itemBuilder: (context, _) => const Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                  ),
+                  itemBuilder:
+                      (context, _) =>
+                          const Icon(Icons.star, color: Colors.amber),
                   onRatingUpdate: (rating) {
                     print(rating);
                   },
                 ),
                 CustomText(
-                  text: singleRestaurantCubit
-                      .restaurantDetailsModel!.restaurant.reviewsCount
-                      .toString(),
+                  text:
+                      singleRestaurantCubit
+                          .restaurantDetailsModel!
+                          .restaurant
+                          .reviewsCount
+                          .toString(),
                   fontSize: 12,
                   color: Colors.grey,
                 ),
               ],
-            )
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -543,7 +578,7 @@ Widget _ratingBar(int star, double percent) {
         ),
       ),
       const SizedBox(width: 8),
-      CustomText(text: "${(percent * 100).toInt()}%")
+      CustomText(text: "${(percent * 100).toInt()}%"),
     ],
   );
 }
@@ -560,12 +595,13 @@ Widget _filterChips() {
 
 Widget _filterButton(String text, {bool selected = false}) {
   return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: selected ? Colors.amber : Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: CustomText(text: text));
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+    decoration: BoxDecoration(
+      color: selected ? Colors.amber : Colors.grey.shade200,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: CustomText(text: text),
+  );
 }
 
 @override
@@ -593,14 +629,16 @@ class ReviewCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.grey.shade200,
-                blurRadius: 4,
-                offset: const Offset(0, 2)),
-          ]),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -628,28 +666,20 @@ class ReviewCard extends StatelessWidget {
                 ),
               ),
               Utils.horizontalSpace(4),
-              const CustomText(
-                text: '2 days ago',
-                color: Color(0xff64748B),
-              )
+              const CustomText(text: '2 days ago', color: Color(0xff64748B)),
             ],
           ),
           const SizedBox(height: 6),
-          CustomText(
-            text: review.review,
-          ),
+          CustomText(text: review.review),
           const SizedBox(height: 6),
           const Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Icon(Icons.thumb_up_alt_outlined, size: 16, color: Colors.grey),
               SizedBox(width: 4),
-              CustomText(
-                text: 'Helpful',
-                color: Color(0xff64748B),
-              ),
+              CustomText(text: 'Helpful', color: Color(0xff64748B)),
             ],
-          )
+          ),
         ],
       ),
     );

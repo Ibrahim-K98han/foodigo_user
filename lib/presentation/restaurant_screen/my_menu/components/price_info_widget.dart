@@ -36,6 +36,7 @@ class _PriceInfoWidgetState extends State<PriceInfoWidget> {
                 child: TextFormField(
                   initialValue: state.productPrice,
                   onChanged: stCubit.productPrice,
+                  keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                     hintText: 'Enter product price',
                   ),
@@ -50,6 +51,7 @@ class _PriceInfoWidgetState extends State<PriceInfoWidget> {
                 child: TextFormField(
                   initialValue: state.offerPrice,
                   onChanged: stCubit.offerPrice,
+                  keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                     hintText: 'Enter offer price',
                   ),

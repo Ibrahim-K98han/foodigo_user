@@ -14,8 +14,11 @@ import '../../../../utils/utils.dart';
 import '../../product_details/product_details_screen.dart';
 
 class ArrivalFood extends StatelessWidget {
-  const ArrivalFood(
-      {super.key, required this.newArrivalProducts, required this.restaurant});
+  const ArrivalFood({
+    super.key,
+    required this.newArrivalProducts,
+    required this.restaurant,
+  });
 
   final List<FeaturedProducts> newArrivalProducts;
   final List<Restaurants> restaurant;
@@ -34,7 +37,7 @@ class ArrivalFood extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        Utils.verticalSpace(16),
+        // Utils.verticalSpace(16),
         SingleChildScrollView(
           scrollDirection: Axis.vertical,
           padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -44,15 +47,13 @@ class ArrivalFood extends StatelessWidget {
                 final newArrival = newArrivalProducts[index];
                 final res = restaurant[index];
                 return Padding(
-                  padding: EdgeInsets.only(
-                    bottom: 16.0.h,
-                  ),
+                  padding: EdgeInsets.only(bottom: 16.h),
                   child: FoodCart(
                     newArrivalProducts: newArrival,
                     restaurants: res,
                   ),
                 );
-              })
+              }),
             ],
           ),
         ),
@@ -62,8 +63,11 @@ class ArrivalFood extends StatelessWidget {
 }
 
 class FoodCart extends StatefulWidget {
-  const FoodCart(
-      {super.key, required this.newArrivalProducts, required this.restaurants});
+  const FoodCart({
+    super.key,
+    required this.newArrivalProducts,
+    required this.restaurants,
+  });
 
   final FeaturedProducts newArrivalProducts;
   final Restaurants restaurants;
@@ -80,8 +84,10 @@ class _FoodCartState extends State<FoodCart> {
   void initState() {
     super.initState();
     wishList = context.read<WishListCubit>();
-    isFavorite = wishList.wishListModel?.data?.wishlistItems
-            ?.any((item) => item.product?.id == widget.newArrivalProducts.id) ??
+    isFavorite =
+        wishList.wishListModel?.data?.wishlistItems?.any(
+          (item) => item.product?.id == widget.newArrivalProducts.id,
+        ) ??
         false;
   }
 
@@ -107,20 +113,21 @@ class _FoodCartState extends State<FoodCart> {
               topRight: Radius.circular(Utils.radius(10.0)),
             ),
           ),
-          builder: (context) => DraggableScrollableSheet(
-            initialChildSize: 0.85,
-            minChildSize: 0.5,
-            maxChildSize: 0.95,
-            expand: false,
-            builder: (context, scrollController) {
-              return SingleChildScrollView(
-                controller: scrollController,
-                child: ProductDetailsScreen(
-                  id: widget.newArrivalProducts.id,
-                ),
-              );
-            },
-          ),
+          builder:
+              (context) => DraggableScrollableSheet(
+                initialChildSize: 0.85,
+                minChildSize: 0.5,
+                maxChildSize: 0.95,
+                expand: false,
+                builder: (context, scrollController) {
+                  return SingleChildScrollView(
+                    controller: scrollController,
+                    child: ProductDetailsScreen(
+                      id: widget.newArrivalProducts.id,
+                    ),
+                  );
+                },
+              ),
         );
       },
       child: Container(
@@ -146,8 +153,9 @@ class _FoodCartState extends State<FoodCart> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10.0.r),
-                      topRight: Radius.circular(10.0.r)),
+                    topLeft: Radius.circular(10.0.r),
+                    topRight: Radius.circular(10.0.r),
+                  ),
                   child: CustomImage(
                     path: RemoteUrls.imageUrl(widget.newArrivalProducts.image),
                     fit: BoxFit.cover,
@@ -165,12 +173,16 @@ class _FoodCartState extends State<FoodCart> {
                       if (isFavorite) {
                         // Remove from wishlist
                         final wishlistItem = wishList
-                            .wishListModel?.data?.wishlistItems
+                            .wishListModel
+                            ?.data
+                            ?.wishlistItems
                             ?.firstWhere(
-                                (item) => item.product?.id == productId);
+                              (item) => item.product?.id == productId,
+                            );
                         if (wishlistItem != null) {
-                          await wishList
-                              .removeFromWishList(wishlistItem.wishlistId);
+                          await wishList.removeFromWishList(
+                            wishlistItem.wishlistId,
+                          );
                         }
                       } else {
                         // Add to wishlist
@@ -201,7 +213,7 @@ class _FoodCartState extends State<FoodCart> {
                       ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
             Padding(
@@ -216,7 +228,9 @@ class _FoodCartState extends State<FoodCart> {
                     children: [
                       CustomText(
                         text: Utils.formatPrice(
-                            context, widget.newArrivalProducts.price),
+                          context,
+                          widget.newArrivalProducts.offerPrice,
+                        ),
                         fontSize: 16.sp,
                         color: redColor,
                         fontWeight: FontWeight.w700,
@@ -262,9 +276,9 @@ class _FoodCartState extends State<FoodCart> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomImage(
-                              path:
-                                  RemoteUrls.imageUrl(widget.restaurants.logo),
-                              height: 20),
+                            path: RemoteUrls.imageUrl(widget.restaurants.logo),
+                            height: 20,
+                          ),
                           Utils.horizontalSpace(6.0),
                           CustomText(
                             text: widget.restaurants.restaurantName,
@@ -279,14 +293,15 @@ class _FoodCartState extends State<FoodCart> {
                           width: 4.w,
                           height: 4.h,
                           decoration: const BoxDecoration(
-                              color: smallContainerColor,
-                              shape: BoxShape.circle),
+                            color: smallContainerColor,
+                            shape: BoxShape.circle,
+                          ),
                         ),
                       ),
                       Row(
                         children: [
-                          const CustomImage(path: KImages.location, height: 20),
-                          Utils.horizontalSpace(6.0),
+                          const CustomImage(path: KImages.location, height: 16),
+                          Utils.horizontalSpace(4.0),
                           CustomText(
                             text: widget.restaurants.address,
                             fontWeight: FontWeight.w400,
@@ -295,7 +310,7 @@ class _FoodCartState extends State<FoodCart> {
                         ],
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

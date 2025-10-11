@@ -56,19 +56,32 @@ class EarningModel extends Equatable {
 
   factory EarningModel.fromMap(Map<String, dynamic> map) {
     return EarningModel(
-      withdrawList: map['withdraw_list'] != null
-          ? List<WithdrawList>.from(
-              (map['withdraw_list'] as List<dynamic>).map<WithdrawList?>(
-                (x) => WithdrawList.fromMap(x as Map<String, dynamic>),
-              ),
-            )
-          : null,
-      totalIncome: map['total_income'] ?? '',
-      totalCommission: map['total_commission'] ?? '',
-      netIncome: map['net_income'] ?? '',
-      currentBalance: map['current_balance'] ?? '',
-      totalWithdrawAmount: map['total_withdraw_amount'] ?? '',
-      pendingWithdraw: map['pending_withdraw'] ?? '',
+      withdrawList:
+          map['withdraw_list'] != null
+              ? List<WithdrawList>.from(
+                (map['withdraw_list'] as List<dynamic>).map<WithdrawList>(
+                  (x) => WithdrawList.fromMap(x as Map<String, dynamic>),
+                ),
+              )
+              : null,
+      totalIncome: map['total_income']?.toString() ?? '',
+      totalCommission:
+          map['total_commission'] != null
+              ? (map['total_commission'] as num).toDouble()
+              : 0.0,
+      netIncome:
+          map['net_income'] != null
+              ? (map['net_income'] as num).toDouble()
+              : 0.0,
+      currentBalance:
+          map['current_balance'] != null
+              ? (map['current_balance'] as num).toDouble()
+              : 0.0,
+      totalWithdrawAmount:
+          map['total_withdraw_amount'] != null
+              ? (map['total_withdraw_amount'] as num).toInt()
+              : 0,
+      pendingWithdraw: map['pending_withdraw']?.toString() ?? '',
     );
   }
 

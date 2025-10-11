@@ -126,3 +126,28 @@ class EditAddonsLoaded extends ResAddonsState {
   @override
   List<Object?> get props => [editAddon];
 }
+
+///Add Addon
+
+class AddAddonsLoading extends ResAddonsState {
+  const AddAddonsLoading();
+}
+
+class AddAddonsError extends ResAddonsState {
+  final String message;
+  final int statusCode;
+
+  const AddAddonsError(this.message, this.statusCode);
+
+  @override
+  List<Object?> get props => [message, statusCode];
+}
+
+class AddAddonsLoaded extends ResAddonsState {
+  final TranslateAddonModel editAddon;
+
+  const AddAddonsLoaded(this.editAddon);
+
+  @override
+  List<Object?> get props => [editAddon];
+}

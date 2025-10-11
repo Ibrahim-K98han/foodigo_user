@@ -8,10 +8,10 @@ import '../model/edit_product_model.dart';
 import '../remote/store_product_remote_data_source.dart';
 
 abstract class StoreProductRepository {
-  Future<Either<dynamic, ProductData>> storeProduct(
+  Future<Either<dynamic, StoreProductResponseModel>> storeProduct(
       StoreProductStateModel body, Uri uri, String token);
 
-  Future<Either<dynamic, ProductData>> updateStoreProduct(
+  Future<Either<dynamic, StoreProductResponseModel>> updateStoreProduct(
       StoreProductStateModel body, Uri uri, String token);
 
   Future<Either<dynamic, ProductData>> getEditProduct(Uri url, String token);
@@ -28,11 +28,11 @@ class StoreProductRepositoryImpl implements StoreProductRepository {
   });
 
   @override
-  Future<Either<dynamic, ProductData>> storeProduct(
+  Future<Either<dynamic, StoreProductResponseModel>> storeProduct(
       StoreProductStateModel body, uri, String token) async {
     try {
       final result = await remoteDataSource.storeProduct(body, uri, token);
-      final response = ProductData.fromMap(result);
+      final response = StoreProductResponseModel.fromMap(result);
       return Right(response);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
@@ -70,7 +70,7 @@ class StoreProductRepositoryImpl implements StoreProductRepository {
 
   /// -------- UPDATE PRODUCT ----------
   @override
-  Future<Either<dynamic, ProductData>> updateStoreProduct(
+  Future<Either<dynamic, StoreProductResponseModel>> updateStoreProduct(
       StoreProductStateModel body, Uri uri, String token) async {
     try {
       final result = await remoteDataSource.updateStoreProduct(body, uri, token);

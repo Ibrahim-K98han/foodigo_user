@@ -8,6 +8,7 @@ import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/fetch_error_text.dart';
 import 'package:foodigo/widget/loading_widget.dart';
 import 'package:foodigo/widget/page_refresh.dart';
+
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../widget/custom_image.dart';
@@ -37,10 +38,7 @@ class _MyOrderScreenState extends State<MyOrderScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'My Orders',
-        visibleLeading: false,
-      ),
+      appBar: const CustomAppBar(title: 'My Orders', visibleLeading: false),
       body: PageRefresh(
         onRefresh: () async {
           orCubit.getAllOrder();
@@ -101,46 +99,52 @@ class LoadedAllOrderData extends StatelessWidget {
             borderRadius: BorderRadius.circular(6),
           ),
           unselectedLabelColor: Colors.black,
-          tabs: statusMap.values.map((label) {
-            return Tab(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: CustomText(text: label, fontSize: 14),
-              ),
-            );
-          }).toList(),
+          tabs:
+              statusMap.values.map((label) {
+                return Tab(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: CustomText(text: label, fontSize: 14),
+                  ),
+                );
+              }).toList(),
         ),
         Expanded(
           child: TabBarView(
             controller: tabController,
-            children: statusMap.keys.map((status) {
-              final filteredOrders = orders.where((order) {
-                final statusValue = int.tryParse(order.orderStatus ?? "0");
-                return statusValue == status;
-              }).toList();
+            children:
+                statusMap.keys.map((status) {
+                  final filteredOrders =
+                      orders.where((order) {
+                        final statusValue = int.tryParse(order.orderStatus);
+                        return statusValue == status;
+                      }).toList();
 
-              if (filteredOrders.isEmpty) {
-                return const Center(
-                  child: CustomImage(path: KImages.cartNotFound),
-                );
-              }
-              return ListView.separated(
-                separatorBuilder: (context, index) {
-                  return Divider(
-                    color: greyColor.withOpacity(0.2),
+                  if (filteredOrders.isEmpty) {
+                    return const Center(
+                      child: CustomImage(path: KImages.cartNotFound),
+                    );
+                  }
+                  return ListView.separated(
+                    separatorBuilder: (context, index) {
+                      return Divider(color: greyColor.withOpacity(0.2));
+                    },
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 0.0,
+                    ),
+                    itemCount: filteredOrders.length,
+                    itemBuilder: (context, index) {
+                      final item = filteredOrders[index];
+                      return ResOrderCard(order: item);
+                    },
                   );
-                },
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0.0),
-                itemCount: filteredOrders.length,
-                itemBuilder: (context, index) {
-                  final item = filteredOrders[index];
-                  return ResOrderCard(order: item);
-                },
-              );
-            }).toList(),
+                }).toList(),
           ),
-        )
+        ),
       ],
     );
   }

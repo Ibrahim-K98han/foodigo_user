@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:foodigo/features/restaurant_features/Addons/cubit/res_addons_state.dart';
 
@@ -46,7 +47,7 @@ class ResAddonStateModel extends Equatable {
   factory ResAddonStateModel.fromMap(Map<String, dynamic> map) {
     return ResAddonStateModel(
       name: map['name'] ?? '',
-      price: map['price'] ?? 0.0,
+      price: map['price'] ?? '',
       translateId: map['translate_id'] ?? '',
       isSelected: map['is_selected'] ?? false,
     );
@@ -61,6 +62,11 @@ class ResAddonStateModel extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props =>
-      [name, price, translateId, isSelected, resAddonsState];
+  List<Object> get props => [
+    name,
+    price,
+    translateId,
+    isSelected,
+    resAddonsState,
+  ];
 }

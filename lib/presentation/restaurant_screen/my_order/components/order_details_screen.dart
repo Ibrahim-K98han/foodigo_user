@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../../features/restaurant_features/Order/cubit/res_order_cubit.dart';
 import '../../../../features/restaurant_features/Order/cubit/res_order_state.dart';
 import '../../../../utils/constraints.dart';
@@ -44,7 +45,7 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     CustomText(
-                      text: order.restaurant.restaurantName ?? "Unknown",
+                      text: order.restaurant.restaurantName,
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
                       color: textColor,
@@ -113,9 +114,35 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
                   itemCount: order.items!.length,
                   itemBuilder: (context, index) {
                     final item = order.items![index];
+
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [Info(title: "Quantity", subTitle: item.qty)],
+                      children: [
+                        CustomText(
+                          text: item.product?.name ?? '',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        Info(title: "Quantity", subTitle: item.qty),
+                        Info(
+                          title: "Variation",
+                          subTitle: item.size.entries
+                              .map((e) => e.key)
+                              .join(", "),
+                        ),
+                        Info(
+                          title: "Extra addons",
+                          subTitle: item.addons.entries
+                              .map((e) => e.key)
+                              .join(", "),
+                        ),
+                        Info(
+                          title: "Price",
+                          subTitle: item.size.entries
+                              .map((e) => Utils.formatPrice(context, e.value))
+                              .join(", "),
+                        ),
+                      ],
                     );
                   },
                 ),

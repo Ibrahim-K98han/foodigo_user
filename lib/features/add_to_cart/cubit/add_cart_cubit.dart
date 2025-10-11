@@ -59,6 +59,10 @@ class AddCartCubit extends Cubit<AddCartStateModel> {
     }
   }
 
+  void setProductId(int productId) {
+    emit(state.copyWith(productId: productId));
+  }
+
   void incrementAddon(int addonId) {
     final updatedQty = Map<String, int>.from(state.addonsQty);
     updatedQty['$addonId'] = (updatedQty['$addonId'] ?? 0) + 1;

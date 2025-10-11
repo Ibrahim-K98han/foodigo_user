@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_cubit.dart';
 
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
@@ -17,17 +19,24 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+  late ForgotPasswordCubit fpCubit;
+  @override
+  void initState() {
+    fpCubit = context.read<ForgotPasswordCubit>();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // final fpCubit = context.read<ForgotPasswordCubit>();
-    // final rCubit = context.read<RegisterCubit>();
-    // final email =  fpCubit.state.email;
-    // final otp =  fpCubit.state.code;
-    // print('Email ====== $email');
-    // print('OTp ========= $otp');
+    final email = fpCubit.state.email;
+    final otp = fpCubit.state.otp;
+    print('Email ====== $email');
+    print('OTp ========= $otp');
     return Scaffold(
-      appBar:
-          const CustomAppBar(title: 'Password Change', visibleLeading: true),
+      appBar: const CustomAppBar(
+        title: 'Password Change',
+        visibleLeading: true,
+      ),
       backgroundColor: scaffoldBackground,
       body: SingleChildScrollView(
         child: Padding(
@@ -53,15 +62,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(6.0),
-                      borderSide: const BorderSide(
-                        color: borderColor,
-                      ),
+                      borderSide: const BorderSide(color: borderColor),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(6.0),
-                      borderSide: const BorderSide(
-                        color: borderColor,
-                      ),
+                      borderSide: const BorderSide(color: borderColor),
                     ),
                     hintText: 'New password',
                     suffixIcon: IconButton(
@@ -86,15 +91,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(6.0),
-                      borderSide: const BorderSide(
-                        color: borderColor,
-                      ),
+                      borderSide: const BorderSide(color: borderColor),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(6.0),
-                      borderSide: const BorderSide(
-                        color: borderColor,
-                      ),
+                      borderSide: const BorderSide(color: borderColor),
                     ),
                     hintText: 'Confirm password',
                     suffixIcon: IconButton(
@@ -112,7 +113,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
               ),
               Utils.verticalSpace(40),
-              PrimaryButton(text: 'Save', onPressed: () {})
+              PrimaryButton(text: 'Save', onPressed: () {}),
             ],
           ),
         ),

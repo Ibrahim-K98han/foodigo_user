@@ -36,15 +36,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    const bool isRemember = true;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: whiteColor,
-        title: const CustomImage(
-          path: KImages.logo,
-          height: 30,
-        ),
+        title: const CustomImage(path: KImages.logo, height: 30),
       ),
       backgroundColor: scaffoldBackground,
       body: ListView(
@@ -84,7 +79,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   if (validate is RegisterValidateStateError) ...[
                     if (validate.errors.name.isNotEmpty)
                       FetchErrorText(text: validate.errors.name.first),
-                  ]
+                  ],
                 ],
               );
             },
@@ -117,7 +112,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   if (validate is RegisterValidateStateError) ...[
                     if (validate.errors.email.isNotEmpty)
                       FetchErrorText(text: validate.errors.email.first),
-                  ]
+                  ],
                 ],
               );
             },
@@ -140,15 +135,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         filled: true,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(6.0),
-                          borderSide: const BorderSide(
-                            color: borderColor,
-                          ),
+                          borderSide: const BorderSide(color: borderColor),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(6.0),
-                          borderSide: const BorderSide(
-                            color: borderColor,
-                          ),
+                          borderSide: const BorderSide(color: borderColor),
                         ),
                         hintText: 'Enter Password',
                         suffixIcon: IconButton(
@@ -176,7 +167,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   if (validate is RegisterValidateStateError) ...[
                     if (validate.errors.password.isNotEmpty)
                       FetchErrorText(text: validate.errors.password.first),
-                  ]
+                  ],
                 ],
               );
             },
@@ -199,15 +190,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         filled: true,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(6.0),
-                          borderSide: const BorderSide(
-                            color: borderColor,
-                          ),
+                          borderSide: const BorderSide(color: borderColor),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(6.0),
-                          borderSide: const BorderSide(
-                            color: borderColor,
-                          ),
+                          borderSide: const BorderSide(color: borderColor),
                         ),
                         hintText: 'Enter Confirm Password',
                         suffixIcon: IconButton(
@@ -235,8 +222,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   if (validate is RegisterValidateStateError) ...[
                     if (validate.errors.confirmPassword.isNotEmpty)
                       FetchErrorText(
-                          text: validate.errors.confirmPassword.first),
-                  ]
+                        text: validate.errors.confirmPassword.first,
+                      ),
+                  ],
                 ],
               );
             },
@@ -250,7 +238,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     label: 'Phone Number',
                     bottomSpace: 4.0,
                     child: TextFormField(
-
                       initialValue: state.phone,
                       onChanged: rCubit.phoneNumber,
                       keyboardType: TextInputType.number,
@@ -262,14 +249,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(
                           errorText: 'Enter Phone number',
-                        )
+                        ),
                       ]),
                     ),
                   ),
                   if (validate is RegisterValidateStateError) ...[
                     if (validate.errors.phone.isNotEmpty)
                       FetchErrorText(text: validate.errors.phone.first),
-                  ]
+                  ],
                 ],
               );
             },
@@ -288,17 +275,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 } else if (reg is RegisterStateSuccess) {
                   Utils.successSnackBar(context, reg.message);
                   Navigator.pushNamedAndRemoveUntil(
-                      context, RouteNames.otpScreen, (route) => false);
+                    context,
+                    RouteNames.otpScreen,
+                    (route) => false,
+                  );
                 }
               }
             },
             child: PrimaryButton(
-                text: "Sign Up",
-                fontSize: 14,
-                onPressed: () {
-                  rCubit.userRegister();
-                  // rCubit.clearAllField();
-                }),
+              text: "Sign Up",
+              fontSize: 14,
+              onPressed: () {
+                rCubit.userRegister();
+                // rCubit.clearAllField();
+              },
+            ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -318,7 +309,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(
-                            context, RouteNames.authenticationScreen);
+                          context,
+                          RouteNames.authenticationScreen,
+                        );
                       },
                       child: const CustomText(
                         text: 'Sign In',
@@ -332,7 +325,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               Utils.verticalSpace(20.0),
             ],
-          )
+          ),
         ],
       ),
     );

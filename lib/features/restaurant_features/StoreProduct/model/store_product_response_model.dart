@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:foodigo/features/SingleRestaurant/model/single_restaurant_model.dart';
-import 'package:foodigo/features/restaurant_features/Products/model/product_model.dart';
 
 class StoreProductResponseModel extends Equatable {
   final Data? data;

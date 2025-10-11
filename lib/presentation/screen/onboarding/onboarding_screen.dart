@@ -5,14 +5,11 @@ import 'package:foodigo/features/Splash/cubit/splash_cubit.dart';
 import 'package:foodigo/features/Splash/cubit/splash_state.dart';
 import 'package:foodigo/features/Splash/model/splash_response_model.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
-import 'package:foodigo/widget/fetch_error_text.dart';
-import 'package:foodigo/widget/loading_widget.dart';
 
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../widget/custom_image.dart';
 import '../../core/routes/route_names.dart';
-import 'model/onbording_data.dart';
 import 'widgets/dot_indicator_widget.dart';
 
 class OnboardingScreen extends StatefulWidget {

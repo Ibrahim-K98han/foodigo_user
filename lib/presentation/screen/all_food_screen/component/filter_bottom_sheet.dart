@@ -1,15 +1,11 @@
 import 'dart:async';
-
-import 'package:another_stepper/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foodigo/features/AllFood/model/all_food_model.dart';
 import 'package:foodigo/features/HomeData/cubit/home_data_cubit.dart';
 import 'package:foodigo/utils/constraints.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
 import 'package:foodigo/widget/primary_button.dart';
-
 import '../../../../features/AllFood/cubit/all_food_cubit.dart';
 import '../../../../features/HomeData/category_model.dart';
 import '../../../../features/HomeData/cuisines_model.dart';

@@ -4,22 +4,26 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 
 class RestaurantProfileModel extends Equatable {
+  final String message;
   final RestaurantProfile? restaurantProfile;
   final List<Cities>? cities;
   final List<Cuisines>? cuisines;
 
   const RestaurantProfileModel({
+    required this.message,
     this.restaurantProfile,
     this.cities,
     this.cuisines,
   });
 
   RestaurantProfileModel copyWith({
+    String? message,
     RestaurantProfile? restaurantProfile,
     List<Cities>? cities,
     List<Cuisines>? cuisines,
   }) {
     return RestaurantProfileModel(
+      message: message ?? this.message,
       restaurantProfile: restaurantProfile ?? this.restaurantProfile,
       cities: cities ?? this.cities,
       cuisines: cuisines ?? this.cuisines,
@@ -28,6 +32,7 @@ class RestaurantProfileModel extends Equatable {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'message':message,
       'restaurant': restaurantProfile?.toMap(),
       'cities': cities?.map((x) => x.toMap()).toList(),
       'cuisines': cuisines?.map((x) => x.toMap()).toList(),
@@ -36,23 +41,29 @@ class RestaurantProfileModel extends Equatable {
 
   factory RestaurantProfileModel.fromMap(Map<String, dynamic> map) {
     return RestaurantProfileModel(
-      restaurantProfile: map['restaurant'] != null
-          ? RestaurantProfile.fromMap(map['restaurant'] as Map<String, dynamic>)
-          : null,
-      cities: map['cities'] != null
-          ? List<Cities>.from(
-              (map['cities'] as List<dynamic>).map<Cities?>(
-                (x) => Cities.fromMap(x as Map<String, dynamic>),
-              ),
-            )
-          : null,
-      cuisines: map['cuisines'] != null
-          ? List<Cuisines>.from(
-              (map['cuisines'] as List<dynamic>).map<Cuisines?>(
-                (x) => Cuisines.fromMap(x as Map<String, dynamic>),
-              ),
-            )
-          : null,
+      message: map['message'] ?? '',
+      restaurantProfile:
+          map['restaurant'] != null
+              ? RestaurantProfile.fromMap(
+                map['restaurant'] as Map<String, dynamic>,
+              )
+              : null,
+      cities:
+          map['cities'] != null
+              ? List<Cities>.from(
+                (map['cities'] as List<dynamic>).map<Cities?>(
+                  (x) => Cities.fromMap(x as Map<String, dynamic>),
+                ),
+              )
+              : null,
+      cuisines:
+          map['cuisines'] != null
+              ? List<Cuisines>.from(
+                (map['cuisines'] as List<dynamic>).map<Cuisines?>(
+                  (x) => Cuisines.fromMap(x as Map<String, dynamic>),
+                ),
+              )
+              : null,
     );
   }
 
@@ -60,16 +71,18 @@ class RestaurantProfileModel extends Equatable {
 
   factory RestaurantProfileModel.fromJson(String source) =>
       RestaurantProfileModel.fromMap(
-          json.decode(source) as Map<String, dynamic>);
+        json.decode(source) as Map<String, dynamic>,
+      );
 
   @override
   bool get stringify => true;
 
   @override
-  List<Object> get props => [restaurantProfile!, cities!, cuisines!];
+  List<Object> get props => [message,restaurantProfile!, cities!, cuisines!];
 }
 
 class RestaurantProfile extends Equatable {
+  final String message;
   final int id;
   final String logo;
   final String coverImage;
@@ -102,8 +115,10 @@ class RestaurantProfile extends Equatable {
   final String createdAt;
   final String updatedAt;
   final String isTrusted;
+  final String cuisines;
 
   const RestaurantProfile({
+    required this.message,
     required this.id,
     required this.logo,
     required this.coverImage,
@@ -136,16 +151,17 @@ class RestaurantProfile extends Equatable {
     required this.createdAt,
     required this.updatedAt,
     required this.isTrusted,
+    required this.cuisines,
   });
 
   RestaurantProfile copyWith({
+    String? message,
     int? id,
     String? logo,
     String? coverImage,
     String? restaurantName,
     String? slug,
     String? cityId,
-    String? cuisines,
     String? whatsapp,
     String? address,
     String? latitude,
@@ -172,8 +188,11 @@ class RestaurantProfile extends Equatable {
     String? createdAt,
     String? updatedAt,
     String? isTrusted,
+    String? cuisines,
   }) {
     return RestaurantProfile(
+
+      message: message ?? this.message,
       id: id ?? this.id,
       logo: logo ?? this.logo,
       coverImage: coverImage ?? this.coverImage,
@@ -206,11 +225,13 @@ class RestaurantProfile extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isTrusted: isTrusted ?? this.isTrusted,
+      cuisines: cuisines ?? this.cuisines,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'message':message,
       'id': id,
       'logo': logo,
       'cover_image': coverImage,
@@ -243,11 +264,13 @@ class RestaurantProfile extends Equatable {
       'created_at': createdAt,
       'updated_at': updatedAt,
       'is_trusted': isTrusted,
+      'cuisines': cuisines,
     };
   }
 
   factory RestaurantProfile.fromMap(Map<String, dynamic> map) {
     return RestaurantProfile(
+      message: map['message'] ?? '',
       id: map['id'] ?? 0,
       logo: map['logo'] ?? '',
       coverImage: map['cover_image'] ?? '',
@@ -280,6 +303,7 @@ class RestaurantProfile extends Equatable {
       createdAt: map['created_at'] ?? '',
       updatedAt: map['updated_at'] ?? '',
       isTrusted: map['is_trusted'] ?? '',
+      cuisines: map['cuisines'] ?? '',
     );
   }
 
@@ -294,6 +318,7 @@ class RestaurantProfile extends Equatable {
   @override
   List<Object> get props {
     return [
+      message,
       id,
       logo,
       coverImage,
@@ -326,6 +351,7 @@ class RestaurantProfile extends Equatable {
       createdAt,
       updatedAt,
       isTrusted,
+      cuisines,
     ];
   }
 }
@@ -383,11 +409,14 @@ class Cities extends Equatable {
       updatedAt: map['updated_at'] ?? '',
       image: map['image'] ?? '',
       name: map['name'] ?? '',
-      citiesTranslate: map['cities_translate'] != null
-          ? List<CitiesTranslate>.from(
-              (map['cities_translate'] as List<dynamic>)
-                  .map((x) => CitiesTranslate.fromMap(x)))
-          : null,
+      citiesTranslate:
+          map['cities_translate'] != null
+              ? List<CitiesTranslate>.from(
+                (map['cities_translate'] as List<dynamic>).map(
+                  (x) => CitiesTranslate.fromMap(x),
+                ),
+              )
+              : null,
     );
   }
 
@@ -401,14 +430,7 @@ class Cities extends Equatable {
 
   @override
   List<Object?> get props {
-    return [
-      id,
-      createdAt,
-      updatedAt,
-      image,
-      name,
-      citiesTranslate,
-    ];
+    return [id, createdAt, updatedAt, image, name, citiesTranslate];
   }
 }
 
@@ -479,14 +501,7 @@ class CitiesTranslate extends Equatable {
 
   @override
   List<Object> get props {
-    return [
-      id,
-      cityId,
-      langCode,
-      name,
-      createdAt,
-      updatedAt,
-    ];
+    return [id, cityId, langCode, name, createdAt, updatedAt];
   }
 }
 
@@ -555,11 +570,14 @@ class Cuisines extends Equatable {
       createdAt: map['created_at'] ?? '',
       updatedAt: map['updated_at'] ?? '',
       name: map['name'] ?? '',
-      cuisinesTranslate: map['cuisines_translate'] != null
-          ? List<CuisinesTranslate>.from(
-              (map['cuisines_translate'] as List<dynamic>)
-                  .map((x) => CuisinesTranslate.fromMap(x)))
-          : null,
+      cuisinesTranslate:
+          map['cuisines_translate'] != null
+              ? List<CuisinesTranslate>.from(
+                (map['cuisines_translate'] as List<dynamic>).map(
+                  (x) => CuisinesTranslate.fromMap(x),
+                ),
+              )
+              : null,
     );
   }
 
@@ -653,13 +671,8 @@ class CuisinesTranslate extends Equatable {
 
   @override
   List<Object> get props {
-    return [
-      id,
-      cuisineId,
-      langCode,
-      name,
-      createdAt,
-      updatedAt,
-    ];
+    return [id, cuisineId, langCode, name, createdAt, updatedAt];
   }
 }
+
+

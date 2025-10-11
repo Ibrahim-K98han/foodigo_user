@@ -5,6 +5,7 @@ import 'package:foodigo/features/restaurant_features/Category/cubit/res_categori
 import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_cubit.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_state.dart';
 import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_state_model.dart';
+import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/presentation/restaurant_screen/my_menu/components/category_info_widget.dart';
 import 'package:foodigo/presentation/restaurant_screen/my_menu/components/photo_info_widget.dart';
 import 'package:foodigo/presentation/restaurant_screen/my_menu/components/price_info_widget.dart';
@@ -16,6 +17,8 @@ import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/fetch_error_text.dart';
 import 'package:foodigo/widget/loading_widget.dart';
 import 'package:foodigo/widget/primary_button.dart';
+
+import '../main_page/component/restaurant_main_controller.dart';
 
 class EditFoodScreen extends StatefulWidget {
   const EditFoodScreen({super.key, required this.id});
@@ -45,7 +48,8 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-          title: widget.id.isNotEmpty ? 'Edit Food' : 'Upload Food'),
+        title: widget.id.isNotEmpty ? 'Edit Food' : 'Upload Food',
+      ),
       body: BlocConsumer<StoreProductCubit, StoreProductStateModel>(
         listener: (context, state) {
           final edit = state.storeProductState;
@@ -61,25 +65,17 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
             return const LoadingWidget();
           } else if (edit is EditProductError) {
             if (edit.statusCode == 503 || stCubit.products != null) {
-              return LoadEditData(
-                id: widget.id,
-              );
+              return LoadEditData(id: widget.id);
             } else {
               return FetchErrorText(text: edit.message);
             }
           } else if (edit is EditProductLoaded) {
-            return LoadEditData(
-              id: widget.id,
-            );
+            return LoadEditData(id: widget.id);
           }
           if (stCubit.products != null) {
-            return LoadEditData(
-              id: widget.id,
-            );
+            return LoadEditData(id: widget.id);
           } else {
-            return LoadEditData(
-              id: widget.id,
-            );
+            return LoadEditData(id: widget.id);
           }
         },
       ),
@@ -89,22 +85,30 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
           listener: (context, state) {
             final update = state.storeProductState;
             if (update is StoreProductLoading) {
-              Utils.loadingDialog(context);
+              widget.id.isNotEmpty
+                  ? const SizedBox.shrink()
+                  : Utils.loadingDialog(context);
             } else {
-              Future.delayed(
-                const Duration(seconds: 2),
-                () {
-                  if (mounted) {
-                    Utils.closeDialog(context);
-                  }
-                },
-              );
+              Future.delayed(const Duration(seconds: 1), () {
+                if (mounted) {
+                  Utils.closeDialog(context);
+                }
+              });
               if (update is StoreProductError) {
                 Utils.errorSnackBar(context, update.message);
-              } else if (update is StoreProductSuccess) {
-                Utils.showSnackBar(context, update.message);
-                Future.delayed(const Duration(seconds: 1), () {
-                  Navigator.of(context).pop(true);
+                // Navigator.pushNamed(context, RouteNames.myMenuScreen);
+              } else if (update is StoreProductLoaded) {
+                Utils.showSnackBar(
+                  context,
+                  'New Product has been created successfully',
+                );
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  RouteNames.restaurantMainScreen,
+                  (route) => false,
+                );
+                Future.delayed(Duration(milliseconds: 100), () {
+                  RestaurantMainController().changeTab(1);
                 });
               }
             }
@@ -115,6 +119,15 @@ class _EditFoodScreenState extends State<EditFoodScreen> {
               onPressed: () {
                 if (widget.id.isNotEmpty) {
                   stCubit.updateProduct(widget.id.toString());
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    RouteNames.restaurantMainScreen,
+                    (route) => false,
+                  );
+                  Future.delayed(Duration(milliseconds: 100), () {
+                    RestaurantMainController().changeTab(1);
+                  });
+                  Utils.successSnackBar(context, 'Product Update Successfully');
                   // Navigator.pushNamed(context, RouteNames.myMenuScreen);
                 } else {
                   stCubit.storeProduct();

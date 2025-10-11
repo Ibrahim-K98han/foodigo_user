@@ -25,7 +25,7 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
 
   void name(String name) => emit(state.copyWith(name: name));
 
-  void price(String price) => emit(state.copyWith(price: price));
+  void price(String price) => emit(state.copyWith(price: price.toString()));
 
   void translateId(String translateId) =>
       emit(state.copyWith(translateId: translateId));
@@ -37,7 +37,6 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
     final result = await _repository.getAddonList(
       _loginBloc.userInformation!.token,
     );
-
     result.fold(
       (failure) => emit(
         state.copyWith(
@@ -53,8 +52,7 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
 
   /// Store Addon
   Future<void> storeAddon() async {
-    emit(state.copyWith(resAddonsState: const ResAddonsLoading()));
-
+    emit(state.copyWith(resAddonsState: const AddAddonsLoading()));
     try {
       final result = await _repository.storeAddon(
         state,
@@ -64,33 +62,42 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
       result.fold(
         (failure) => emit(
           state.copyWith(
-            resAddonsState: ResAddonsError(failure.message, failure.statusCode),
+            resAddonsState: AddAddonsError(failure.message, failure.statusCode),
           ),
         ),
         (success) {
           final updatedList = List<ResAddons>.from(
             resAddonModel?.resAddons ?? [],
-          )..addAll(success.resAddons ?? []);
+          )..addAll(success.resAddons);
           resAddonModel = ResAddonModel(resAddons: updatedList);
 
-          emit(state.copyWith(resAddonsState: ResAddonsLoaded(resAddonModel!)));
+          emit(
+            state.copyWith(
+              resAddonsState: AddAddonsLoaded(
+                resAddonModel! as TranslateAddonModel,
+              ),
+            ),
+          );
           clear();
         },
       );
     } catch (e) {
-      emit(state.copyWith(resAddonsState: ResAddonsError(e.toString(), 500)));
+      emit(state.copyWith(resAddonsState: AddAddonsError(e.toString(), 500)));
     }
   }
 
   /// Update Addon
   Future<void> updateAddon(String id) async {
     emit(state.copyWith(resAddonsState: const UpdateAddonsLoading()));
+
     final uri = Utils.tokenWithCode(
       RemoteUrls.updateAddon(id),
       _loginBloc.userInformation!.token,
       _loginBloc.state.languageCode,
     );
+
     print('Update Addon $uri');
+
     try {
       final result = await _repository.updateAddon(
         state,
@@ -98,7 +105,9 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
         _loginBloc.userInformation!.token,
         id,
       );
-      print('API Call Success');
+
+      await getAddon();
+
       result.fold(
         (failure) => emit(
           state.copyWith(
@@ -109,10 +118,23 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
           ),
         ),
         (success) {
+          if (resAddonModel != null) {
+            final updatedList =
+                resAddonModel!.resAddons.map((e) {
+                  if (e.id == success.id) return success;
+                  return e;
+                }).toList();
+            resAddonModel = ResAddonModel(resAddons: updatedList);
+          }
           addons = success;
           emit(
-            state.copyWith(resAddonsState: UpdateAddonsLoaded(resAddonModel!)),
+            state.copyWith(
+              resAddonsState: const ResAddonsSuccess(
+                "Addon updated successfully",
+              ),
+            ),
           );
+          // Clear the form state
           clear();
         },
       );
@@ -136,10 +158,21 @@ class ResAddonsCubit extends Cubit<ResAddonStateModel> {
           resAddonsState: DeleteAddonError(l.message, l.statusCode),
         ),
       ),
-      (success) async {
+      (message) {
+        // Remove the deleted addon from local list
+        if (resAddonModel != null) {
+          final updatedList =
+              resAddonModel!.resAddons
+                  .where((addon) => addon.id.toString() != productId)
+                  .toList();
+          resAddonModel = ResAddonModel(resAddons: updatedList);
+        }
+
         emit(
           state.copyWith(
-            resAddonsState: DeleteAddonSuccess(success.toString()),
+            resAddonsState: DeleteAddonSuccess(
+              message,
+            ), // "Addon deleted successfully"
           ),
         );
       },

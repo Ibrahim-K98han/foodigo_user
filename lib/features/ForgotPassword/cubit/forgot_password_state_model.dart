@@ -96,8 +96,8 @@ class ForgotPasswordStateModel extends Equatable {
       code: map['token'] ?? '',
       password: map['password'] ?? '',
       confirmPassword: map['password_confirmation'] ?? '',
-      showPassword: map['showPassword'] ?? false,
-      showConfirmPassword: map['showConfirmPassword'] ?? false,
+      showPassword: map['show_password'] ?? false,
+      showConfirmPassword: map['show_confirmPassword'] ?? false,
     );
   }
 

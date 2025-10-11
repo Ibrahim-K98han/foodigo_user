@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foodigo/features/HomeData/cubit/home_data_cubit.dart';
 import 'package:foodigo/features/Order/cubit/order_cubit.dart';
 import 'package:foodigo/features/Order/cubit/order_state.dart';
 import 'package:foodigo/features/Order/model/order_model.dart';
@@ -39,7 +38,6 @@ class _MyOrderScreenState extends State<MyOrderScreen>
 
   @override
   Widget build(BuildContext context) {
-    final hCubit = context.read<HomeDataCubit>();
     return Scaffold(
       backgroundColor: const Color(0xFFF6F8FA),
       appBar: const CustomAppBar(
@@ -107,46 +105,48 @@ class LoadOrderData extends StatelessWidget {
           dividerColor: Colors.transparent,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.black,
-          tabs: statusMap.values.map((label) {
-            return Tab(
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: CustomText(
-                  text: label,
-                  fontSize: 14,
-                ),
-              ),
-            );
-          }).toList(),
+          tabs:
+              statusMap.values.map((label) {
+                return Tab(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: CustomText(text: label, fontSize: 14),
+                  ),
+                );
+              }).toList(),
         ),
         Expanded(
           child: TabBarView(
             controller: tabController,
-            children: statusMap.keys.map((status) {
-              final filteredOrders = orders.where((order) {
-                final statusValue = int.tryParse(order.orderStatus);
-                return statusValue == status;
-              }).toList();
-              if (filteredOrders.isEmpty) {
-                return const Center(
-                  child: CustomImage(path: KImages.cartNotFound),
-                );
-              }
-              return ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                shrinkWrap: true,
-                physics: const BouncingScrollPhysics(),
-                itemCount: filteredOrders.length,
-                itemBuilder: (context, index) {
-                  final order = filteredOrders[index];
-                  return Padding(
-                    padding: Utils.symmetric(h: 20.0, v: 10.0),
-                    child: OrderCard(orderModel: order),
+            children:
+                statusMap.keys.map((status) {
+                  final filteredOrders =
+                      orders.where((order) {
+                        final statusValue = int.tryParse(order.orderStatus);
+                        return statusValue == status;
+                      }).toList();
+                  if (filteredOrders.isEmpty) {
+                    return const Center(
+                      child: CustomImage(path: KImages.cartNotFound),
+                    );
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: filteredOrders.length,
+                    itemBuilder: (context, index) {
+                      final order = filteredOrders[index];
+                      return Padding(
+                        padding: Utils.symmetric(h: 20.0, v: 10.0),
+                        child: OrderCard(orderModel: order),
+                      );
+                    },
                   );
-                },
-              );
-            }).toList(),
+                }).toList(),
           ),
         ),
       ],

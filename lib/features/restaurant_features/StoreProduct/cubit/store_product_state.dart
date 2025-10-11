@@ -25,7 +25,7 @@ class StoreProductLoading extends StoreProductState {
 }
 
 class StoreProductLoaded extends StoreProductState {
-  final ProductData response;
+  final StoreProductResponseModel response;
 
   const StoreProductLoaded(this.response);
 
@@ -116,7 +116,7 @@ class StoreProductUpdateInitial extends StoreProductState {
 class StoreProductUpdateLoading extends StoreProductState {}
 
 class StoreProductUpdateLoaded extends StoreProductState {
-  final ProductData response;
+  final StoreProductResponseModel response;
 
   const StoreProductUpdateLoaded(this.response);
 

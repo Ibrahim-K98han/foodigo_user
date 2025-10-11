@@ -7,7 +7,7 @@ class ProductData extends Equatable {
   final User? user;
   final List<Categories>? categories;
   final List<Addons>? addons;
-  final Product? product;
+  final ProductUpdate? product;
   final List<int>? selectedIds;
   final ProductTranslate? productTranslate;
 
@@ -24,7 +24,7 @@ class ProductData extends Equatable {
     User? user,
     List<Categories>? categories,
     List<Addons>? addons,
-    Product? product,
+    ProductUpdate? product,
     List<int>? selectedIds,
     ProductTranslate? productTranslate,
   }) {
@@ -69,7 +69,7 @@ class ProductData extends Equatable {
             )
           : null,
       product: map['product'] != null
-          ? Product.fromMap(map['product'] as Map<String, dynamic>)
+          ? ProductUpdate.fromMap(map['product'] as Map<String, dynamic>)
           : null,
       selectedIds: map['selected_ids'] != null
           ? List<int>.from(map['selected_ids'] as List)
@@ -547,7 +547,7 @@ class Addons extends Equatable {
   }
 }
 
-class Product extends Equatable {
+class ProductUpdate extends Equatable {
   final int id;
   final String slug;
   final String image;
@@ -564,7 +564,7 @@ class Product extends Equatable {
   final String shortDescription;
   final String size;
 
-  const Product({
+  const ProductUpdate({
     required this.id,
     required this.slug,
     required this.image,
@@ -582,7 +582,7 @@ class Product extends Equatable {
     required this.size,
   });
 
-  Product copyWith({
+  ProductUpdate copyWith({
     int? id,
     String? slug,
     String? image,
@@ -599,7 +599,7 @@ class Product extends Equatable {
     String? shortDescription,
     String? size,
   }) {
-    return Product(
+    return ProductUpdate(
       id: id ?? this.id,
       slug: slug ?? this.slug,
       image: image ?? this.image,
@@ -638,8 +638,8 @@ class Product extends Equatable {
     };
   }
 
-  factory Product.fromMap(Map<String, dynamic> map) {
-    return Product(
+  factory ProductUpdate.fromMap(Map<String, dynamic> map) {
+    return ProductUpdate(
       id: map['id'] ?? 0,
       slug: map['slug'] ?? '',
       image: map['image'] ?? '',
@@ -660,8 +660,8 @@ class Product extends Equatable {
 
   String toJson() => json.encode(toMap());
 
-  factory Product.fromJson(String source) =>
-      Product.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ProductUpdate.fromJson(String source) =>
+      ProductUpdate.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool get stringify => true;

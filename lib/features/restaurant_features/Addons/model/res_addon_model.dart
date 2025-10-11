@@ -55,6 +55,7 @@ class TranslateAddonModel extends Equatable {
   });
 
   TranslateAddonModel copyWith({
+    String? message,
     Addon? addon,
     AddonTranslate? addonTranslate,
   }) {

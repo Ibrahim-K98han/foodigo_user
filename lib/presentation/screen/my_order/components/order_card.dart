@@ -40,7 +40,7 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final orderDetails = context.read<OrderCubit>();
+    context.read<OrderCubit>();
     return Container(
       padding: Utils.symmetric(h: 10.0, v: 6.0),
       height:
@@ -78,7 +78,7 @@ class OrderCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: size.width * 0.5.w,
+                      width: size.width * 0.54,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -100,191 +100,8 @@ class OrderCard extends StatelessWidget {
                                 context: context,
                                 barrierDismissible: true,
                                 builder: (BuildContext context) {
-                                  return Dialog(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6.r),
-                                    ),
-                                    elevation: 5,
-                                    backgroundColor: Colors.white,
-                                    child: SizedBox(
-                                      height: 400.h,
-                                      child: BlocBuilder<
-                                        OrderCubit,
-                                        OrderState
-                                      >(
-                                        builder: (context, state) {
-                                          if (state
-                                              is OrderDetailsStateLoading) {
-                                            return const Center(
-                                              child: LoadingWidget(),
-                                            );
-                                          } else if (state
-                                              is OrderDetailsStateError) {
-                                            return Padding(
-                                              padding: const EdgeInsets.all(20),
-                                              child: Text(
-                                                "Error: ${state.message}",
-                                              ),
-                                            );
-                                          } else if (state
-                                              is OrderDetailsStateSuccess) {
-                                            final orderDetails =
-                                                state.orderDetails;
-                                            return Padding(
-                                              padding: EdgeInsets.all(10.r),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Expanded(
-                                                    child: ListView.builder(
-                                                      shrinkWrap: true,
-                                                      itemCount:
-                                                          orderDetails
-                                                              .items
-                                                              ?.length ??
-                                                          0,
-                                                      itemBuilder: (
-                                                        context,
-                                                        index,
-                                                      ) {
-                                                        final item =
-                                                            orderDetails
-                                                                .items![index];
-                                                        final product =
-                                                            item.products!;
-                                                        final sizeMap =
-                                                            jsonDecode(
-                                                                  item.size,
-                                                                )
-                                                                as Map<
-                                                                  String,
-                                                                  dynamic
-                                                                >;
-                                                        final sizeName =
-                                                            sizeMap.keys.first;
-                                                        final sizePrice =
-                                                            sizeMap
-                                                                .values
-                                                                .first;
-
-                                                        final decodedAddons =
-                                                            jsonDecode(
-                                                              item.addons,
-                                                            );
-
-                                                        Map<String, dynamic>
-                                                        addonMap = {};
-                                                        if (decodedAddons
-                                                            is Map<
-                                                              String,
-                                                              dynamic
-                                                            >) {
-                                                          addonMap =
-                                                              decodedAddons;
-                                                        } else if (decodedAddons
-                                                            is List) {
-                                                          addonMap = {
-                                                            for (var e
-                                                                in decodedAddons)
-                                                              e.toString(): 1,
-                                                          };
-                                                        }
-
-                                                        return Card(
-                                                          margin:
-                                                              EdgeInsets.symmetric(
-                                                                vertical: 5.h,
-                                                              ),
-                                                          child: ListTile(
-                                                            leading: ClipRRect(
-                                                              borderRadius:
-                                                                  BorderRadius.circular(
-                                                                    6.r,
-                                                                  ),
-                                                              child: CustomImage(
-                                                                path:
-                                                                    RemoteUrls.imageUrl(
-                                                                      product
-                                                                          .image,
-                                                                    ),
-                                                                width: 50.w,
-                                                                height: 50.h,
-                                                                fit:
-                                                                    BoxFit
-                                                                        .cover,
-                                                              ),
-                                                            ),
-                                                            title: CustomText(
-                                                              text:
-                                                                  product.name,
-                                                              fontSize: 14,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                            ),
-                                                            subtitle: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .min,
-                                                              children: [
-                                                                CustomText(
-                                                                  text:
-                                                                      "Size: $sizeName",
-                                                                ),
-                                                                CustomText(
-                                                                  text:
-                                                                      "Price: $sizePrice",
-                                                                ),
-                                                                CustomText(
-                                                                  text:
-                                                                      "Quantity: ${item.qty}",
-                                                                ),
-                                                                CustomText(
-                                                                  text:
-                                                                      "Delivery Charge: ${orderModel.deliveryCharge}",
-                                                                ),
-                                                                CustomText(
-                                                                  text:
-                                                                      "Vat: ${orderModel.vat}",
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 20.h),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.end,
-                                                    children: [
-                                                      TextButton(
-                                                        onPressed: () {
-                                                          Navigator.of(
-                                                            context,
-                                                          ).pop();
-                                                        },
-                                                        child: const CustomText(
-                                                          text: 'Close',
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          }
-                                          return const SizedBox.shrink();
-                                        },
-                                      ),
-                                    ),
+                                  return ShowOrderDetailsDialog(
+                                    orderModel: orderModel,
                                   );
                                 },
                               );
@@ -367,6 +184,204 @@ class OrderCard extends StatelessWidget {
           //       )
           //     : const SizedBox()
         ],
+      ),
+    );
+  }
+}
+
+class ShowOrderDetailsDialog extends StatefulWidget {
+  const ShowOrderDetailsDialog({super.key, required this.orderModel});
+
+  final OrderModel orderModel;
+
+  @override
+  State<ShowOrderDetailsDialog> createState() => _ShowOrderDetailsDialogState();
+}
+
+class _ShowOrderDetailsDialogState extends State<ShowOrderDetailsDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.r)),
+      elevation: 5,
+      backgroundColor: Colors.white,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.5,
+          minHeight: 100.h,
+        ),
+        child: BlocBuilder<OrderCubit, OrderState>(
+          builder: (context, state) {
+            if (state is OrderDetailsStateLoading) {
+              return const Center(child: LoadingWidget());
+            } else if (state is OrderDetailsStateError) {
+              return Padding(
+                padding: const EdgeInsets.all(20),
+                child: Text("Error: ${state.message}"),
+              );
+            } else if (state is OrderDetailsStateSuccess) {
+              final orderDetails = state.orderDetails;
+
+              if (orderDetails.items == null || orderDetails.items!.isEmpty) {
+                return const Center(
+                  child: CustomText(
+                    text: "No product available",
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey,
+                  ),
+                );
+              }
+
+              return Padding(
+                padding: EdgeInsets.all(10.r),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Utils.verticalSpace(10),
+                    const CustomText(
+                      text: 'Order Details',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    Divider(color: greyColor.withOpacity(0.2)),
+                    Utils.verticalSpace(10),
+                    Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: orderDetails.items?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          final item = orderDetails.items![index];
+                          final product = item.products;
+
+                          if (product == null) {
+                            return Card(
+                              margin: EdgeInsets.symmetric(vertical: 5.h),
+                              child: const ListTile(
+                                leading: Icon(Icons.error, color: Colors.red),
+                                title: CustomText(
+                                  text: "Product not available",
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            );
+                          }
+
+                          // ✅ safely decode size
+                          Map<String, dynamic> sizeMap = {};
+                          String sizeName = "";
+                          dynamic sizePrice;
+
+                          // ✅ safely decode addon
+                          Map<String, dynamic> addonMap = {};
+                          String addonName = "";
+                          dynamic addonPrice;
+
+                          try {
+                            final decoded = jsonDecode(item.size);
+                            if (decoded is Map<String, dynamic>) {
+                              sizeMap = decoded;
+                              sizeName = sizeMap.keys.first;
+                              sizePrice = sizeMap.values.first;
+                            }
+                          } catch (_) {}
+
+                          try {
+                            final decoded = jsonDecode(item.addons);
+                            if (decoded is Map<String, dynamic>) {
+                              addonMap = decoded;
+                              addonName = addonMap.keys.first;
+                              addonPrice = addonMap.values.first;
+                            }
+                          } catch (_) {}
+
+                          return Container(
+                            margin: EdgeInsets.symmetric(vertical: 6.h),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: greyColor.withOpacity(0.3),
+                              ),
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+
+                            child: Padding(
+                              padding: EdgeInsets.all(8.w),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(6.r),
+                                    child: CustomImage(
+                                      path: RemoteUrls.imageUrl(product.image),
+                                      width: 80.w,
+                                      height: 70.h,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  SizedBox(width: 16.w),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        CustomText(
+                                          text: product.name,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        if (sizeName.isNotEmpty)
+                                          CustomText(text: "Size: $sizeName"),
+                                        if (sizePrice != null)
+                                          CustomText(text: "Price: $sizePrice"),
+                                        CustomText(
+                                          text: "Quantity: ${item.qty}",
+                                        ),
+
+                                        if (addonName.isNotEmpty ||
+                                            addonPrice != null)
+                                          CustomText(
+                                            text:
+                                                "Addon: $addonName${addonPrice != null ? ' (\$$addonPrice)' : ''}",
+                                          ),
+
+                                        CustomText(
+                                          text:
+                                              "Delivery Charge: ${widget.orderModel.deliveryCharge}",
+                                        ),
+                                        CustomText(
+                                          text: "Vat: ${widget.orderModel.vat}",
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 10.h),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const CustomText(
+                          text: 'Close',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

@@ -108,8 +108,11 @@ class RestaurantLoginBloc
       Emitter<RestaurantLoginStateModel> emit) async {
     emit(state.copyWith(
         restaurantLoginState: RestaurantLoginStateLogoutLoading()));
-    final url = Uri.parse(RemoteUrls.restaurantLogout);
-    final result = await _repository.restaurantLogout(url);
+     final url = Uri.parse(RemoteUrls.restaurantLogout).replace(queryParameters: {
+      'token': userInformation!.token,
+      'lang_code': state.languageCode,
+    });
+    final result = await _repository.restaurantLogout(url, userInformation!.token);
     result.fold(
       (failure) {
         if (failure.statusCode == 500) {
