@@ -5,30 +5,31 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
-import 'main_controller.dart';
+import 'restaurant_main_controller.dart';
 
 class MyBottomNavigationBar extends StatelessWidget {
   const MyBottomNavigationBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = MainController();
+    final controller = RestaurantMainController();
     return Container(
       height: Platform.isAndroid ? 110 : 110,
       decoration: const BoxDecoration(
-          color: whiteColor,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.0),
-            topRight: Radius.circular(20.0),
+        color: whiteColor,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x19000000),
+            blurRadius: 40,
+            offset: Offset(0, 4),
+            spreadRadius: 0,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x19000000),
-              blurRadius: 40,
-              offset: Offset(0, 4),
-              spreadRadius: 0,
-            )
-          ]),
+        ],
+      ),
       child: ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         child: StreamBuilder(
@@ -53,10 +54,10 @@ class MyBottomNavigationBar extends StatelessWidget {
                   label: 'My Menu',
                 ),
                 BottomNavigationBarItem(
-                  tooltip: 'My Order',
+                  tooltip: 'My Orders',
                   icon: _navIcon(KImages.orderInActive, textColor),
                   activeIcon: _navIcon(KImages.orderActive, primaryColor),
-                  label: 'My Order',
+                  label: 'My Orders',
                 ),
                 BottomNavigationBarItem(
                   tooltip: 'Menu',
@@ -78,9 +79,7 @@ class MyBottomNavigationBar extends StatelessWidget {
   }
 
   Widget _navIcon(String path, Color color) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: SvgPicture.asset(
-        path,
-        color: color,
-      ));
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: SvgPicture.asset(path, color: color),
+  );
 }

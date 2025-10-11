@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:foodigo/features/Review/model/review_model.dart';
+import 'package:foodigo/data/errors/errors_model.dart';
 
 import '../model/restaurant_profile_model.dart';
 
@@ -52,6 +52,15 @@ class RestaurantProfileError extends RestaurantProfileState {
   List<Object?> get props => [message, statusCode];
 }
 
+class RestaurantProfileValidateStateError extends RestaurantProfileState {
+  final Errors errors;
+
+  const RestaurantProfileValidateStateError(this.errors);
+
+  @override
+  List<Object> get props => [errors];
+}
+
 ///Update Profile
 
 class UpdateRestaurantProfileLoading extends RestaurantProfileState {}
@@ -67,10 +76,10 @@ class UpdateRestaurantProfileError extends RestaurantProfileState {
 }
 
 class UpdateRestaurantProfileLoaded extends RestaurantProfileState {
-  final RestaurantProfileModel restaurantProfileModel;
+  final String message;
 
-  const UpdateRestaurantProfileLoaded(this.restaurantProfileModel);
+  const UpdateRestaurantProfileLoaded(this.message);
 
   @override
-  List<Object?> get props => [restaurantProfileModel];
+  List<Object?> get props => [message];
 }

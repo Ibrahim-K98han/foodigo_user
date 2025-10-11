@@ -16,11 +16,57 @@ class VariationInfoWidget extends StatefulWidget {
 
 class _VariationInfoWidgetState extends State<VariationInfoWidget> {
   late StoreProductCubit stCubit;
+  final List<TextEditingController> _sizeControllers = [];
+  final List<TextEditingController> _priceControllers = [];
 
   @override
   void initState() {
     super.initState();
     stCubit = context.read<StoreProductCubit>();
+
+    // Initial load: add one empty variation if none exist
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (stCubit.state.size.isEmpty) {
+        stCubit.size(['']);
+        stCubit.sizePrice(['']);
+      }
+      _initializeControllers();
+    });
+  }
+
+  void _initializeControllers() {
+    // Clear existing controllers
+    for (var controller in _sizeControllers) {
+      controller.dispose();
+    }
+    for (var controller in _priceControllers) {
+      controller.dispose();
+    }
+    _sizeControllers.clear();
+    _priceControllers.clear();
+
+    // Create new controllers based on current state
+    final state = stCubit.state;
+    final size = state.size.isEmpty ? [''] : state.size;
+    final prices = state.price.isEmpty ? [''] : state.price;
+
+    for (int i = 0; i < size.length; i++) {
+      _sizeControllers.add(TextEditingController(text: size[i]));
+      _priceControllers.add(
+        TextEditingController(text: i < prices.length ? prices[i] : ''),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _sizeControllers) {
+      controller.dispose();
+    }
+    for (var controller in _priceControllers) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -31,52 +77,74 @@ class _VariationInfoWidgetState extends State<VariationInfoWidget> {
         children: [
           BlocBuilder<StoreProductCubit, StoreProductStateModel>(
             builder: (context, state) {
+              final size = state.size.isEmpty ? [''] : state.size;
+              final prices = state.price.isEmpty ? [''] : state.price;
+
+              // Update controllers if list length changed
+              if (_sizeControllers.length != size.length) {
+                _initializeControllers();
+              }
+
               return ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: state.size.length,
+                itemCount: size.length,
                 itemBuilder: (context, index) {
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: CustomFormWidget(
-                          label: 'Option Name',
-                          child: TextFormField(
-                            initialValue: state.size[index],
-                            onChanged: (val) {
-                              final updatedSizes = [...state.size];
-                              updatedSizes[index] = val;
-                              stCubit.size(updatedSizes);
-                            },
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: CustomFormWidget(
+                            label: 'Option Name',
+                            child: TextFormField(
+                              controller: _sizeControllers[index],
+                              decoration: const InputDecoration(
+                                hintText: 'e.g., Small, Medium, Large',
+                                border: OutlineInputBorder(),
+                              ),
+                              onChanged: (val) {
+                                final updatedSizes = List<String>.from(size);
+                                updatedSizes[index] = val;
+                                stCubit.size(updatedSizes);
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: CustomFormWidget(
-                          label: 'Price',
-                          child: TextFormField(
-                            initialValue: state.price[index],
-                            onChanged: (val) {
-                              final updatedPrices = [...state.price];
-                              updatedPrices[index] = val;
-                              stCubit.sizePrice(updatedPrices);
-                            },
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: CustomFormWidget(
+                            label: 'Price',
+                            child: TextFormField(
+                              controller: _priceControllers[index],
+                              decoration: const InputDecoration(
+                                hintText: 'e.g., 100',
+                                border: OutlineInputBorder(),
+                              ),
+                              keyboardType: TextInputType.number,
+                              onChanged: (val) {
+                                final updatedPrices = List<String>.from(prices);
+                                if (index < updatedPrices.length) {
+                                  updatedPrices[index] = val;
+                                } else {
+                                  while (updatedPrices.length < index) {
+                                    updatedPrices.add('');
+                                  }
+                                  updatedPrices.add(val);
+                                }
+                                stCubit.sizePrice(updatedPrices);
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {
-                          final updatedSizes = [...state.size];
-                          final updatedPrices = [...state.price];
-                          updatedSizes.removeAt(index);
-                          updatedPrices.removeAt(index);
-                          stCubit.size(updatedSizes);
-                          stCubit.sizePrice(updatedPrices);
-                        },
-                      ),
-                    ],
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: size.length > 1
+                              ? () => _deleteVariation(index, size, prices)
+                              : null,
+                        ),
+                      ],
+                    ),
                   );
                 },
               );
@@ -84,10 +152,7 @@ class _VariationInfoWidgetState extends State<VariationInfoWidget> {
           ),
           Utils.verticalSpace(8),
           GestureDetector(
-            onTap: () {
-              stCubit.size([...stCubit.state.size, '']);
-              stCubit.sizePrice([...stCubit.state.price, '']);
-            },
+            onTap: _addNewVariation,
             child: Container(
               width: 105,
               height: 45,
@@ -97,6 +162,7 @@ class _VariationInfoWidgetState extends State<VariationInfoWidget> {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.add, color: Colors.orange, size: 20),
                   SizedBox(width: 5),
@@ -109,5 +175,28 @@ class _VariationInfoWidgetState extends State<VariationInfoWidget> {
         ],
       ),
     );
+  }
+
+  void _deleteVariation(int index, List<String> sizes, List<String> prices) {
+    if (sizes.length <= 1) {
+      Utils.showSnackBar(context, 'At least one variation is required');
+      return;
+    }
+
+    final updatedSizes = List<String>.from(sizes);
+    final updatedPrices = List<String>.from(prices);
+
+    updatedSizes.removeAt(index);
+    if (index < updatedPrices.length) {
+      updatedPrices.removeAt(index);
+    }
+
+    stCubit.size(updatedSizes);
+    stCubit.sizePrice(updatedPrices);
+  }
+
+  void _addNewVariation() {
+    stCubit.size([...stCubit.state.size, '']);
+    stCubit.sizePrice([...stCubit.state.price, '']);
   }
 }

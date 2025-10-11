@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/data/remote_url.dart';
+import 'package:foodigo/features/Cart/cubit/cart_cubit.dart';
 import 'package:foodigo/features/HomeData/feature_product_model.dart';
 import 'package:foodigo/features/ProductDetails/cubit/product_details_cubit.dart';
 import 'package:foodigo/features/ProductDetails/cubit/product_details_state.dart';
@@ -38,6 +39,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   void initState() {
     super.initState();
     productDetailsCubit = context.read<ProductDetailsCubit>();
+
     productDetailsCubit.getProductDetailsData(widget.id);
   }
 
@@ -46,9 +48,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     return BlocConsumer<ProductDetailsCubit, ProductDetailsState>(
       listener: (context, state) {
         if (state is ProductDetailsError) {
-          FetchErrorText(
-            text: state.message,
-          );
+          FetchErrorText(text: state.message);
         }
       },
       builder: (BuildContext context, ProductDetailsState state) {
@@ -69,8 +69,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 }
 
 class ProductDetailData extends StatelessWidget {
-  const ProductDetailData(
-      {super.key, required this.featuredProducts, this.isInCart = false});
+  const ProductDetailData({
+    super.key,
+    required this.featuredProducts,
+    this.isInCart = false,
+  });
 
   final FeaturedProducts featuredProducts;
 
@@ -101,21 +104,27 @@ class ProductDetailData extends StatelessWidget {
               const SelectAddonSection(),
 
               ///=============== Add To Cart Button ========================///
-
               BlocBuilder<AddCartCubit, AddCartStateModel>(
                 builder: (context, state) {
                   final addCartCubit = context.read<AddCartCubit>();
+                  final cartCubit = context.read<CartCubit>();
                   return AddToCartButton(
                     btnName: isInCart == true ? 'Update Cart' : 'Add to Cart',
                     text: state.qty.toString(),
                     decrementBtn: () => addCartCubit.decrementQty(),
                     incrementBtn: () => addCartCubit.incrementQty(),
                     addToCartBtn: () async {
+                      addCartCubit.setProductId(featuredProducts.id);
                       isInCart == true
                           ? await addCartCubit.updateCart(
-                              context, featuredProducts.id)
+                            context,
+                            featuredProducts.id,
+                          )
                           : await addCartCubit.addCart(
-                              context, featuredProducts.id);
+                            context,
+                            featuredProducts.id,
+                          );
+                      cartCubit.getCartData();
                     },
                   );
                 },

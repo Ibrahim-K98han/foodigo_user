@@ -15,9 +15,9 @@ class RestaurantProfileCubit extends Cubit<RestaurantProfileStateModel> {
   RestaurantProfileCubit({
     required RestaurantProfileRepository repository,
     required RestaurantLoginBloc loginBloc,
-  })  : _repository = repository,
-        _loginBloc = loginBloc,
-        super(const RestaurantProfileStateModel());
+  }) : _repository = repository,
+       _loginBloc = loginBloc,
+       super(const RestaurantProfileStateModel());
 
   RestaurantProfileModel? restaurantProfileModel;
 
@@ -27,8 +27,10 @@ class RestaurantProfileCubit extends Cubit<RestaurantProfileStateModel> {
 
   void cityId(String cityId) => emit(state.copyWith(cityId: cityId));
 
-  void cuisines(List<String> cuisines) =>
-      emit(state.copyWith(cuisines: cuisines));
+  void cuisines(List<String> ids) {
+    print('Cuisines id===========:$ids');
+    emit(state.copyWith(cuisines: ids));
+  }
 
   void whatsapp(String whatsapp) =>
       emit(state.copyWith(whatsappNumber: whatsapp));
@@ -72,7 +74,7 @@ class RestaurantProfileCubit extends Cubit<RestaurantProfileStateModel> {
   void logo(String logo) => emit(state.copyWith(logo: logo));
 
   void coverImage(String coverImage) =>
-      emit(state.copyWith(images: coverImage));
+      emit(state.copyWith(coverImages: coverImage));
 
   void isFeatured(bool isFeatured) =>
       emit(state.copyWith(isFeatured: isFeatured));
@@ -88,51 +90,69 @@ class RestaurantProfileCubit extends Cubit<RestaurantProfileStateModel> {
 
   // ========= Fetch Restaurant Profile =========
   Future<void> getRestaurantProfile() async {
-    emit(state.copyWith(
-        restaurantProfileState: const RestaurantProfileLoading()));
+    emit(
+      state.copyWith(restaurantProfileState: const RestaurantProfileLoading()),
+    );
 
-    final result = await _repository
-        .getRestaurantProfile(_loginBloc.userInformation!.token);
+    final result = await _repository.getRestaurantProfile(
+      _loginBloc.userInformation!.token,
+    );
 
     result.fold(
-      (l) => emit(state.copyWith(
-        restaurantProfileState: RestaurantProfileError(l.message, l.statusCode),
-      )),
+      (l) => emit(
+        state.copyWith(
+          restaurantProfileState: RestaurantProfileError(
+            l.message,
+            l.statusCode,
+          ),
+        ),
+      ),
       (success) {
         restaurantProfileModel = success;
 
         final profile = restaurantProfileModel?.restaurantProfile;
 
         if (profile != null) {
-          emit(state.copyWith(
-            restaurantName: profile.restaurantName,
-            cityId: profile.cityId,
-            cuisines: _parseCuisines(restaurantProfileModel?.cuisines),
-            whatsappNumber: profile.whatsapp,
-            address: profile.address,
-            latitude: profile.latitude,
-            longitude: profile.longitude,
-            maxDeliveryDistance: profile.maxDeliveryDistance,
-            ownerName: profile.ownerName,
-            ownerEmail: profile.ownerEmail,
-            ownerPhoneNumber: profile.ownerPhone,
-            name: profile.name,
-            openingHours: profile.openingHour,
-            closingHours: profile.closingHour,
-            minProcessingTime: profile.minProcessingTime,
-            maxProcessingTime: profile.maxProcessingTime,
-            isFeatured: _parseBool(
-                restaurantProfileModel!.restaurantProfile!.isFeatured),
-            isDeliveryOrder: _parseBool(
-                restaurantProfileModel!.restaurantProfile!.isDeliveryOrder),
-            isPickupOrder: _parseBool(
-                restaurantProfileModel!.restaurantProfile!.isPickupOrder),
-            restaurantProfileState: RestaurantProfileLoaded(success),
-          ));
+          emit(
+            state.copyWith(
+              restaurantName: profile.restaurantName,
+              cityId: profile.cityId,
+              cuisines: parseCuisines(profile.cuisines),
+              whatsappNumber: profile.whatsapp,
+              address: profile.address,
+              latitude: profile.latitude,
+              longitude: profile.longitude,
+              maxDeliveryDistance: profile.maxDeliveryDistance,
+              ownerName: profile.ownerName,
+              ownerEmail: profile.ownerEmail,
+              ownerPhoneNumber: profile.ownerPhone,
+              name: profile.name,
+              openingHours: profile.openingHour,
+              closingHours: profile.closingHour,
+              minProcessingTime: profile.minProcessingTime,
+              maxProcessingTime: profile.maxProcessingTime,
+              timeSlotSeparator: profile.timeSlotSeparate,
+              isFeatured: _parseBool(
+                restaurantProfileModel!.restaurantProfile!.isFeatured,
+              ),
+              isDeliveryOrder: _parseBool(
+                restaurantProfileModel!.restaurantProfile!.isDeliveryOrder,
+              ),
+              isPickupOrder: _parseBool(
+                restaurantProfileModel!.restaurantProfile!.isPickupOrder,
+              ),
+              restaurantProfileState: RestaurantProfileLoaded(success),
+            ),
+          );
+          print(
+            "state cuisine get edit data: ${parseCuisines(profile.cuisines)}",
+          );
         } else {
-          emit(state.copyWith(
-            restaurantProfileState: RestaurantProfileLoaded(success),
-          ));
+          emit(
+            state.copyWith(
+              restaurantProfileState: RestaurantProfileLoaded(success),
+            ),
+          );
         }
       },
     );
@@ -140,34 +160,52 @@ class RestaurantProfileCubit extends Cubit<RestaurantProfileStateModel> {
 
   ///Update Restaurant Profile
   Future<void> updateRestaurantProfile() async {
-    emit(state.copyWith(
-        restaurantProfileState: UpdateRestaurantProfileLoading()));
+    print('update Restaurant body: ${state.toMap()}');
+    emit(
+      state.copyWith(restaurantProfileState: UpdateRestaurantProfileLoading()),
+    );
     final uri = Utils.tokenWithCode(
       RemoteUrls.updateRestaurantProfile,
       _loginBloc.userInformation!.token,
       _loginBloc.state.languageCode,
     );
     print('Update Restaurant Profile $uri');
+
     try {
       final result = await _repository.updateRestaurantProfile(
         state,
         uri,
         _loginBloc.userInformation!.token,
       );
-      print('APi Call Success');
-      result.fold((failure) {
-        emit(state.copyWith(
-            restaurantProfileState: UpdateRestaurantProfileError(
-                failure.message, failure.statusCode)));
-      }, (success) {
-        restaurantProfileModel = success;
-        emit(state.copyWith(
-            restaurantProfileState: UpdateRestaurantProfileLoaded(success)));
-      });
+      result.fold(
+        (failure) {
+          emit(
+            state.copyWith(
+              restaurantProfileState: UpdateRestaurantProfileError(
+                failure.message,
+                failure.statusCode,
+              ),
+            ),
+          );
+        },
+        (success) {
+          restaurantProfileModel = success;
+          emit(
+            state.copyWith(
+              restaurantProfileState: UpdateRestaurantProfileLoaded(success.toString()),
+            ),
+          );
+        },
+      );
     } catch (e) {
-      emit(state.copyWith(
-        restaurantProfileState: UpdateRestaurantProfileError(e.toString(), 500),
-      ));
+      emit(
+        state.copyWith(
+          restaurantProfileState: UpdateRestaurantProfileError(
+            e.toString(),
+            500,
+          ),
+        ),
+      );
     }
   }
 
@@ -181,15 +219,24 @@ class RestaurantProfileCubit extends Cubit<RestaurantProfileStateModel> {
     return false;
   }
 
-  List<String> _parseCuisines(dynamic raw) {
-    if (raw == null) return [];
-    try {
-      if (raw is String) {
-        return List<String>.from(jsonDecode(raw));
-      } else if (raw is List) {
-        return raw.map((e) => e.toString()).toList();
+  List<String> parseCuisines(dynamic data) {
+    if (data == null) return [];
+
+    if (data is List<String>) return data; // already string list
+    if (data is List<int>) {
+      return data.map((e) => e.toString()).toList(); // handle int list
+    }
+
+    if (data is String) {
+      try {
+        final decoded = jsonDecode(data); // decode JSON string
+        // convert every element to string
+        return List<String>.from(decoded.map((e) => e.toString()));
+      } catch (e) {
+        return [];
       }
-    } catch (_) {}
+    }
+
     return [];
   }
 }

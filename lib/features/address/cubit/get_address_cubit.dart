@@ -1,7 +1,9 @@
 import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/address/model/address_model.dart';
 import 'package:foodigo/features/address/model/address_state_model.dart';
+
 import '../../../data/errors/failure.dart';
 import '../../Login/bloc/login_bloc.dart';
 import '../repository/get_address_repository.dart';
@@ -14,13 +16,14 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
   GetAddressCubit({
     required GetAddressRepository repository,
     required LoginBloc loginBloc,
-  })  : _repository = repository,
-        _loginBloc = loginBloc,
-        super(const AddressStateModel());
+  }) : _repository = repository,
+       _loginBloc = loginBloc,
+       super(const AddressStateModel());
 
-  List<Address> get getAddress => state.addressState is AllAddressLoaded
-      ? (state.addressState as AllAddressLoaded).getAddress
-      : [];
+  List<Address> get getAddress =>
+      state.addressState is AllAddressLoaded
+          ? (state.addressState as AllAddressLoaded).getAddress
+          : [];
 
   Address? addr;
 
@@ -40,9 +43,7 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
     emit(state.copyWith(phone: phone));
   }
 
-  void address(String address) {
-    emit(state.copyWith(address: address));
-  }
+  void address(String address) => emit(state.copyWith(address: address));
 
   void landMark(String landMark) {
     emit(state.copyWith(landmark: landMark));
@@ -63,22 +64,33 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
   /// Add address
   Future<void> addAddress() async {
     emit(state.copyWith(addressState: AddAddressStateLoading()));
-    final result =
-        await _repository.addAddress(state, _loginBloc.userInformation!.token);
+    final result = await _repository.addAddress(
+      state,
+      _loginBloc.userInformation!.token,
+    );
 
     result.fold(
       (failure) {
         if (failure is InvalidAuthData) {
-          emit(state.copyWith(
-              addressState: AddAddressStateFormValidate(failure.errors)));
+          emit(
+            state.copyWith(
+              addressState: AddAddressStateFormValidate(failure.errors),
+            ),
+          );
         } else {
-          emit(state.copyWith(
-            addressState:
-                AddAddresstStateError(failure.message, failure.statusCode),
-          ));
+          emit(
+            state.copyWith(
+              addressState: AddAddresstStateError(
+                failure.message,
+                failure.statusCode,
+              ),
+            ),
+          );
         }
       },
       (success) {
+        clear();
+        emit(state.copyWith(addressState: AddAddressStateSuccess(success)));
         addr = success;
         // reload all addresses after success
         getAllAddressData();
@@ -90,12 +102,14 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
   Future<void> getAllAddressData() async {
     emit(state.copyWith(addressState: AllAddressLoading()));
 
-    final result =
-        await _repository.getAllAddressData(_loginBloc.userInformation!.token);
+    final result = await _repository.getAllAddressData(
+      _loginBloc.userInformation!.token,
+    );
 
     result.fold(
-      (l) => emit(state.copyWith(
-          addressState: AAllAddressError(l.message, l.statusCode))),
+      (l) => emit(
+        state.copyWith(addressState: AAllAddressError(l.message, l.statusCode)),
+      ),
       (success) {
         emit(state.copyWith(addressState: AllAddressLoaded(success)));
       },
@@ -106,13 +120,17 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
   Future<void> deleteAddress(String id) async {
     emit(state.copyWith(addressState: DeleteAddressLoading(id)));
 
-    final result =
-        await _repository.deleteAddress(_loginBloc.userInformation!.token, id);
+    final result = await _repository.deleteAddress(
+      _loginBloc.userInformation!.token,
+      id,
+    );
 
     result.fold(
-      (l) => emit(state.copyWith(
-        addressState: DeleteAddressError(l.message, l.statusCode),
-      )),
+      (l) => emit(
+        state.copyWith(
+          addressState: DeleteAddressError(l.message, l.statusCode),
+        ),
+      ),
       (success) async {
         // reload all addresses after delete
         await getAllAddressData();
@@ -126,24 +144,52 @@ class GetAddressCubit extends Cubit<AddressStateModel> {
     log("update address body: ${state.toMap()}");
 
     final result = await _repository.updateAddress(
-        state, _loginBloc.userInformation!.token, id);
+      state,
+      _loginBloc.userInformation!.token,
+      id,
+    );
 
     result.fold(
       (failure) {
         if (failure is InvalidAuthData) {
-          emit(state.copyWith(
-              addressState: UpdateAddressFormValidate(failure.errors)));
+          emit(
+            state.copyWith(
+              addressState: UpdateAddressFormValidate(failure.errors),
+            ),
+          );
         } else {
-          emit(state.copyWith(
-              addressState:
-                  UpdateAddressError(failure.message, failure.statusCode)));
+          emit(
+            state.copyWith(
+              addressState: UpdateAddressError(
+                failure.message,
+                failure.statusCode,
+              ),
+            ),
+          );
         }
       },
-      (success) async{
+      (success) async {
         addr = success;
         emit(state.copyWith(addressState: UpdateAddressSuccess(success)));
+        clear();
         await getAllAddressData();
       },
+    );
+  }
+
+  void clear() {
+    emit(
+      const AddressStateModel(
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        landmark: '',
+        latitude: '',
+        longitude: '',
+        type: 'Home',
+        addressState: AllAddressInitial(),
+      ),
     );
   }
 }

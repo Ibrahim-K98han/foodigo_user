@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/data/remote_url.dart';
@@ -23,11 +22,9 @@ class TopRestaurant extends StatelessWidget {
 
     return Container(
       height: size.height * 0.35,
-      decoration: const BoxDecoration(
-        color: Color(0xFF000000),
-      ),
+      decoration: const BoxDecoration(color: Color(0xFF000000)),
       child: Padding(
-        padding: Utils.symmetric(h: 0.0.h, v: 10.0.w),
+        padding: Utils.symmetric(h: 0.0.h, v: 0.w),
         child: Column(
           children: [
             TitleAndNavigator(
@@ -38,7 +35,7 @@ class TopRestaurant extends StatelessWidget {
                 Navigator.pushNamed(context, RouteNames.allRestaurantScreen);
               },
             ),
-            Utils.verticalSpace(12.0),
+            // Utils.verticalSpace(8.0),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
@@ -60,7 +57,7 @@ class TopRestaurant extends StatelessWidget {
                         },
                       ),
                     );
-                  })
+                  }),
                 ],
               ),
             ),
@@ -98,8 +95,9 @@ class TopRestaurantCart extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10.0),
-                      topRight: Radius.circular(10.0)),
+                    topLeft: Radius.circular(10.0),
+                    topRight: Radius.circular(10.0),
+                  ),
                   child: CustomImage(
                     path: RemoteUrls.imageUrl(restaurants.coverImage),
                     fit: BoxFit.cover,
@@ -118,10 +116,8 @@ class TopRestaurantCart extends StatelessWidget {
                     child: Padding(
                       padding: Utils.symmetric(h: 6.0, v: 2.0),
                       child: const Center(
-                          child: CustomText(
-                        text: 'open',
-                        color: whiteColor,
-                      )),
+                        child: CustomText(text: 'open', color: whiteColor),
+                      ),
                     ),
                   ),
                 ),
@@ -149,8 +145,12 @@ class TopRestaurantCart extends StatelessWidget {
               ],
             ),
             Padding(
-              padding:
-                  Utils.only(top: 20.0, bottom: 4.0, right: 10.0, left: 10.0),
+              padding: Utils.only(
+                top: 20.0,
+                bottom: 4.0,
+                right: 10.0,
+                left: 10.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -158,34 +158,38 @@ class TopRestaurantCart extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CustomText(
-                        text: restaurants.name,
+                        text: restaurants.restaurantName,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        maxLine: 1,
+                        maxLine: 2,
                       ),
                       Utils.horizontalSpace(4.0),
                       const CustomImage(path: KImages.rating),
                     ],
                   ),
-                  Divider(
-                    color: Colors.black.withOpacity(0.1),
-                  ),
+                  Divider(color: Colors.black.withOpacity(0.1)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           CustomImage(
                             path: KImages.location,
-                            height: 20,
+                            height: 16,
                             color: Colors.black.withOpacity(0.4),
                           ),
                           Utils.horizontalSpace(2.0),
-                          CustomText(
-                            text: restaurants.address,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 13,
-                            color: blackColor.withOpacity(0.6),
+                          SizedBox(
+                            width: 150.w,
+                            child: CustomText(
+                              text: restaurants.address,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 13,
+                              maxLine: 1,
+                              overflow: TextOverflow.ellipsis,
+                              color: blackColor.withOpacity(0.6),
+                            ),
                           ),
                         ],
                       ),
@@ -194,7 +198,9 @@ class TopRestaurantCart extends StatelessWidget {
                         height: 5,
                         width: 5,
                         decoration: const BoxDecoration(
-                            color: Color(0xFFF98C3B), shape: BoxShape.circle),
+                          color: Color(0xFFF98C3B),
+                          shape: BoxShape.circle,
+                        ),
                       ),
                       Utils.horizontalSpace(4.0),
                       Row(
@@ -204,7 +210,7 @@ class TopRestaurantCart extends StatelessWidget {
                           Row(
                             children: [
                               CustomText(
-                                text: restaurants.reviewsAvgRating,
+                                text: restaurants.reviewsCount.toString(),
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
                               ),
@@ -219,7 +225,7 @@ class TopRestaurantCart extends StatelessWidget {
                         ],
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

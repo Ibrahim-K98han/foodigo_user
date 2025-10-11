@@ -4,8 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/features/restaurant_features/Login/bloc/restaurant_login_event.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/loading_widget.dart';
-import '../../../features/restaurant_features/Login/bloc/restaurant_login_state.dart';
+
 import '../../../features/restaurant_features/Login/bloc/restaurant_login_bloc.dart';
+import '../../../features/restaurant_features/Login/bloc/restaurant_login_state.dart';
 import '../../../features/restaurant_features/Login/model/restaurant_login_state_model.dart';
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
@@ -24,86 +25,92 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: "Profile",
-        visibleLeading: false,
-      ),
+      appBar: const CustomAppBar(title: "Profile", visibleLeading: false),
       body: CustomScrollView(
         slivers: [
           const ProfileImage(),
           SliverList(
-              delegate: SliverChildListDelegate([
-            DrawerItem(
-              title: "Restaurant Info",
-              icon: KImages.profileInActive,
-              onTap: () {
-                Navigator.pushNamed(
-                    context, RouteNames.editRestaurantProfileScreen);
-              },
-            ),
-            DrawerItem(
-              title: "Wallet",
-              icon: KImages.dollarBag,
-              onTap: () {
-                Navigator.pushNamed(context, RouteNames.walletScreen);
-              },
-            ),
-            DrawerItem(
-                title: "Settings",
-                icon: KImages.settingIcon,
+            delegate: SliverChildListDelegate([
+              DrawerItem(
+                title: "Restaurant Info",
+                icon: KImages.profileInActive,
                 onTap: () {
-                  // Navigator.pushNamed(context, RouteNames.settingsScreen);
-                }),
-            DrawerItem(
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.editRestaurantProfileScreen,
+                  );
+                },
+              ),
+              DrawerItem(
+                title: "Wallet",
+                icon: KImages.dollarBag,
+                onTap: () {
+                  Navigator.pushNamed(context, RouteNames.walletScreen);
+                },
+              ),
+              // DrawerItem(
+              //   title: "Settings",
+              //   icon: KImages.settingIcon,
+              //   onTap: () {
+              //     // Navigator.pushNamed(context, RouteNames.settingsScreen);
+              //   },
+              // ),
+              DrawerItem(
                 title: "Addon Manage",
                 icon: KImages.filterFood,
                 onTap: () {
                   Navigator.pushNamed(context, RouteNames.addonMangeScreen);
-                }),
-            DrawerItem(
+                },
+              ),
+              DrawerItem(
                 title: "Change Password",
                 icon: KImages.unlock,
                 onTap: () {
                   Navigator.pushNamed(
-                      context, RouteNames.restaurantChangePasswordScreen);
-                }),
-            Utils.verticalSpace(40.0),
-            GestureDetector(
-              onTap: () {
-                showDialog(
+                    context,
+                    RouteNames.restaurantChangePasswordScreen,
+                  );
+                },
+              ),
+              Utils.verticalSpace(40.0),
+              GestureDetector(
+                onTap: () {
+                  showDialog(
                     context: context,
                     barrierDismissible: false,
-                    builder: (context) => const LogoutPrompt());
-              },
-              child: Padding(
-                padding: Utils.symmetric(),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6.0),
-                    border: Border.all(
-                      color: const Color(0xFFF01543).withOpacity(0.4),
+                    builder: (context) => const LogoutPrompt(),
+                  );
+                },
+                child: Padding(
+                  padding: Utils.symmetric(),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6.0),
+                      border: Border.all(
+                        color: const Color(0xFFF01543).withOpacity(0.4),
+                      ),
                     ),
-                  ),
-                  child: Padding(
-                    padding: Utils.symmetric(h: 20.0, v: 12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const CustomImage(path: KImages.logout),
-                        Utils.horizontalSpace(8.0),
-                        const CustomText(
-                          text: "Logout",
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: redColor,
-                        ),
-                      ],
+                    child: Padding(
+                      padding: Utils.symmetric(h: 20.0, v: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const CustomImage(path: KImages.logout),
+                          Utils.horizontalSpace(8.0),
+                          const CustomText(
+                            text: "Logout",
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: redColor,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ])),
+            ]),
+          ),
         ],
       ),
     );
@@ -111,9 +118,7 @@ class ProfileScreen extends StatelessWidget {
 }
 
 class LogoutPrompt extends StatelessWidget {
-  const LogoutPrompt({
-    super.key,
-  });
+  const LogoutPrompt({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -121,77 +126,78 @@ class LogoutPrompt extends StatelessWidget {
     final email = restaurantBloc.userInformation!.restaurant!.email;
     print(email);
     return FeedBackDialog(
-        image: KImages.logoutImage,
-        //   height: 280.0,
-        message: "Do you want to\nLOGOUT",
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: PrimaryButton(
-                    text: 'Cancel',
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    borderRadiusSize: 4.0,
-                    isGradient: false,
-                    bgColor: blackColor,
-                    textColor: whiteColor,
-                    fontSize: 16.0,
-                    minimumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
-                    maximumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
-                  ),
+      image: KImages.logoutImage,
+      //   height: 280.0,
+      message: "Do you want to\nLOGOUT",
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(
+                child: PrimaryButton(
+                  text: 'Cancel',
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  borderRadiusSize: 4.0,
+                  isGradient: false,
+                  bgColor: blackColor,
+                  textColor: whiteColor,
+                  fontSize: 16.0,
+                  minimumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
+                  maximumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
                 ),
-                Utils.horizontalSpace(20),
-                Expanded(
-                  child: BlocConsumer<RestaurantLoginBloc,
-                      RestaurantLoginStateModel>(
-                    listener: (context, state) {
-                      if (state.restaurantLoginState
-                          is RestaurantLoginStateLogoutLoaded) {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          RouteNames.authenticationScreen,
-                          (route) => false,
-                        );
-                      }
-                    },
-                    builder: (context, state) {
-                      if (state.restaurantLoginState
-                          is RestaurantLoginStateLogoutLoading) {
-                        return Center(
-                          child: SizedBox(
-                            width: 30.w,
-                            height: 30.h,
-                            child: const LoadingWidget(),
-                          ),
-                        );
-                      }
-                      return PrimaryButton(
-                        text: 'Logout',
-                        onPressed: () {
-                          context
-                              .read<RestaurantLoginBloc>()
-                              .add(RestaurantLoginEventLogout(email: email));
-                        },
-                        bgColor: redColor,
-                        textColor: whiteColor,
-                        borderRadiusSize: 4.0,
-                        fontSize: 16.0,
-                        minimumSize:
-                            Size(Utils.hSize(150.0), Utils.vSize(30.0)),
-                        maximumSize:
-                            Size(Utils.hSize(150.0), Utils.vSize(30.0)),
+              ),
+              Utils.horizontalSpace(20),
+              Expanded(
+                child: BlocConsumer<
+                  RestaurantLoginBloc,
+                  RestaurantLoginStateModel
+                >(
+                  listener: (context, state) {
+                    if (state.restaurantLoginState
+                        is RestaurantLoginStateLogoutLoaded) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        RouteNames.authenticationScreen,
+                        (route) => false,
                       );
-                    },
-                  ),
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state.restaurantLoginState
+                        is RestaurantLoginStateLogoutLoading) {
+                      return Center(
+                        child: SizedBox(
+                          width: 30.w,
+                          height: 30.h,
+                          child: const LoadingWidget(),
+                        ),
+                      );
+                    }
+                    return PrimaryButton(
+                      text: 'Logout',
+                      onPressed: () {
+                        context.read<RestaurantLoginBloc>().add(
+                          const RestaurantLoginEventLogout(),
+                        );
+                      },
+                      bgColor: redColor,
+                      textColor: whiteColor,
+                      borderRadiusSize: 4.0,
+                      fontSize: 16.0,
+                      minimumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
+                      maximumSize: Size(Utils.hSize(150.0), Utils.vSize(30.0)),
+                    );
+                  },
                 ),
-              ],
-            ),
-          ],
-        ));
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -247,10 +253,13 @@ class _SwitchWidgetState extends State<SwitchWidget> {
               height: 25,
               padding: const EdgeInsets.symmetric(horizontal: 1),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  // color: isOn ? textColor : Colors.grey.shade400,
-                  border: Border.all(
-                      color: isOn ? redColor : Colors.grey.shade400, width: 2)),
+                borderRadius: BorderRadius.circular(30),
+                // color: isOn ? textColor : Colors.grey.shade400,
+                border: Border.all(
+                  color: isOn ? redColor : Colors.grey.shade400,
+                  width: 2,
+                ),
+              ),
               child: AnimatedAlign(
                 duration: const Duration(milliseconds: 100),
                 alignment: isOn ? Alignment.centerRight : Alignment.centerLeft,

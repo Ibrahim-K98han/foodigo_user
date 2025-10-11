@@ -60,21 +60,15 @@ class _HomeScreenState extends State<HomeScreen> {
               return const LoadingWidget();
             } else if (home is HomeDataError) {
               if (home.statusCode == 503 || homeDataCubit.homeModel != null) {
-                return LoadedHomeData(
-                  homeModel: homeDataCubit.homeModel!,
-                );
+                return LoadedHomeData(homeModel: homeDataCubit.homeModel!);
               } else {
                 return FetchErrorText(text: home.message);
               }
             } else if (home is HomeDataLoaded) {
-              return LoadedHomeData(
-                homeModel: homeDataCubit.homeModel!,
-              );
+              return LoadedHomeData(homeModel: homeDataCubit.homeModel!);
             }
             if (homeDataCubit.homeModel != null) {
-              return LoadedHomeData(
-                homeModel: homeDataCubit.homeModel!,
-              );
+              return LoadedHomeData(homeModel: homeDataCubit.homeModel!);
             } else {
               return const FetchErrorText(text: 'Something Went Wrong');
             }
@@ -86,15 +80,13 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class LoadedHomeData extends StatelessWidget {
-  const LoadedHomeData({
-    super.key,
-    required this.homeModel,
-  });
+  const LoadedHomeData({super.key, required this.homeModel});
 
   final HomeModel homeModel;
 
   @override
   Widget build(BuildContext context) {
+    print('banner 1: ${homeModel.homePage!.blogBannerOne.toString()}');
     return Container(
       decoration: const BoxDecoration(
         boxShadow: [
@@ -103,7 +95,7 @@ class LoadedHomeData extends StatelessWidget {
             blurRadius: 40,
             offset: Offset(0, 2),
             spreadRadius: 10,
-          )
+          ),
         ],
       ),
       child: Column(
@@ -116,38 +108,35 @@ class LoadedHomeData extends StatelessWidget {
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
-                  CategoryList(
-                    categories: homeModel.categories!,
-                  ),
+                  CategoryList(categories: homeModel.categories!),
                   // Utils.verticalSpace(12.0),
                   FeatureFood(
                     featuredProducts: homeModel.featuredProducts!,
                     restaurant: homeModel.restaurants!,
                   ),
-                  // Utils.verticalSpace(20.0),
+
+                  Utils.verticalSpace(8.0),
 
                   ///============= Banner  =============///
                   Padding(
                     padding: Utils.symmetric(),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10.r),
+                      borderRadius: BorderRadius.circular(6.r),
                       child: CustomImage(
-                        path: homeModel.promotionalBannerOne.isNotEmpty
-                            ? RemoteUrls.imageUrl(
-                                homeModel.promotionalBannerOne)
-                            : KImages.banner, // fallback image
-                        height: 100.h,
+                        path: RemoteUrls.imageUrl(
+                          homeModel.homePage!.promotionalBannerOne,
+                        ),
+                        height: 120.h,
                         width: double.infinity,
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
 
+                  Utils.verticalSpace(8.0),
+
+                  TopRestaurant(restaurants: homeModel.restaurants!),
                   // Utils.verticalSpace(20.0),
-                  TopRestaurant(
-                    restaurants: homeModel.restaurants!,
-                  ),
-                  Utils.verticalSpace(20.0),
                   ArrivalFood(
                     newArrivalProducts: homeModel.newArrivalProducts!,
                     restaurant: homeModel.restaurants!,
@@ -155,7 +144,7 @@ class LoadedHomeData extends StatelessWidget {
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -185,25 +174,24 @@ class BannerSlider extends StatelessWidget {
             onPageChanged: (index, reason) {},
             scrollDirection: Axis.horizontal,
           ),
-          items: slider.map((e) {
-            return Padding(
-              padding: Utils.symmetric(),
-              child: Container(
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
-                //margin: Utils.symmetric(h: 10.0),
-                width: double.infinity,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: CustomImage(
-                    path: slider.first,
-                    fit: BoxFit.fill,
+          items:
+              slider.map((e) {
+                return Padding(
+                  padding: Utils.symmetric(),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    //margin: Utils.symmetric(h: 10.0),
+                    width: double.infinity,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10.0),
+                      child: CustomImage(path: slider.first, fit: BoxFit.fill),
+                      // child: Image.network(e.image),
+                    ),
                   ),
-                  // child: Image.network(e.image),
-                ),
-              ),
-            );
-          }).toList(),
+                );
+              }).toList(),
         ),
         // Positioned(
         //   bottom: 10.0,

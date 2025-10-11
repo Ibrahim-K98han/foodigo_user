@@ -1,16 +1,11 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_image.dart';
-import 'package:foodigo/widget/primary_button.dart';
 
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
 import '../../../widget/custom_text_style.dart';
-import '../../core/routes/route_names.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   const ProductDetailsScreen({super.key});
@@ -120,8 +115,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                   padding: Utils.symmetric(h: 0, v: 10.0),
                                   child: Container(
                                     decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10.0),
-                                        border: Border.all(color: borderColor)),
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      border: Border.all(color: borderColor),
+                                    ),
                                     child: Padding(
                                       padding: Utils.symmetric(v: 10.0),
                                       child: const Row(
@@ -143,7 +139,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     ),
                                   ),
                                 );
-                              })
+                              }),
                             ],
                           ),
                         ),
@@ -179,8 +175,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                   padding: Utils.symmetric(h: 0, v: 10.0),
                                   child: Container(
                                     decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10.0),
-                                        border: Border.all(color: borderColor)),
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      border: Border.all(color: borderColor),
+                                    ),
                                     child: Padding(
                                       padding: Utils.symmetric(v: 10.0),
                                       child: const Row(
@@ -202,7 +199,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     ),
                                   ),
                                 );
-                              })
+                              }),
                             ],
                           ),
                         ),
@@ -215,34 +212,36 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
           ),
           Padding(
-              padding: Utils.symmetric(v: 20.0),
-              child: GestureDetector(
-                onTap: () {
-                  // Navigator.pushNamed(context, RouteNames.editFoodScreen);
-                },
-                child: Container(
-                  height: 46.h,
-                  width: double.maxFinite,
-                  decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(6.r)),
-                  child: Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const CustomImage(path: KImages.editIcon),
-                        Utils.horizontalSpace(8),
-                        const CustomText(
-                          text: 'Edit',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: textColor,
-                        )
-                      ],
-                    ),
+            padding: Utils.symmetric(v: 20.0),
+            child: GestureDetector(
+              onTap: () {
+                // Navigator.pushNamed(context, RouteNames.editFoodScreen);
+              },
+              child: Container(
+                height: 46.h,
+                width: double.maxFinite,
+                decoration: BoxDecoration(
+                  color: primaryColor,
+                  borderRadius: BorderRadius.circular(6.r),
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const CustomImage(path: KImages.editIcon),
+                      Utils.horizontalSpace(8),
+                      const CustomText(
+                        text: 'Edit',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: textColor,
+                      ),
+                    ],
                   ),
                 ),
-              )),
+              ),
+            ),
+          ),
         ],
       ),
     );

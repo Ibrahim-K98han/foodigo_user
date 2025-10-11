@@ -48,6 +48,7 @@ class _ChangeAddressScreenState extends State<ChangeAddressScreen> {
         child: PrimaryButton(
           text: 'Add Address',
           onPressed: () {
+            addressCubit.clear();
             Navigator.pushNamed(
               context,
               RouteNames.editAddressScreen,
@@ -70,33 +71,32 @@ class _ChangeAddressScreenState extends State<ChangeAddressScreen> {
               addresses = addressState.getAddress;
               if (addresses.isEmpty) {
                 return const Center(
-                    child: Text("No Address Found Please Add Address"));
+                  child: Text("No Address Found Please Add Address"),
+                );
               }
             }
-            return SingleChildScrollView(
-              child: Padding(
-                padding: Utils.symmetric(),
-                child: Column(
-                  children: [
-                    ...addresses.map(
-                      (address) => AddressItem(
-                        address: address,
-                        onTap: () {
-                          isSelected == true
-                              ? Navigator.pushNamed(
-                                  context, RouteNames.orderScreen,
-                                  arguments: address)
-                              : null;
+            return ListView.builder(
+              padding: Utils.symmetric(),
+              itemCount: addresses.length,
+              itemBuilder: (context, index) {
+                final address = addresses[index];
+                return AddressItem(
+                  address: address,
+                  onTap: () {
+                    isSelected == true
+                        ? Navigator.pushNamed(
+                          context,
+                          RouteNames.orderScreen,
+                          arguments: address,
+                        )
+                        : null;
 
-                          context
-                              .read<CheckoutCubit>()
-                              .addressId(address.id.toString());
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                    context.read<CheckoutCubit>().addressId(
+                      address.id.toString(),
+                    );
+                  },
+                );
+              },
             );
           },
         ),
@@ -142,13 +142,13 @@ class AddressItem extends StatelessWidget {
                           Navigator.pushNamed(
                             context,
                             RouteNames.editAddressScreen,
-                            arguments: {
-                              'address': address,
-                            },
+                            arguments: {'address': address},
                           );
                         },
                         child: const CustomImage(
-                            path: KImages.editIcon, height: 25),
+                          path: KImages.editIcon,
+                          height: 25,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       GestureDetector(
@@ -164,7 +164,9 @@ class AddressItem extends StatelessWidget {
                               return const LoadingWidget();
                             }
                             return const CustomImage(
-                                path: KImages.deleteIcon, height: 25);
+                              path: KImages.deleteIcon,
+                              height: 25,
+                            );
                           },
                         ),
                       ),
@@ -189,11 +191,7 @@ class AddressWidget extends StatelessWidget {
   final String text;
   final String title;
 
-  const AddressWidget({
-    super.key,
-    required this.text,
-    required this.title,
-  });
+  const AddressWidget({super.key, required this.text, required this.title});
 
   @override
   Widget build(BuildContext context) {

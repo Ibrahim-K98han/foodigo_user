@@ -1,19 +1,17 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/GetProfile/cubit/get_profile_cubit.dart';
 import 'package:foodigo/features/GetProfile/cubit/get_profile_state.dart';
+import 'package:foodigo/features/GetProfile/model/profile_state_model.dart';
+import 'package:foodigo/features/Login/model/user_response_model.dart';
+import 'package:foodigo/presentation/screen/profile/component/profilee_image.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_form.dart';
-import 'package:foodigo/widget/custom_image.dart';
-import 'package:foodigo/widget/custom_text_style.dart';
+import 'package:foodigo/widget/fetch_error_text.dart';
 import 'package:foodigo/widget/loading_widget.dart';
 import 'package:foodigo/widget/primary_button.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../utils/constraints.dart';
-import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -26,15 +24,6 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   late GetProfileCubit pCubit;
 
-  File? _image;
-  final ImagePicker _picker = ImagePicker();
-
-  /// controllers
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController addressController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -42,391 +31,167 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     pCubit.getProfileData();
   }
 
-  Future<void> pickFromCamera() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
-    if (image != null) {
-      setState(() => _image = File(image.path));
-    }
-  }
-
-  Future<void> pickFromGallery() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() => _image = File(image.path));
-    }
-  }
-
-  void _showImageSourceDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Camera'),
-              onTap: () {
-                Navigator.pop(context);
-                pickFromCamera();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo),
-              title: const Text('Gallery'),
-              onTap: () {
-                Navigator.pop(context);
-                pickFromGallery();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
       appBar: const CustomAppBar(title: 'Edit Profile', visibleLeading: true),
-      body: Padding(
-        padding: Utils.symmetric(h: 24.0),
-        child: BlocListener<GetProfileCubit, GetProfileState>(
-          listener: (context, state) {
-            if (state is UpdateProfileSuccess) {
-              Utils.successSnackBar(context, 'Profile updated successfully');
-              context.read<GetProfileCubit>().getProfileData();
-            } else if (state is UpdateProfileError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
-                ),
-              );
+      body: BlocConsumer<GetProfileCubit, ProfileStateModel>(
+        listener: (context, state) {
+          final profile = state.getProfileState;
+          if (profile is UpdateProfileError) {
+            if (profile.statusCode == 503) {
+              FetchErrorText(text: profile.message);
+            } else {
+              Utils.errorSnackBar(context, profile.message);
             }
-          },
-          child: BlocBuilder<GetProfileCubit, GetProfileState>(
-            builder: (context, state) {
-              if (state is GetProfileLoaded) {
-                final user = state.user;
-
-                nameController.text = user.name;
-                emailController.text = user.email;
-                phoneController.text = user.phone;
-                addressController.text = user.address;
-
-                return ListView(
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Profile Image
-                        Stack(
-                          children: [
-                            Container(
-                              height: Utils.vSize(80.0),
-                              width: Utils.vSize(80.0),
-                              decoration:
-                                  const BoxDecoration(shape: BoxShape.circle),
-                              child: ClipRRect(
-                                borderRadius: Utils.borderRadius(r: 50.0),
-                                child: _image != null
-                                    ? Image.file(_image!, fit: BoxFit.cover)
-                                    : const CustomImage(
-                                        path: KImages.profile,
-                                        fit: BoxFit.cover,
-                                      ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: GestureDetector(
-                                onTap: () => _showImageSourceDialog(context),
-                                child: Container(
-                                  padding: Utils.all(value: 5.0),
-                                  height: Utils.vSize(24),
-                                  width: Utils.vSize(24),
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: primaryColor,
-                                  ),
-                                  child: const Center(
-                                    child: CustomImage(path: KImages.camera),
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-
-                        Utils.verticalSpace(8.0),
-
-                        /// Full Name
-                        CustomFormWidget(
-                          label: 'Full Name',
-                          bottomSpace: 14.0,
-                          child: TextFormField(
-                            controller: nameController,
-                            decoration: const InputDecoration(
-                              fillColor: Color(0xffF8FAFC),
-                              filled: true,
-                              hintText: 'Full name',
-                            ),
-                          ),
-                        ),
-
-                        /// Email
-                        CustomFormWidget(
-                          label: 'Email',
-                          bottomSpace: 14.0,
-                          child: TextFormField(
-                            controller: emailController,
-                            decoration: const InputDecoration(
-                              fillColor: Color(0xffF8FAFC),
-                              filled: true,
-                              hintText: 'Email',
-                            ),
-                          ),
-                        ),
-
-                        /// Phone Number
-                        CustomFormWidget(
-                          label: 'Phone Number',
-                          bottomSpace: 14.0,
-                          child: TextFormField(
-                            controller: phoneController,
-                            decoration: const InputDecoration(
-                              fillColor: Color(0xffF8FAFC),
-                              filled: true,
-                              hintText: 'Phone number',
-                            ),
-                          ),
-                        ),
-
-                        /// Gender label
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: CustomText(
-                            text: 'Gender',
-                            fontWeight: FontWeight.w500,
-                            color: settingsIconBgColor,
-                          ),
-                        ),
-                        Utils.verticalSpace(16.0),
-
-                        /// Address
-                        CustomFormWidget(
-                          label: 'Address',
-                          bottomSpace: 14.0,
-                          child: TextFormField(
-                            controller: addressController,
-                            maxLines: 4,
-                            decoration: const InputDecoration(
-                              fillColor: Color(0xffF8FAFC),
-                              filled: true,
-                              hintText: 'Mirpur-10, Dhaka-1216',
-                            ),
-                          ),
-                        ),
-
-                        Utils.verticalSpace(45.0),
-
-                        /// Update button
-                        PrimaryButton(
-                          text: 'Update Profile',
-                          onPressed: () {
-                            final updatedUser = {
-                              "name": nameController.text,
-                              "email": emailController.text,
-                              "phone": phoneController.text,
-                              "address": addressController.text,
-                            };
-                            context
-                                .read<GetProfileCubit>()
-                                .updateProfile(updatedUser);
-                          },
-                        )
-                      ],
-                    )
-                  ],
-                );
-              } else if (state is GetProfileError) {
-                return Center(child: Text(state.message));
-              }
-              return const Center(child: LoadingWidget());
-            },
-          ),
-        ),
+          }
+          if (profile is UpdateProfileLoaded) {
+            Utils.successSnackBar(context, 'Profile Updated Successfully');
+          }
+        },
+        builder: (context, state) {
+          final profile = state.getProfileState;
+          if (profile is UpdateProfileLoading) {
+            return const LoadingWidget();
+          } else if (profile is UpdateProfileError) {
+            if (profile.statusCode == 503 || pCubit.user != null) {
+              return LoadProfileData(user: pCubit.user!);
+            } else {
+              return FetchErrorText(text: profile.message);
+            }
+          } else if (profile is UpdateProfileLoaded) {
+            return LoadProfileData(user: pCubit.user!);
+          }
+          if (pCubit.user != null) {
+            return LoadProfileData(user: pCubit.user!);
+          } else {
+            return const FetchErrorText(text: 'Something Went Wrong');
+          }
+        },
       ),
     );
   }
+}
 
-// @override
-// Widget build(BuildContext context) {
-//   return Scaffold(
-//     backgroundColor: whiteColor,
-//     appBar: const CustomAppBar(title: 'Edit Profile', visibleLeading: true),
-//     body: Padding(
-//       padding: Utils.symmetric(h: 24.0),
-//       child: BlocBuilder<GetProfileCubit, GetProfileState>(
-//         builder: (context, state) {
-//           if (state is UpdateProfileSuccess) {
-//             const LoadingWidget();
-//             context.read<GetProfileCubit>().getProfileData();
-//           } else if (state is GetProfileLoaded) {
-//             final user = state.user;
-//             nameController.text = user.name;
-//             emailController.text = user.email;
-//             phoneController.text = user.phone;
-//             addressController.text = user.address;
-//
-//             return ListView(
-//               children: [
-//                 Column(
-//                   mainAxisSize: MainAxisSize.min,
-//                   children: [
-//                     /// Profile Image
-//                     Stack(
-//                       children: [
-//                         Container(
-//                           height: Utils.vSize(80.0),
-//                           width: Utils.vSize(80.0),
-//                           decoration:
-//                               const BoxDecoration(shape: BoxShape.circle),
-//                           child: ClipRRect(
-//                             borderRadius: Utils.borderRadius(r: 50.0),
-//                             child: _image != null
-//                                 ? Image.file(_image!, fit: BoxFit.cover)
-//                                 : const CustomImage(
-//                                     path: KImages.profile,
-//                                     fit: BoxFit.cover,
-//                                   ),
-//                           ),
-//                         ),
-//                         Positioned(
-//                           bottom: 0,
-//                           right: 0,
-//                           child: GestureDetector(
-//                             onTap: () => _showImageSourceDialog(context),
-//                             child: Container(
-//                               padding: Utils.all(value: 5.0),
-//                               height: Utils.vSize(24),
-//                               width: Utils.vSize(24),
-//                               decoration: const BoxDecoration(
-//                                 shape: BoxShape.circle,
-//                                 color: primaryColor,
-//                               ),
-//                               child: const Center(
-//                                 child: CustomImage(path: KImages.camera),
-//                               ),
-//                             ),
-//                           ),
-//                         )
-//                       ],
-//                     ),
-//
-//                     Utils.verticalSpace(8.0),
-//
-//                     /// Full Name
-//                     CustomFormWidget(
-//                       label: 'Full Name',
-//                       bottomSpace: 14.0,
-//                       child: TextFormField(
-//                         controller: nameController,
-//                         decoration: const InputDecoration(
-//                           fillColor: Color(0xffF8FAFC),
-//                           filled: true,
-//                           hintText: 'Full name',
-//                         ),
-//                       ),
-//                     ),
-//
-//                     /// Email
-//                     CustomFormWidget(
-//                       label: 'Email',
-//                       bottomSpace: 14.0,
-//                       child: TextFormField(
-//                         controller: emailController,
-//                         decoration: const InputDecoration(
-//                           fillColor: Color(0xffF8FAFC),
-//                           filled: true,
-//                           hintText: 'Email',
-//                         ),
-//                       ),
-//                     ),
-//
-//                     /// Phone Number
-//                     CustomFormWidget(
-//                       label: 'Phone Number',
-//                       bottomSpace: 14.0,
-//                       child: TextFormField(
-//                         controller: phoneController,
-//                         decoration: const InputDecoration(
-//                           fillColor: Color(0xffF8FAFC),
-//                           filled: true,
-//                           hintText: 'Phone number',
-//                         ),
-//                       ),
-//                     ),
-//
-//                     /// Gender label
-//                     const Align(
-//                       alignment: Alignment.centerLeft,
-//                       child: CustomText(
-//                         text: 'Gender',
-//                         fontWeight: FontWeight.w500,
-//                         color: settingsIconBgColor,
-//                       ),
-//                     ),
-//                     Utils.verticalSpace(16.0),
-//
-//                     /// Address
-//                     CustomFormWidget(
-//                       label: 'Address',
-//                       bottomSpace: 14.0,
-//                       child: TextFormField(
-//                         controller: addressController,
-//                         maxLines: 4,
-//                         decoration: const InputDecoration(
-//                           fillColor: Color(0xffF8FAFC),
-//                           filled: true,
-//                           hintText: 'Mirpur-10, Dhaka-1216',
-//                         ),
-//                       ),
-//                     ),
-//
-//                     Utils.verticalSpace(45.0),
-//
-//                     /// Update button
-//                     PrimaryButton(
-//                       text: 'Update Profile',
-//                       onPressed: () {
-//                         final updatedUser = {
-//                           "name": nameController.text,
-//                           "email": emailController.text,
-//                           "phone": phoneController.text,
-//                           "address": addressController.text,
-//                         };
-//                         context
-//                             .read<GetProfileCubit>()
-//                             .updateProfile(updatedUser);
-//                       },
-//                     )
-//                   ],
-//                 )
-//               ],
-//             );
-//           } else if (state is GetProfileError) {
-//             return Center(child: Text(state.message));
-//           }
-//           return const SizedBox();
-//         },
-//       ),
-//     ),
-//   );
-// }
+class LoadProfileData extends StatefulWidget {
+  const LoadProfileData({super.key, required this.user});
+
+  final User user;
+
+  @override
+  State<LoadProfileData> createState() => _LoadProfileDataState();
+}
+
+class _LoadProfileDataState extends State<LoadProfileData> {
+  @override
+  Widget build(BuildContext context) {
+    final pCubit = context.read<GetProfileCubit>();
+    return Padding(
+      padding: Utils.symmetric(h: 24.0),
+      child: ListView(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Profile Image
+              const ProfileeImage(),
+
+              Utils.verticalSpace(8.0),
+
+              /// Full Name
+              BlocBuilder<GetProfileCubit, ProfileStateModel>(
+                builder: (context, state) {
+                  return CustomFormWidget(
+                    label: 'Full Name',
+                    bottomSpace: 14.0,
+                    child: TextFormField(
+                      initialValue: state.name,
+                      onChanged: pCubit.name,
+                      decoration: const InputDecoration(
+                        fillColor: Color(0xffF8FAFC),
+                        filled: true,
+                        hintText: 'Full name',
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+              /// Email
+              BlocBuilder<GetProfileCubit, ProfileStateModel>(
+                builder: (context, state) {
+                  return CustomFormWidget(
+                    label: 'Email',
+                    bottomSpace: 14.0,
+                    child: TextFormField(
+                      initialValue: state.email,
+                      onChanged: pCubit.email,
+                      decoration: const InputDecoration(
+                        fillColor: Color(0xffF8FAFC),
+                        filled: true,
+                        hintText: 'Email',
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+              /// Phone Number
+              BlocBuilder<GetProfileCubit, ProfileStateModel>(
+                builder: (context, state) {
+                  return CustomFormWidget(
+                    label: 'Phone Number',
+                    bottomSpace: 14.0,
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      initialValue: state.phone,
+                      onChanged: pCubit.phone,
+                      decoration: const InputDecoration(
+                        fillColor: Color(0xffF8FAFC),
+                        filled: true,
+                        hintText: 'Phone number',
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+              Utils.verticalSpace(16.0),
+
+              /// Address
+              BlocBuilder<GetProfileCubit, ProfileStateModel>(
+                builder: (context, state) {
+                  return CustomFormWidget(
+                    label: 'Address',
+                    bottomSpace: 14.0,
+                    child: TextFormField(
+                      initialValue: state.address,
+                      onChanged: pCubit.address,
+                      maxLines: 4,
+                      decoration: const InputDecoration(
+                        fillColor: Color(0xffF8FAFC),
+                        filled: true,
+                        hintText: 'Mirpur-10, Dhaka-1216',
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+              Utils.verticalSpace(45.0),
+
+              /// Update button
+              PrimaryButton(
+                text: 'Update Profile',
+                onPressed: () {
+                  pCubit.updateProfile();
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }

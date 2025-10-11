@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodigo/features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_state.dart';
+import 'package:foodigo/widget/fetch_error_text.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 
 import '../../../../features/restaurant_features/RestaurantProfile/cubit/restaurant_profile_cubit.dart';
 import '../../../../features/restaurant_features/RestaurantProfile/model/restaurant_profile_state_model.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_form.dart';
-import '../../my_menu/edit_food_screen.dart';
 import '../../my_menu/components/update_product_tile.dart';
 
 class OtherInfo extends StatefulWidget {
@@ -33,8 +35,10 @@ class _OtherInfoState extends State<OtherInfo> {
           Row(
             children: [
               Expanded(
-                child: BlocBuilder<RestaurantProfileCubit,
-                    RestaurantProfileStateModel>(
+                child: BlocBuilder<
+                  RestaurantProfileCubit,
+                  RestaurantProfileStateModel
+                >(
                   builder: (context, state) {
                     return CustomFormWidget(
                       label: 'Opening Hour',
@@ -53,8 +57,10 @@ class _OtherInfoState extends State<OtherInfo> {
               ),
               Utils.horizontalSpace(12),
               Expanded(
-                child: BlocBuilder<RestaurantProfileCubit,
-                    RestaurantProfileStateModel>(
+                child: BlocBuilder<
+                  RestaurantProfileCubit,
+                  RestaurantProfileStateModel
+                >(
                   builder: (context, state) {
                     return CustomFormWidget(
                       label: 'Closing Hour',
@@ -77,8 +83,10 @@ class _OtherInfoState extends State<OtherInfo> {
           Row(
             children: [
               Expanded(
-                child: BlocBuilder<RestaurantProfileCubit,
-                    RestaurantProfileStateModel>(
+                child: BlocBuilder<
+                  RestaurantProfileCubit,
+                  RestaurantProfileStateModel
+                >(
                   builder: (context, state) {
                     return CustomFormWidget(
                       label: 'Min time(minute)',
@@ -97,8 +105,10 @@ class _OtherInfoState extends State<OtherInfo> {
               ),
               Utils.horizontalSpace(12),
               Expanded(
-                child: BlocBuilder<RestaurantProfileCubit,
-                    RestaurantProfileStateModel>(
+                child: BlocBuilder<
+                  RestaurantProfileCubit,
+                  RestaurantProfileStateModel
+                >(
                   builder: (context, state) {
                     return CustomFormWidget(
                       label: 'Max time(minute)',
@@ -121,28 +131,48 @@ class _OtherInfoState extends State<OtherInfo> {
           Row(
             children: [
               Expanded(
-                child: BlocBuilder<RestaurantProfileCubit,
-                    RestaurantProfileStateModel>(
+                child: BlocBuilder<
+                  RestaurantProfileCubit,
+                  RestaurantProfileStateModel
+                >(
                   builder: (context, state) {
-                    return CustomFormWidget(
-                      label: 'Time slot (minute)',
-                      child: TextFormField(
-                        initialValue: state.timeSlotSeparator,
-                        onChanged: resProCubit.timeSlot,
-                        decoration: const InputDecoration(
-                          filled: true,
-                          fillColor: Color(0xffF8FAFC),
-                          hintText: '20',
+                    final validate = state.restaurantProfileState;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomFormWidget(
+                          label: 'Time slot (minute)',
+                          child: TextFormField(
+                            initialValue: state.timeSlotSeparator,
+                            onChanged: resProCubit.timeSlot,
+                            decoration: const InputDecoration(
+                              filled: true,
+                              fillColor: Color(0xffF8FAFC),
+                              hintText: '0',
+                            ),
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(
+                                errorText: 'Enter Time slot',
+                              ),
+                            ]),
+                          ),
                         ),
-                      ),
+                        if (validate
+                            is RestaurantProfileValidateStateError) ...[
+                          if (validate.errors.name.isNotEmpty)
+                            FetchErrorText(text: validate.errors.phone.first),
+                        ],
+                      ],
                     );
                   },
                 ),
               ),
               Utils.horizontalSpace(12),
               Expanded(
-                child: BlocBuilder<RestaurantProfileCubit,
-                    RestaurantProfileStateModel>(
+                child: BlocBuilder<
+                  RestaurantProfileCubit,
+                  RestaurantProfileStateModel
+                >(
                   builder: (context, state) {
                     return CustomFormWidget(
                       label: 'Tags',
@@ -157,9 +187,9 @@ class _OtherInfoState extends State<OtherInfo> {
                     );
                   },
                 ),
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
     );

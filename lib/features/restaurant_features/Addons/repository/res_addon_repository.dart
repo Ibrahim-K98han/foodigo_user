@@ -9,12 +9,27 @@ import '../remote/res_addon_remote_data_source.dart';
 abstract class ResAddonRepository {
   Future<Either<Failure, ResAddonModel>> getAddonList(String token);
 
-  Future<Either<Failure, ResAddonModel>> storeAddon(ResAddonStateModel body, String token);
-  Future<Either<Failure, ResAddons>> updateAddon(ResAddonStateModel body, Uri url, String token, String id);
+  Future<Either<Failure, ResAddonModel>> storeAddon(
+    ResAddonStateModel body,
+    String token,
+  );
+  Future<Either<Failure, ResAddons>> updateAddon(
+    ResAddonStateModel body,
+    Uri url,
+    String token,
+    String id,
+  );
 
-  Future<Either<Failure, ResAddonModel>> deleteAddon(String token, String id);
+  Future<Either<Failure, String>> deleteAddon(
+    String token,
+    String id,
+  ); // String করুন
 
-  Future<Either<Failure, TranslateAddonModel>> editAddon(String token, String id, Uri url);
+  Future<Either<Failure, TranslateAddonModel>> editAddon(
+    String token,
+    String id,
+    Uri url,
+  );
 }
 
 class ResAddonRepositoryImpl implements ResAddonRepository {
@@ -36,7 +51,10 @@ class ResAddonRepositoryImpl implements ResAddonRepository {
 
   /// Store Addon
   @override
-  Future<Either<Failure, ResAddonModel>> storeAddon(ResAddonStateModel body, String token) async {
+  Future<Either<Failure, ResAddonModel>> storeAddon(
+    ResAddonStateModel body,
+    String token,
+  ) async {
     try {
       final result = await remoteDataSource.storeAddon(body, token);
       return Right(result);
@@ -47,14 +65,28 @@ class ResAddonRepositoryImpl implements ResAddonRepository {
     }
   }
 
+  // ///Delete Addon
+  // @override
+  // Future<Either<Failure, ResAddonModel>> deleteAddon(
+  //   String token,
+  //   String id,
+  // ) async {
+  //   try {
+  //     final result = await remoteDataSource.deleteAddon(token, id);
+  //     final data = ResAddonModel.fromMap(result);
+  //     return Right(data);
+  //   } on ServerException catch (e) {
+  //     return Left(ServerFailure(e.message, e.statusCode));
+  //   }
+  // }
+
   ///Delete Addon
   @override
-  Future<Either<Failure, ResAddonModel>> deleteAddon(
-      String token, String id) async {
+  Future<Either<Failure, String>> deleteAddon(String token, String id) async {
     try {
       final result = await remoteDataSource.deleteAddon(token, id);
-      final data = ResAddonModel.fromMap(result);
-      return Right(data);
+      final message = result['data'] as String;
+      return Right(message);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
     }
@@ -63,7 +95,10 @@ class ResAddonRepositoryImpl implements ResAddonRepository {
   ///Edit addon
   @override
   Future<Either<Failure, TranslateAddonModel>> editAddon(
-      String token, String id, Uri url) async {
+    String token,
+    String id,
+    Uri url,
+  ) async {
     try {
       final result = await remoteDataSource.editAddon(token, id, url);
       final data = TranslateAddonModel.fromMap(result['data']);
@@ -73,10 +108,14 @@ class ResAddonRepositoryImpl implements ResAddonRepository {
     }
   }
 
-
   ///Update Addon
   @override
-  Future<Either<Failure, ResAddons>> updateAddon(ResAddonStateModel body, Uri url, String token, String id) async{
+  Future<Either<Failure, ResAddons>> updateAddon(
+    ResAddonStateModel body,
+    Uri url,
+    String token,
+    String id,
+  ) async {
     try {
       final result = await remoteDataSource.updateAddon(body, url, token, id);
       return Right(result);

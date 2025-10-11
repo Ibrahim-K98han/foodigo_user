@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantDashboard/cubit/res_dashboard_cubit.dart';
 import 'package:foodigo/presentation/core/routes/route_names.dart';
+
 import '../../../../utils/constraints.dart';
 import '../../../../utils/k_images.dart';
 import '../../../../utils/utils.dart';
@@ -28,9 +29,9 @@ class _HomeHeaderState extends State<HomeHeader> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    print(RemoteUrls.imageUrl(
-      rdCubit.resDashboardModel!.restaurantDisplay!.logo,
-    ));
+    print(
+      RemoteUrls.imageUrl(rdCubit.resDashboardModel!.restaurantDisplay!.logo),
+    );
     return SizedBox(
       height: Utils.vSize(size.height * 0.22),
       child: Stack(
@@ -38,12 +39,8 @@ class _HomeHeaderState extends State<HomeHeader> {
         clipBehavior: Clip.none,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-            ),
-            decoration: const BoxDecoration(
-              color: Color(0xFFF6EEEE),
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            decoration: const BoxDecoration(color: Color(0xFFF6EEEE)),
             margin: const EdgeInsets.only(bottom: 16),
             child: Row(
               children: [
@@ -64,8 +61,12 @@ class _HomeHeaderState extends State<HomeHeader> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(50.0),
                             child: CustomImage(
-                              path: RemoteUrls.imageUrl(rdCubit
-                                  .resDashboardModel!.restaurantDisplay!.logo),
+                              path: RemoteUrls.imageUrl(
+                                rdCubit
+                                    .resDashboardModel!
+                                    .restaurantDisplay!
+                                    .logo,
+                              ),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -84,7 +85,10 @@ class _HomeHeaderState extends State<HomeHeader> {
                               fontWeight: FontWeight.w400,
                             ),
                             CustomText(
-                              text: rdCubit.resDashboardModel?.restaurantDisplay
+                              text:
+                                  rdCubit
+                                      .resDashboardModel
+                                      ?.restaurantDisplay
                                       ?.name ??
                                   'Restaurant Name',
                               color: blackColor,
@@ -100,30 +104,14 @@ class _HomeHeaderState extends State<HomeHeader> {
                 ),
                 Row(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        // Navigator.pushNamed(
-                        //     context, RouteNames.notificationScreen);
-                      },
-                      child: Container(
-                        height: 50.0,
-                        width: 50.0,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: whiteColor, width: 1.5),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Center(
-                          child: CustomImage(
-                            path: KImages.notificationIcon,
-                            height: 25,
-                          ),
-                        ),
-                      ),
-                    ),
                     Utils.horizontalSpace(8.0),
                     GestureDetector(
                       onTap: () {
-                        // Navigator.pushNamed(context, RouteNames.editFoodScreen);
+                        Navigator.pushNamed(
+                          context,
+                          RouteNames.editFoodScreen,
+                          arguments: '',
+                        );
                       },
                       child: Container(
                         height: 50.0,
@@ -133,11 +121,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                           shape: BoxShape.circle,
                         ),
                         child: const Center(
-                          child: Icon(
-                            Icons.add,
-                            size: 35,
-                            color: whiteColor,
-                          ),
+                          child: Icon(Icons.add, size: 35, color: whiteColor),
                         ),
                       ),
                     ),
@@ -158,16 +142,14 @@ class _HomeHeaderState extends State<HomeHeader> {
                 decoration: BoxDecoration(
                   color: whiteColor,
                   borderRadius: Utils.borderRadius(),
-                  border: Border.all(
-                    color: borderColor,
-                  ),
+                  border: Border.all(color: borderColor),
                   boxShadow: const [
                     BoxShadow(
                       color: Color(0x0A000000),
                       blurRadius: 40,
                       offset: Offset(0, 2),
                       spreadRadius: 10,
-                    )
+                    ),
                   ],
                 ),
                 child: Padding(
@@ -186,10 +168,14 @@ class _HomeHeaderState extends State<HomeHeader> {
                             ),
                             CustomText(
                               text: Utils.formatPrice(
-                                  context,
-                                  rdCubit.resDashboardModel?.statistics
-                                          ?.financialStatistics?.totalIncome ??
-                                      '0'),
+                                context,
+                                rdCubit
+                                        .resDashboardModel
+                                        ?.statistics
+                                        ?.financialStatistics
+                                        ?.currentBalance ??
+                                    '0',
+                              ),
                               color: blackColor,
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -198,12 +184,16 @@ class _HomeHeaderState extends State<HomeHeader> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, RouteNames.walletScreen);
+                            Navigator.pushNamed(
+                              context,
+                              RouteNames.walletScreen,
+                            );
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: primaryColor),
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: primaryColor,
+                            ),
                             child: Padding(
                               padding: Utils.symmetric(h: 10.0, v: 10.0),
                               child: Row(

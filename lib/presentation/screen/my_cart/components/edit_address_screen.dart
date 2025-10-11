@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/address/cubit/get_address_cubit.dart';
 import 'package:foodigo/features/address/cubit/get_address_state.dart';
+import 'package:foodigo/features/address/model/address_model.dart';
 import 'package:foodigo/features/address/model/address_state_model.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/custom_form.dart';
@@ -9,13 +10,12 @@ import 'package:foodigo/widget/primary_button.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:foodigo/features/address/model/address_model.dart';
+
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
 import '../../../../widget/fetch_error_text.dart';
 import 'map_pcker_screen.dart';
-
 
 class EditAddressScreen extends StatefulWidget {
   const EditAddressScreen({super.key});
@@ -25,6 +25,7 @@ class EditAddressScreen extends StatefulWidget {
 }
 
 class _EditAddressScreenState extends State<EditAddressScreen> {
+  final TextEditingController addressController = TextEditingController();
   late GetAddressCubit addAddressCubit;
   String? selectDeliveryType;
   final List<String> deliveryValue = ['home', 'office'];
@@ -34,9 +35,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     LocationPermission permission;
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Location services are disabled.')),
-      );
+      Utils.errorSnackBar(context, 'Location Service Disable');
       return;
     }
     permission = await Geolocator.checkPermission();
@@ -52,18 +51,21 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     if (permission == LocationPermission.deniedForever) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text(
-                'Location permissions are permanently denied. Please enable them in settings.')),
+          content: Text(
+            'Location permissions are permanently denied. Please enable them in settings.',
+          ),
+        ),
       );
       return;
     }
     Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium);
+      desiredAccuracy: LocationAccuracy.medium,
+    );
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) =>
-            MapPickerScreen(
+        builder:
+            (_) => MapPickerScreen(
               initialPosition: LatLng(position.latitude, position.longitude),
             ),
       ),
@@ -71,7 +73,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     if (result != null) {
       addAddressCubit.latitude(result['lat'].toString());
       addAddressCubit.longitude(result['lng'].toString());
-      addAddressCubit.address(result['address']);
+      addressController.text = result['address'];
       addAddressCubit.landMark(result['landmark']);
     }
   }
@@ -84,15 +86,19 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
   }
 
   @override
+  void dispose() {
+    addressController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final args =
-    ModalRoute
-        .of(context)!
-        .settings
-        .arguments as Map<String, dynamic>?;
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
     final isEdit = args?["isEdit"] ?? true;
     final Address? editAddress = args?["address"];
     if (isEdit && editAddress != null) {
+      selectDeliveryType = editAddress.deliveryType;
       addAddressCubit.addressType(editAddress.deliveryType);
       addAddressCubit.fullName(editAddress.name);
       addAddressCubit.email(editAddress.email);
@@ -100,203 +106,211 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
       addAddressCubit.address(editAddress.address);
       addAddressCubit.latitude(editAddress.lat);
       addAddressCubit.longitude(editAddress.lon);
-
+      addressController.text = editAddress.address ?? '';
     }
     return Scaffold(
       appBar: CustomAppBar(title: isEdit ? 'Edit Address' : 'Add Address'),
       body: Padding(
-          padding: Utils.symmetric(),
-          child: ListView(
-            children: [
-              BlocBuilder<GetAddressCubit, AddressStateModel>(
-                builder: (context, state) {
-                  final validate = state.addressState;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const CustomText(
+        padding: Utils.symmetric(),
+        child: ListView(
+          children: [
+            BlocBuilder<GetAddressCubit, AddressStateModel>(
+              builder: (context, state) {
+                final validate = state.addressState;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CustomText(
+                      text: 'Delivery Type',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    Utils.verticalSpace(4),
+                    DropdownButtonFormField<String>(
+                      dropdownColor: whiteColor,
+                      value: selectDeliveryType,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 14,
+                        ),
+                      ),
+                      hint: const CustomText(
                         text: 'Delivery Type',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        color: lightGrayColor,
                       ),
-                      Utils.verticalSpace(4),
-                      DropdownButtonFormField<String>(
-                        dropdownColor: whiteColor,
-                        value: selectDeliveryType,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 14,
-                          ),
-                        ),
-                        hint: const CustomText(
-                            text: 'Delivery Type', color: lightGrayColor),
-                        items: deliveryValue.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: CustomText(text: value, fontSize: 14),
-                          );
-                        }).toList(),
-                        onChanged: (newValue) {
-                          addAddressCubit.addressType(newValue!);
-                        },
-                        validator: (value) =>
-                        value == null ? 'Please select an option' : null,
-                      ),
-                      if (validate is UpdateAddressFormValidate) ...[
-                        if (validate.errors.addressType.isNotEmpty)
-                          FetchErrorText(
-                              text: validate.errors.addressType.first),
-                      ]
+                      items:
+                          deliveryValue.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: CustomText(text: value, fontSize: 14),
+                            );
+                          }).toList(),
+                      onChanged: (newValue) {
+                        setState(() => selectDeliveryType = newValue);
+                        addAddressCubit.addressType(newValue!);
+                      },
+                      validator:
+                          (value) =>
+                              value == null ? 'Please select an option' : null,
+                    ),
+                    if (validate is UpdateAddressFormValidate) ...[
+                      if (validate.errors.addressType.isNotEmpty)
+                        FetchErrorText(text: validate.errors.addressType.first),
                     ],
-                  );
-                },
-              ),
-              Utils.verticalSpace(14),
-              BlocBuilder<GetAddressCubit, AddressStateModel>(
-                builder: (context, state) {
-                  final validate = state.addressState;
-                  return Column(
-                    children: [
-                      CustomFormWidget(
-                        label: 'Full Name',
-                        bottomSpace: 14.0,
-                        child: TextFormField(
-                          initialValue: state.name,
-                          onChanged: addAddressCubit.fullName,
-                          decoration: const InputDecoration(
-                            fillColor: Color(0xffF8FAFC),
-                            filled: true,
-                            hintText: 'full name',
-                          ),
-                          validator: FormBuilderValidators.compose([
-                            FormBuilderValidators.required(
-                              errorText: 'Enter Name',
-                            )
-                          ]),
+                  ],
+                );
+              },
+            ),
+            Utils.verticalSpace(14),
+            BlocBuilder<GetAddressCubit, AddressStateModel>(
+              builder: (context, state) {
+                final validate = state.addressState;
+
+                return Column(
+                  children: [
+                    CustomFormWidget(
+                      label: 'Full Name',
+                      bottomSpace: 14.0,
+                      child: TextFormField(
+                        initialValue: state.name,
+                        onChanged: addAddressCubit.fullName,
+                        decoration: const InputDecoration(
+                          fillColor: Color(0xffF8FAFC),
+                          filled: true,
+                          hintText: 'full name',
                         ),
-                      ),
-                      if (validate is UpdateAddressFormValidate) ...[
-                        if (validate.errors.name.isNotEmpty)
-                          FetchErrorText(text: validate.errors.name.first),
-                      ]
-                    ],
-                  );
-                },
-              ),
-              BlocBuilder<GetAddressCubit, AddressStateModel>(
-                builder: (context, state) {
-                  final validate = state.addressState;
-                  return Column(
-                    children: [
-                      CustomFormWidget(
-                        label: 'Email',
-                        bottomSpace: 14.0,
-                        child: TextFormField(
-                          initialValue: state.email,
-                          onChanged: addAddressCubit.email,
-                          decoration: const InputDecoration(
-                            fillColor: Color(0xffF8FAFC),
-                            filled: true,
-                            hintText: 'email',
+                        validator: FormBuilderValidators.compose([
+                          FormBuilderValidators.required(
+                            errorText: 'Enter Name',
                           ),
-                          validator: FormBuilderValidators.compose([
-                            FormBuilderValidators.required(
-                              errorText: 'Enter Email',
-                            )
-                          ]),
-                        ),
+                        ]),
                       ),
-                      if (validate is UpdateAddressFormValidate) ...[
-                        if (validate.errors.email.isNotEmpty)
-                          FetchErrorText(text: validate.errors.email.first),
-                      ]
+                    ),
+                    if (validate is UpdateAddressFormValidate) ...[
+                      if (validate.errors.name.isNotEmpty)
+                        FetchErrorText(text: validate.errors.name.first),
                     ],
-                  );
-                },
-              ),
-              BlocBuilder<GetAddressCubit, AddressStateModel>(
-                builder: (context, state) {
-                  final validate = state.addressState;
-                  return Column(
-                    children: [
-                      CustomFormWidget(
-                        label: 'Phone',
-                        bottomSpace: 14.0,
-                        child: TextFormField(
-                          keyboardType: TextInputType.phone,
-                          initialValue: state.phone,
-                          onChanged: addAddressCubit.phone,
-                          decoration: const InputDecoration(
-                            fillColor: Color(0xffF8FAFC),
-                            filled: true,
-                            hintText: 'phone',
+                  ],
+                );
+              },
+            ),
+            BlocBuilder<GetAddressCubit, AddressStateModel>(
+              builder: (context, state) {
+                final validate = state.addressState;
+                return Column(
+                  children: [
+                    CustomFormWidget(
+                      label: 'Email',
+                      bottomSpace: 14.0,
+                      child: TextFormField(
+                        initialValue: state.email,
+                        onChanged: addAddressCubit.email,
+                        decoration: const InputDecoration(
+                          fillColor: Color(0xffF8FAFC),
+                          filled: true,
+                          hintText: 'email',
+                        ),
+                        validator: FormBuilderValidators.compose([
+                          FormBuilderValidators.required(
+                            errorText: 'Enter Email',
                           ),
-                          validator: FormBuilderValidators.compose([
-                            FormBuilderValidators.required(
-                              errorText: 'Enter Phone number',
-                            )
-                          ]),
-                        ),
+                        ]),
                       ),
-                      if (validate is UpdateAddressFormValidate) ...[
-                        if (validate.errors.phone.isNotEmpty)
-                          FetchErrorText(text: validate.errors.phone.first),
-                      ]
+                    ),
+                    if (validate is UpdateAddressFormValidate) ...[
+                      if (validate.errors.email.isNotEmpty)
+                        FetchErrorText(text: validate.errors.email.first),
                     ],
-                  );
-                },
-              ),
-              BlocBuilder<GetAddressCubit, AddressStateModel>(
-                builder: (context, state) {
-                  final validate = state.addressState;
-                  return Column(
-                    children: [
-                      CustomFormWidget(
-                        label: 'Address',
-                        bottomSpace: 14.0,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                key: ValueKey(state.address),
-                                initialValue: state.address,
-                                onChanged: addAddressCubit.address,
-                                readOnly: true,
-                                decoration: const InputDecoration(
-                                  fillColor: Color(0xffF8FAFC),
-                                  filled: true,
-                                  hintText: 'Select Address on Map',
-                                ),
-                                validator: FormBuilderValidators.compose([
-                                  FormBuilderValidators.required(
-                                    errorText: 'Enter Address',
-                                  )
-                                ]),
+                  ],
+                );
+              },
+            ),
+            BlocBuilder<GetAddressCubit, AddressStateModel>(
+              builder: (context, state) {
+                final validate = state.addressState;
+                return Column(
+                  children: [
+                    CustomFormWidget(
+                      label: 'Phone',
+                      bottomSpace: 14.0,
+                      child: TextFormField(
+                        keyboardType: TextInputType.phone,
+                        initialValue: state.phone,
+                        onChanged: addAddressCubit.phone,
+                        decoration: const InputDecoration(
+                          fillColor: Color(0xffF8FAFC),
+                          filled: true,
+                          hintText: 'phone',
+                        ),
+                        validator: FormBuilderValidators.compose([
+                          FormBuilderValidators.required(
+                            errorText: 'Enter Phone number',
+                          ),
+                        ]),
+                      ),
+                    ),
+                    if (validate is UpdateAddressFormValidate) ...[
+                      if (validate.errors.phone.isNotEmpty)
+                        FetchErrorText(text: validate.errors.phone.first),
+                    ],
+                  ],
+                );
+              },
+            ),
+            BlocBuilder<GetAddressCubit, AddressStateModel>(
+              builder: (context, state) {
+                final validate = state.addressState;
+
+                print("state address: ${state.address}");
+                return Column(
+                  children: [
+                    CustomFormWidget(
+                      label: 'Address',
+                      bottomSpace: 14.0,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              // key: ValueKey(state.address),
+                              // initialValue: state.address,
+                              controller: addressController,
+                              onChanged: addAddressCubit.address,
+                              decoration: const InputDecoration(
+                                fillColor: Color(0xffF8FAFC),
+                                filled: true,
+                                hintText: 'Select Address on Map',
                               ),
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required(
+                                  errorText: 'Enter Address',
+                                ),
+                              ]),
                             ),
-                            IconButton(
-                              onPressed: () async {
-                                await pickLocation();
-                              },
-                              icon: const Icon(Icons.location_on),
-                            ),
-                          ],
-                        ),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              await pickLocation();
+                            },
+                            icon: const Icon(Icons.location_on),
+                          ),
+                        ],
                       ),
-                      if (validate is UpdateAddressFormValidate) ...[
-                        if (validate.errors.address.isNotEmpty)
-                          FetchErrorText(text: validate.errors.address.first),
-                      ]
+                    ),
+                    if (validate is UpdateAddressFormValidate) ...[
+                      if (validate.errors.address.isNotEmpty)
+                        FetchErrorText(text: validate.errors.address.first),
                     ],
-                  );
-                },
-              ),
-            ],
-          )),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
       bottomNavigationBar: Padding(
         padding: Utils.symmetric(v: 20.0),
         child: PrimaryButton(
@@ -307,7 +321,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
             } else {
               addAddressCubit.addAddress();
             }
-            addAddressCubit.clearForm();
+            // addAddressCubit.clearForm();
             Navigator.pop(context);
           },
         ),
@@ -315,4 +329,3 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     );
   }
 }
-

@@ -5,7 +5,7 @@ import '../my_menu/my_menu_screen.dart';
 import '../my_order/my_order_screen.dart';
 import '../profile/profile_screen.dart';
 import 'component/bottom_navigation_bar copy.dart';
-import 'component/main_controller.dart';
+import 'component/restaurant_main_controller.dart';
 
 
 class RestaurantMainScreen extends StatefulWidget {
@@ -16,7 +16,7 @@ class RestaurantMainScreen extends StatefulWidget {
 }
 
 class _RestaurantMainScreenState extends State<RestaurantMainScreen> {
-  final _homeController = MainController();
+  final _homeController = RestaurantMainController();
   late List<Widget> screenList;
 
   @override

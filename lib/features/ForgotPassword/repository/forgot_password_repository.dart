@@ -9,21 +9,26 @@ abstract class ForgotPasswordRepository {
   Future<Either<dynamic, String>> forgotPassword(Map<String, dynamic> body);
 
   Future<Either<dynamic, String>> resetPassword(
-      ForgotPasswordStateModel body, String email, String otp);
-  Future<Either<dynamic, String>> verifyRegOtp(
-      ForgotPasswordStateModel body, String email);
+    ForgotPasswordStateModel body,
+    String email,
+    String otp,
+  );
+
+  Future<Either<dynamic, String>> verifyForgotOtp(
+    ForgotPasswordStateModel body,
+    String email,
+  );
 }
 
 class ForgotPasswordRepositoryImpl implements ForgotPasswordRepository {
   final ForgotPasswordRemoteDataSource remoteDataSource;
 
-  const ForgotPasswordRepositoryImpl({
-    required this.remoteDataSource,
-  });
+  const ForgotPasswordRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<Either<dynamic, String>> forgotPassword(
-      Map<String, dynamic> body) async {
+    Map<String, dynamic> body,
+  ) async {
     try {
       final result = await remoteDataSource.forgotPassword(body);
       return Right(result);
@@ -36,7 +41,10 @@ class ForgotPasswordRepositoryImpl implements ForgotPasswordRepository {
 
   @override
   Future<Either<dynamic, String>> resetPassword(
-      ForgotPasswordStateModel body, String email, String otp) async {
+    ForgotPasswordStateModel body,
+    String email,
+    String otp,
+  ) async {
     try {
       final result = await remoteDataSource.resetPassword(body, email, otp);
       return Right(result);
@@ -48,11 +56,13 @@ class ForgotPasswordRepositoryImpl implements ForgotPasswordRepository {
   }
 
   @override
-  Future<Either<dynamic, String>> verifyRegOtp(
-      ForgotPasswordStateModel body, String email) async {
+  Future<Either<dynamic, String>> verifyForgotOtp(
+    ForgotPasswordStateModel body,
+    String email,
+  ) async {
     try {
-      final result = await remoteDataSource.otpVerify(body, email);
-      return Right(result['message']);
+      final result = await remoteDataSource.forgotOtpVerify(body, email);
+      return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
     } on InvalidAuthData catch (e) {

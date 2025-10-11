@@ -5,6 +5,7 @@ import 'package:foodigo/utils/constraints.dart';
 import 'package:foodigo/widget/custom_text_style.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
+
 import '../../../../features/restaurant_features/Addons/cubit/res_addons_cubit.dart';
 import '../../../../features/restaurant_features/Addons/cubit/res_addons_state.dart';
 import '../../../../features/restaurant_features/Addons/model/res_addon_state_model.dart';
@@ -29,6 +30,9 @@ class _CategoryInfoWidgetState extends State<CategoryInfoWidget> {
   void initState() {
     super.initState();
     stCubit = context.read<StoreProductCubit>();
+
+    // Initialize selected category from the cubit’s state (for edit/update)
+    selectedCategoryValue = stCubit.state.categoryId;
   }
 
   @override
@@ -45,30 +49,41 @@ class _CategoryInfoWidgetState extends State<CategoryInfoWidget> {
                 final categories = catState.categoryModel.resCategories;
                 return DropdownButtonFormField<String>(
                   hint: const Text('Select Category'),
-                  value: categories?.any((cat) =>
-                              cat.id.toString() == selectedCategoryValue) ==
-                          true
-                      ? selectedCategoryValue
-                      : null,
+                  value:
+                      selectedCategoryValue != null &&
+                              categories!.any(
+                                (cat) =>
+                                    cat.id.toString() == selectedCategoryValue,
+                              )
+                          ? selectedCategoryValue
+                          : null,
                   isExpanded: true,
                   onChanged: (value) {
-                    stCubit.category(value!);
+                    setState(() {
+                      selectedCategoryValue = value!;
+                    });
+                    stCubit.category(value!); // update cubit state too
                   },
-                  items: categories?.map<DropdownMenuItem<String>>((cat) {
-                    return DropdownMenuItem(
-                      value: cat.id.toString(),
-                      child: Text(cat.name),
-                    );
-                  }).toList(),
+                  items:
+                      categories?.map<DropdownMenuItem<String>>((cat) {
+                        return DropdownMenuItem(
+                          value: cat.id.toString(),
+                          child: Text(cat.name),
+                        );
+                      }).toList(),
                 );
               } else if (catState is ResCategoriesError) {
-                return Text(catState.message,
-                    style: const TextStyle(color: Colors.red));
+                return Text(
+                  catState.message,
+                  style: const TextStyle(color: Colors.red),
+                );
               }
               return const SizedBox();
             },
           ),
+
           Utils.verticalSpace(12),
+
           BlocBuilder<ResAddonsCubit, ResAddonStateModel>(
             builder: (context, addonState) {
               if (addonState.resAddonsState is ResAddonsLoaded) {
@@ -79,27 +94,23 @@ class _CategoryInfoWidgetState extends State<CategoryInfoWidget> {
                   dialogWidth: 350.w,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6.r),
-                    border: Border.all(
-                      color: borderColor,
-                    ),
+                    border: Border.all(color: borderColor),
                   ),
-                  items: addons
-                      .map(
-                        (addon) => MultiSelectItem(
-                          addon.id.toString(),
-                          addon.name ?? "Unnamed",
-                        ),
-                      )
-                      .toList(),
-                  title: const CustomText(
-                    text: "Select Addons",
-                    fontSize: 18,
-                  ),
+                  items:
+                      addons
+                          .map(
+                            (addon) => MultiSelectItem(
+                              addon.id.toString(),
+                              addon.name,
+                            ),
+                          )
+                          .toList(),
+                  title: const CustomText(text: "Select Addons", fontSize: 18),
                   buttonText: const Text(
                     "Select Addons",
                     style: TextStyle(
-                      color: Colors.black, // text color
-                      fontSize: 16, // text size
+                      color: Colors.black,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -132,6 +143,7 @@ class _CategoryInfoWidgetState extends State<CategoryInfoWidget> {
               return const SizedBox();
             },
           ),
+
           Utils.verticalSpace(12),
         ],
       ),

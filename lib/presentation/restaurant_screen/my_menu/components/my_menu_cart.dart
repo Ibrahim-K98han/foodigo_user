@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/features/restaurant_features/Products/cubit/product_cubit.dart';
 
 import '../../../../data/remote_url.dart';
 import '../../../../features/restaurant_features/Products/model/product_model.dart';
@@ -21,6 +22,7 @@ class MyMenuCart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final storeProduct = context.read<StoreProductCubit>();
+    final pCubit = context.read<ProductCubit>();
     return GestureDetector(
       onTap: () {
         // Navigator.pushNamed(context, RouteNames.productDetailsScreen);
@@ -70,8 +72,9 @@ class MyMenuCart extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10.r),
-                      topRight: Radius.circular(10.r)),
+                    topLeft: Radius.circular(10.r),
+                    topRight: Radius.circular(10.r),
+                  ),
                   child: CustomImage(
                     path: RemoteUrls.imageUrl(productList.image!),
                     fit: BoxFit.fill,
@@ -80,7 +83,7 @@ class MyMenuCart extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  top: 10.h,
+                  top: 6.h,
                   right: 10.w,
                   child: Row(
                     children: [
@@ -94,43 +97,90 @@ class MyMenuCart extends StatelessWidget {
                         },
                         child: Container(
                           decoration: const BoxDecoration(
-                              color: whiteColor, shape: BoxShape.circle),
+                            color: whiteColor,
+                            shape: BoxShape.circle,
+                          ),
                           child: Padding(
-                            padding: Utils.all(value: 4.0),
-                            child: const Center(
-                                child: CustomImage(
-                              path: KImages.editIcon,
-                              width: 16,
-                              height: 16,
-                              color: redColor,
-                            )),
+                            padding: Utils.all(value: 8.0),
+                            child: Center(
+                              child: CustomImage(
+                                path: KImages.editIcon,
+                                width: 14.w,
+                                height: 14.h,
+                                color: redColor,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                      Utils.horizontalSpace(4.w),
+                      Utils.horizontalSpace(12.w),
                       GestureDetector(
                         onTap: () {
-                          storeProduct
-                              .deleteStoreProduct(productList.id.toString());
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const CustomText(
+                                  text: 'Delete Product',
+                                  fontSize: 18,
+                                ),
+                                content: const CustomText(
+                                  text:
+                                      'Are you sure you want to delete this product?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const CustomText(
+                                      text: 'Cancel',
+                                      color: textColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      storeProduct.deleteStoreProduct(
+                                        productList.id.toString(),
+                                      );
+                                      Navigator.of(context).pop();
+                                      await pCubit.getProduct();
+                                    },
+                                    child: const CustomText(
+                                      text: 'Delete',
+                                      fontSize: 16,
+                                      color: redColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
                         child: Container(
                           decoration: const BoxDecoration(
-                              color: whiteColor, shape: BoxShape.circle),
+                            color: whiteColor,
+                            shape: BoxShape.circle,
+                          ),
                           child: Padding(
-                            padding: Utils.all(value: 4.0),
-                            child: const Center(
-                                child: CustomImage(
-                              path: KImages.deleteIcon,
-                              width: 16,
-                              height: 16,
-                              color: redColor,
-                            )),
+                            padding: Utils.all(value: 8.0),
+                            child: Center(
+                              child: CustomImage(
+                                path: KImages.deleteIcon,
+                                width: 14.w,
+                                height: 14.h,
+                                color: redColor,
+                              ),
+                            ),
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
             Padding(
@@ -144,7 +194,10 @@ class MyMenuCart extends StatelessWidget {
                     // Add space between price and rating
                     children: [
                       CustomText(
-                        text: Utils.formatPrice(context, productList.price!),
+                        text: Utils.formatPrice(
+                          context,
+                          productList.offerPrice!,
+                        ),
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: redColor,
@@ -154,9 +207,11 @@ class MyMenuCart extends StatelessWidget {
                           const CustomImage(path: KImages.star),
                           Utils.horizontalSpace(4.0),
                           CustomText(
-                            text: productList.reviews!.isNotEmpty
-                                ? productList.reviews!.first.rating.toString()
-                                : "0.0",
+                            text:
+                                productList.reviews!.isNotEmpty
+                                    ? productList.reviews!.first.rating
+                                        .toString()
+                                    : "0.0",
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
                           ),

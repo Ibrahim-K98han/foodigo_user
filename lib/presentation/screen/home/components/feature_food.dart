@@ -16,8 +16,11 @@ import '../../../../widget/title_and_navigator.dart';
 import '../../../core/routes/route_names.dart';
 
 class FeatureFood extends StatelessWidget {
-  const FeatureFood(
-      {super.key, required this.featuredProducts, required this.restaurant});
+  const FeatureFood({
+    super.key,
+    required this.featuredProducts,
+    required this.restaurant,
+  });
 
   final List<FeaturedProducts> featuredProducts;
   final List<Restaurants> restaurant;
@@ -54,12 +57,8 @@ class FeatureFood extends StatelessWidget {
                         backgroundColor: whiteColor,
                         constraints: BoxConstraints.loose(
                           Size(
-                            Utils
-                                .mediaQuery(context)
-                                .width,
-                            Utils
-                                .mediaQuery(context)
-                                .height * 0.9,
+                            Utils.mediaQuery(context).width,
+                            Utils.mediaQuery(context).height * 0.9,
                           ),
                         ),
                         isScrollControlled: true,
@@ -69,8 +68,8 @@ class FeatureFood extends StatelessWidget {
                             topRight: Radius.circular(Utils.radius(10.0)),
                           ),
                         ),
-                        builder: (context) =>
-                            DraggableScrollableSheet(
+                        builder:
+                            (context) => DraggableScrollableSheet(
                               initialChildSize: 0.85,
                               minChildSize: 0.5,
                               maxChildSize: 0.95,
@@ -88,7 +87,7 @@ class FeatureFood extends StatelessWidget {
                     },
                   ),
                 );
-              })
+              }),
             ],
           ),
         ),
@@ -98,10 +97,12 @@ class FeatureFood extends StatelessWidget {
 }
 
 class FeatureFoodCart extends StatefulWidget {
-  const FeatureFoodCart({super.key,
+  const FeatureFoodCart({
+    super.key,
     required this.featuredProducts,
     this.onTap,
-    required this.restaurants});
+    required this.restaurants,
+  });
 
   final FeaturedProducts featuredProducts;
   final Restaurants restaurants;
@@ -120,8 +121,10 @@ class _FeatureFoodCartState extends State<FeatureFoodCart> {
   void initState() {
     super.initState();
     wishList = context.read<WishListCubit>();
-    isFavorite = wishList.wishListModel?.data?.wishlistItems
-        ?.any((item) => item.product?.id == widget.featuredProducts.id) ??
+    isFavorite =
+        wishList.wishListModel?.data?.wishlistItems?.any(
+          (item) => item.product?.id == widget.featuredProducts.id,
+        ) ??
         false;
   }
 
@@ -132,8 +135,8 @@ class _FeatureFoodCartState extends State<FeatureFoodCart> {
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
-        height: size.height * 0.34.h,
-        width: 240.0,
+        height: size.height * 0.35.h,
+        width: 240.w,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
           color: whiteColor,
@@ -146,8 +149,9 @@ class _FeatureFoodCartState extends State<FeatureFoodCart> {
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10.0),
-                      topRight: Radius.circular(10.0)),
+                    topLeft: Radius.circular(10.0),
+                    topRight: Radius.circular(10.0),
+                  ),
                   child: CustomImage(
                     path: RemoteUrls.imageUrl(widget.featuredProducts.image),
                     fit: BoxFit.cover,
@@ -165,12 +169,16 @@ class _FeatureFoodCartState extends State<FeatureFoodCart> {
                       if (isFavorite) {
                         // Remove from wishlist
                         final wishlistItem = wishList
-                            .wishListModel?.data?.wishlistItems
+                            .wishListModel
+                            ?.data
+                            ?.wishlistItems
                             ?.firstWhere(
-                                (item) => item.product?.id == productId);
+                              (item) => item.product?.id == productId,
+                            );
                         if (wishlistItem != null) {
-                          await wishList
-                              .removeFromWishList(wishlistItem.wishlistId);
+                          await wishList.removeFromWishList(
+                            wishlistItem.wishlistId,
+                          );
                         }
                       } else {
                         // Add to wishlist
@@ -201,7 +209,7 @@ class _FeatureFoodCartState extends State<FeatureFoodCart> {
                       ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
             Expanded(
@@ -216,7 +224,7 @@ class _FeatureFoodCartState extends State<FeatureFoodCart> {
                       // Add space between price and rating
                       children: [
                         CustomText(
-                          text: '\$${widget.featuredProducts.price}',
+                          text: '\$${widget.featuredProducts.offerPrice}',
                           fontSize: 16.sp,
                           color: redColor,
                           fontWeight: FontWeight.w700,
@@ -228,14 +236,16 @@ class _FeatureFoodCartState extends State<FeatureFoodCart> {
                             Row(
                               children: [
                                 CustomText(
-                                  text:
-                                  widget.featuredProducts.reviewsAvgRating,
+                                  text: Utils.formatRating(
+                                    context,
+                                    widget.featuredProducts.reviewsAvgRating,
+                                  ),
                                   fontWeight: FontWeight.w600,
                                   fontSize: 13.sp,
                                 ),
                                 CustomText(
                                   text:
-                                  ' (${widget.featuredProducts.reviewsCount})',
+                                      ' (${widget.featuredProducts.reviewsCount})',
                                   fontWeight: FontWeight.w600,
                                   fontSize: 13.sp,
                                   color: blackColor.withOpacity(0.4),
@@ -252,7 +262,6 @@ class _FeatureFoodCartState extends State<FeatureFoodCart> {
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                       color: settingsIconBgColor,
-                      height: 1.0.h,
                       maxLine: 2,
                     ),
                     Utils.verticalSpace(6.0),
@@ -260,7 +269,9 @@ class _FeatureFoodCartState extends State<FeatureFoodCart> {
                       children: [
                         CustomImage(
                           path: KImages.location,
-                          height: 20.h,
+                          width: 16.w,
+                          height: 16.h,
+                          fit: BoxFit.cover,
                           color: blackColor.withOpacity(0.4),
                         ),
                         Utils.horizontalSpace(6.0),
@@ -275,7 +286,10 @@ class _FeatureFoodCartState extends State<FeatureFoodCart> {
                     Utils.verticalSpace(6.0),
                     Row(
                       children: [
-                         CustomImage(path: RemoteUrls.imageUrl(widget.restaurants.logo), height: 20),
+                        CustomImage(
+                          path: RemoteUrls.imageUrl(widget.restaurants.logo),
+                          height: 20,
+                        ),
                         Utils.horizontalSpace(6.0),
                         CustomText(
                           text: widget.restaurants.restaurantName,

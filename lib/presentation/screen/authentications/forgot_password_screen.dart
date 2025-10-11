@@ -39,12 +39,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: AppBar(
-        title: const CustomImage(
-          path: KImages.logo,
-          height: 30,
-        ),
-      ),
+      appBar: AppBar(title: const CustomImage(path: KImages.logo, height: 30)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
@@ -78,19 +73,21 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                   Utils.verticalSpace(24),
                   const Center(
-                      child: CustomImage(
-                    path: KImages.passwordImage,
-                    height: 160,
-                  )),
+                    child: CustomImage(
+                      path: KImages.passwordImage,
+                      height: 160,
+                    ),
+                  ),
                   Utils.verticalSpace(24),
                   BlocBuilder<ForgotPasswordCubit, ForgotPasswordStateModel>(
                     builder: (context, state) {
                       final validate = state.passwordState;
                       return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomFormWidget(
                             label: 'Email',
-                            bottomSpace: 16.0,
+                            bottomSpace: 4.0,
                             child: TextFormField(
                               initialValue: state.email,
                               onChanged: fpCubit.changeEmail,
@@ -110,7 +107,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           if (validate is ForgotPasswordFormValidateError) ...[
                             if (validate.errors.email.isNotEmpty)
                               FetchErrorText(text: validate.errors.email.first),
-                          ]
+                          ],
                         ],
                       );
                     },

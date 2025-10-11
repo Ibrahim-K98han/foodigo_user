@@ -9,7 +9,6 @@ import 'package:foodigo/utils/constraints.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 
-import '../../../features/ForgotPassword/cubit/forgot_password_cubit.dart';
 import '../../../utils/k_images.dart';
 import '../../../utils/utils.dart';
 import '../../../widget/custom_image.dart';
@@ -37,13 +36,10 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     final email = rCubit.state.email;
+    print('register email $email');
+
     return Scaffold(
-      appBar: AppBar(
-        title: const CustomImage(
-          path: KImages.logo,
-          height: 30,
-        ),
-      ),
+      appBar: AppBar(title: const CustomImage(path: KImages.logo, height: 30)),
       body: BlocListener<RegisterCubit, RegisterStateModel>(
         listener: (context, state) {
           final otp = state.registerState;
@@ -86,8 +82,8 @@ class _OtpScreenState extends State<OtpScreen> {
                     Center(
                       child: Pinput(
                         length: 6,
-                        separatorBuilder: (index) =>
-                            SizedBox(width: Utils.hSize(12.0)),
+                        separatorBuilder:
+                            (index) => SizedBox(width: Utils.hSize(12.0)),
                         defaultPinTheme: PinTheme(
                           height: Utils.vSize(60.0),
                           width: Utils.hSize(60.0),
@@ -105,6 +101,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         ),
                         onChanged: (String code) {
                           rCubit.otpChange(code);
+                          print('register code:$code');
                         },
                         onCompleted: (String code) {
                           rCubit.verifyRegOtp(email);
@@ -126,7 +123,9 @@ class _OtpScreenState extends State<OtpScreen> {
                           GestureDetector(
                             onTap: () {
                               Navigator.pushNamed(
-                                  context, RouteNames.authenticationScreen);
+                                context,
+                                RouteNames.authenticationScreen,
+                              );
                             },
                             child: const CustomText(
                               text: 'Sign In',
@@ -167,9 +166,7 @@ class _OtpScreenState extends State<OtpScreen> {
             color: primaryColor,
             fontWeight: FontWeight.w600,
           ),
-          endTime: DateTime.now().add(
-            const Duration(seconds: 30),
-          ),
+          endTime: DateTime.now().add(const Duration(seconds: 30)),
           onEnd: () {
             print('finish');
             setState(() => finishTime = false);
@@ -181,7 +178,9 @@ class _OtpScreenState extends State<OtpScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           const CustomText(
-              text: 'Don\'t get verification code', fontSize: 14.0),
+            text: 'Don\'t get verification code',
+            fontSize: 14.0,
+          ),
           GestureDetector(
             onTap: () => rCubit.resendVerificationCode(),
             child: const CustomText(

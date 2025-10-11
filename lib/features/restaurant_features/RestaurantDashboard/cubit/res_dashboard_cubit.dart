@@ -18,7 +18,6 @@ class ResDashboardCubit extends Cubit<ResDashboardState> {
 
   ResDashboardModel? resDashboardModel;
 
-  ///Show Review
   Future<void> getDashboardData() async {
     emit(const ResDashboardLoading());
     final result = await _repository

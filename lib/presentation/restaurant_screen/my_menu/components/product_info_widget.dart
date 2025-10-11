@@ -21,9 +21,10 @@ class _ProductInfoWidgetState extends State<ProductInfoWidget> {
     super.initState();
     stCubit = context.read<StoreProductCubit>();
   }
+
   @override
   Widget build(BuildContext context) {
-    return  UpdateProductTile(
+    return UpdateProductTile(
       title: 'Product Info',
       widget: Column(
         children: [
@@ -63,8 +64,8 @@ class _ProductInfoWidgetState extends State<ProductInfoWidget> {
                 label: 'Description',
                 child: TextFormField(
                   initialValue: state.shortDescription,
-                  maxLines: 4,
                   onChanged: stCubit.description,
+                  maxLines: 4,
                   decoration: const InputDecoration(
                     hintText: 'Enter Description',
                   ),

@@ -52,10 +52,13 @@ class RemoteUrls {
   static const String forgotPassword = '${baseUrl}auth/forgot-password';
   static const String resetPassword = '${baseUrl}auth/reset-password';
   static const String applyCoupon = '${baseUrl}cart/coupon/apply';
-  static const String getAllPaymentMethod = '${baseUrl}checkout/payment-methods';
+  static const String getAllPaymentMethod =
+      '${baseUrl}checkout/payment-methods';
   static const String splashScreen = '${baseUrl}home/splash-screen';
   static const String changeProfilePass = '${baseUrl}auth/change-password';
-
+  static const String privacyPolicy = '${baseUrl}home/privacy-policy';
+  static const String termsAndCondition = '${baseUrl}home/terms-conditions';
+  static const String offerAndReward = '${baseUrl}home/offers';
   static const String payWithBank = '${baseUrl}payment/bank';
   static const String payWithStripe = '${rootUrl}payment-api/pay-with-stripe';
 
@@ -65,23 +68,35 @@ class RemoteUrls {
   static const String getRestaurantDashboard = '${baseUrl}restaurant/dashboard';
   static const String getProduct = '${baseUrl}restaurant/product/product-list';
   static const String getAllOrder = '${baseUrl}restaurant/order/order-list';
-  static String getOrderDetails(String id) => '${baseUrl}restaurant/order/detail/$id';
-  static const String getCategoryList = '${baseUrl}restaurant/category/category-list';
+  static String getOrderDetails(String id) =>
+      '${baseUrl}restaurant/order/detail/$id';
+  static const String getCategoryList =
+      '${baseUrl}restaurant/category/category-list';
   static const String storeProduct = '${baseUrl}restaurant/product/store';
-  static String editProduct(String id) => '${baseUrl}restaurant/product/edit/$id';
-  static String updateStoreProduct(String id) => '${baseUrl}restaurant/product/update/$id';
-  static String deleteStoreProduct(String id) => '${baseUrl}restaurant/product/delete/$id';
-  static const String getRestaurantProfile = '${baseUrl}restaurant/profile/edit';
-  static const String updateRestaurantProfile = '${baseUrl}restaurant/profile/update';
+  static String editProduct(String id) =>
+      '${baseUrl}restaurant/product/edit/$id';
+  static String updateStoreProduct(String id) =>
+      '${baseUrl}restaurant/product/update/$id';
+  static String deleteStoreProduct(String id) =>
+      '${baseUrl}restaurant/product/delete/$id';
+  static const String getRestaurantProfile =
+      '${baseUrl}restaurant/profile/edit';
+  static const String updateRestaurantProfile =
+      '${baseUrl}restaurant/profile/update';
   static const String getAddon = '${baseUrl}restaurant/addon/addon-list';
   static String editAddon(String id) => '${baseUrl}restaurant/addon/edit/$id';
   static const String storeAddon = '${baseUrl}restaurant/addon/store';
-  static String deleteAddon(String id) => '${baseUrl}restaurant/addon/delete/$id';
-  static String updateAddon(String id) => '${baseUrl}restaurant/addon/update/$id';
-  static const String restaurantPassChange = '${baseUrl}restaurant/profile/change-password';
+  static String deleteAddon(String id) =>
+      '${baseUrl}restaurant/addon/delete/$id';
+  static String updateAddon(String id) =>
+      '${baseUrl}restaurant/addon/update/$id';
+  static const String restaurantPassChange =
+      '${baseUrl}restaurant/profile/change-password';
   static const String getEarning = '${baseUrl}restaurant/withdraw/my-withdraw';
   static const String getWithdraw = '${baseUrl}restaurant/withdraw/create';
   static const String withdrawStore = '${baseUrl}restaurant/withdraw/store';
+  static String changeOrderStatus(String id) =>
+      '${baseUrl}restaurant/order/status/change/$id';
 
   static imageUrl(String imageUrl) => rootUrl + imageUrl;
 }

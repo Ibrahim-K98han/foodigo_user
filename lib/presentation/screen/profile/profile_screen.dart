@@ -7,7 +7,6 @@ import 'package:foodigo/presentation/core/routes/route_names.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 
 import '../../../data/remote_url.dart';
-import '../../../features/GetProfile/cubit/get_profile_state.dart';
 import '../../../features/Login/bloc/login_event.dart';
 import '../../../features/Login/model/login_state_model.dart';
 import '../../../utils/constraints.dart';
@@ -62,29 +61,49 @@ class ProfileScreen extends StatelessWidget {
                 title: "Privacy Policy",
                 icon: KImages.help,
                 onTap: () {
-                  // Navigator.pushNamed(context, RouteNames.faqScreen);
+                  Navigator.pushNamed(context, RouteNames.privacyPolicyScreen);
                 },
               ),
+              DrawerItem(
+                title: "Terms & Condition",
+                icon: KImages.help,
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.termsAndConditionScreen,
+                  );
+                },
+              ),
+              // DrawerItem(
+              //   title: "Offer & Reward",
+              //   icon: KImages.help,
+              //   onTap: () {
+              //     Navigator.pushNamed(context, RouteNames.offerAndRewardScreen);
+              //   },
+              // ),
+
               // DrawerItem(
               // title: "Order Status",
               // icon: KImages.time_square,
               // onTap: () {
               //   // Navigator.pushNamed(context, RouteNames.faqScreen);
               // }),
-              DrawerItem(
-                title: "Language",
-                icon: KImages.language,
-                onTap: () {
-                  Navigator.pushNamed(context, RouteNames.languageScreen);
-                },
-              ),
-              DrawerItem(
-                title: "Offers & Rewards",
-                icon: KImages.offers,
-                onTap: () {
-                  // Navigator.pushNamed(context, RouteNames.languageScreen);
-                },
-              ),
+
+              // DrawerItem(
+              //   title: "Language",
+              //   icon: KImages.language,
+              //   onTap: () {
+              //     Navigator.pushNamed(context, RouteNames.languageScreen);
+              //   },
+              // ),
+
+              // DrawerItem(
+              //   title: "Offers & Rewards",
+              //   icon: KImages.offers,
+              //   onTap: () {
+              //     // Navigator.pushNamed(context, RouteNames.languageScreen);
+              //   },
+              // ),
               DrawerItem(
                 title: "Change Password",
                 icon: KImages.unlock,
@@ -95,12 +114,7 @@ class ProfileScreen extends StatelessWidget {
                   );
                 },
               ),
-              Utils.verticalSpace(40.0),
-              // SwitchWidget(
-              //   text: 'Notification',
-              //   initialValue: true,
-              //   onToggle: (bool value) {},
-              // ),
+
               Utils.verticalSpace(40.0),
               GestureDetector(
                 onTap: () {
@@ -177,70 +191,53 @@ class _ProfileImageState extends State<ProfileImage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GetProfileCubit, GetProfileState>(
-      builder: (context, state) {
-        String image;
-        String name;
-        if (state is GetProfileLoaded) {
-          if (state.user.image.isNotEmpty) {
-            image = RemoteUrls.imageUrl(state.user.image);
-          } else {
-            image = KImages.profile;
-          }
-          name = state.user.name ?? "";
-        } else {
-          image = KImages.profile;
-          name = loginBloc.userInformation?.user?.name ?? "Guest";
-        }
-
-        return SliverToBoxAdapter(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+    return SliverToBoxAdapter(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
             children: [
-              Stack(
-                children: [
-                  Container(
-                    height: Utils.vSize(80.0),
-                    width: Utils.vSize(80.0),
-                    decoration: const BoxDecoration(shape: BoxShape.circle),
-                    child: ClipRRect(
-                      borderRadius: Utils.borderRadius(r: 50.0),
-                      child: CustomImage(path: image, fit: BoxFit.cover),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          RouteNames.editProfileScreen,
-                        );
-                      },
-                      child: Container(
-                        padding: Utils.all(value: 5.0),
-                        height: Utils.vSize(24),
-                        width: Utils.vSize(24),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: primaryColor,
-                        ),
-                        child: const Center(
-                          child: CustomImage(path: KImages.editIcon),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              Container(
+                height: Utils.vSize(80.0),
+                width: Utils.vSize(80.0),
+                decoration: const BoxDecoration(shape: BoxShape.circle),
+                child: ClipRRect(
+                  borderRadius: Utils.borderRadius(r: 50.0),
+                  child: CustomImage(path: image, fit: BoxFit.cover),
+                ),
               ),
-              Utils.verticalSpace(8.0),
-              CustomText(text: name, fontSize: 16, fontWeight: FontWeight.w500),
-              Utils.verticalSpace(16.0),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, RouteNames.editProfileScreen);
+                  },
+                  child: Container(
+                    padding: Utils.all(value: 5.0),
+                    height: Utils.vSize(24),
+                    width: Utils.vSize(24),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: primaryColor,
+                    ),
+                    child: const Center(
+                      child: CustomImage(path: KImages.editIcon),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
-        );
-      },
+          Utils.verticalSpace(8.0),
+          CustomText(
+            text: pCubit.user!.name,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+          Utils.verticalSpace(16.0),
+        ],
+      ),
     );
   }
 }

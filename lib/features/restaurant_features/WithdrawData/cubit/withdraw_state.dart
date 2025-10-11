@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:foodigo/data/errors/errors_model.dart';
+
 import '../model/withdraw_model.dart';
 
 abstract class WithdrawState extends Equatable {
@@ -49,12 +51,20 @@ class WithdrawMethodError extends WithdrawState {
   List<Object?> get props => [message, statusCode];
 }
 
-
 class WithdrawStoreLoaded extends WithdrawState {
-  final WithdrawModel withdraw;
+  final NewWithdrawResponse withdraw;
 
   const WithdrawStoreLoaded(this.withdraw);
 
   @override
   List<Object?> get props => [withdraw];
+}
+
+class WithdrawValidateStateError extends WithdrawState {
+  final Errors errors;
+
+  const WithdrawValidateStateError(this.errors);
+
+  @override
+  List<Object> get props => [errors];
 }

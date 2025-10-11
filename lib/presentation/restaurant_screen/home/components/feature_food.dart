@@ -4,8 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/data/remote_url.dart';
 import 'package:foodigo/features/restaurant_features/Products/model/product_model.dart';
 import 'package:foodigo/presentation/core/routes/route_names.dart';
-import 'package:foodigo/presentation/restaurant_screen/product_details/product_details_screen.dart';
+import 'package:foodigo/presentation/restaurant_screen/main_page/component/restaurant_main_controller.dart';
 import 'package:foodigo/utils/k_images.dart';
+
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_image.dart';
@@ -27,7 +28,16 @@ class MyFood extends StatelessWidget {
           textColors: textColor,
           seeAllColors: subTitleTextColor,
           press: () {
-            Navigator.pushNamed(context, RouteNames.myMenuScreen);
+            // Navigator.pushNamed(context, RouteNames.myMenuScreen);
+
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              RouteNames.restaurantMainScreen,
+              (route) => false,
+            );
+            Future.delayed(Duration(milliseconds: 100), () {
+              RestaurantMainController().changeTab(1);
+            });
           },
         ),
         SingleChildScrollView(
@@ -38,7 +48,7 @@ class MyFood extends StatelessWidget {
             children: List.generate(productList.length, (index) {
               final product = productList[index];
               return Padding(
-                padding: const EdgeInsets.only(right: 14),
+                padding: EdgeInsets.only(right: 16.w),
                 child: FoodCart(product: product),
               );
             }),
@@ -48,6 +58,8 @@ class MyFood extends StatelessWidget {
     );
   }
 }
+
+
 
 class FoodCart extends StatelessWidget {
   const FoodCart({super.key, required this.product});
@@ -84,7 +96,7 @@ class FoodCart extends StatelessWidget {
               child: CustomImage(
                 path: RemoteUrls.imageUrl(product.image!),
                 fit: BoxFit.cover,
-                height: 150,
+                height: 150.h,
                 width: double.infinity,
               ),
             ),
@@ -106,9 +118,10 @@ class FoodCart extends StatelessWidget {
                         children: [
                           const CustomImage(path: KImages.star),
                           CustomText(
-                            text: product.reviews!.isNotEmpty
-                                ? product.reviews!.first.rating.toString()
-                                : "0.0",
+                            text:
+                                product.reviews!.isNotEmpty
+                                    ? product.reviews!.first.rating.toString()
+                                    : "0.0",
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
                           ),

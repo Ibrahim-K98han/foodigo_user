@@ -4,9 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantDashboard/cubit/res_dashboard_cubit.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantDashboard/cubit/res_dashboard_state.dart';
 import 'package:foodigo/features/restaurant_features/RestaurantDashboard/model/res_dashboard_model.dart';
-import 'package:foodigo/widget/custom_image.dart';
+import 'package:foodigo/presentation/core/routes/route_names.dart';
+import 'package:foodigo/presentation/restaurant_screen/home/components/build_single_card.dart';
+import 'package:foodigo/presentation/restaurant_screen/home/components/recent_order_card.dart';
+import 'package:foodigo/presentation/restaurant_screen/main_page/component/restaurant_main_controller.dart';
 import 'package:foodigo/widget/page_refresh.dart';
-import 'package:intl/intl.dart';
 
 import '../../../features/restaurant_features/Products/cubit/product_cubit.dart';
 import '../../../utils/constraints.dart';
@@ -98,67 +100,6 @@ class DashboardDataLoad extends StatefulWidget {
 }
 
 class _DashboardDataLoadState extends State<DashboardDataLoad> {
-  String selectedValue = 'Last 30 days';
-
-  final List<String> items = ['Last 30 days', '1', '2', '3'];
-
-  String getOrderStatusText(dynamic status) {
-    switch (status.toString()) {
-      case '1':
-        return 'Pending';
-      case '2':
-        return 'Confirmed';
-      case '3':
-        return 'Processing';
-      case '4':
-        return 'On The Way';
-      case '5':
-        return 'Delivered';
-      case '6':
-        return 'Cancelled';
-      default:
-        return 'Unknown';
-    }
-  }
-
-  Color getOrderStatusColor(dynamic status) {
-    switch (status.toString()) {
-      case '1': // Pending
-        return const Color(0xFF1F7EFA);
-      case '2': // Confirmed
-        return Colors.orange;
-      case '3': // Preparing
-        return Colors.blueGrey;
-      case '4': // Out for Delivery
-        return Colors.purple;
-      case '5': // Completed
-        return Colors.green;
-      case '6': // Cancelled
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  Color getOrderStatusBgColor(dynamic status) {
-    switch (status.toString()) {
-      case '1': // Pending
-        return const Color(0xFF1F7EFA).withOpacity(0.2);
-      case '2': // Confirmed
-        return Colors.orange.withOpacity(0.2);
-      case '3': // Preparing
-        return Colors.blueGrey.withOpacity(0.2);
-      case '4': // Out for Delivery
-        return Colors.purple.withOpacity(0.2);
-      case '5': // Completed
-        return Colors.green.withOpacity(0.2);
-      case '6': // Cancelled
-        return Colors.red.withOpacity(0.2);
-      default:
-        return Colors.grey.withOpacity(0.2);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final pCubit = context.read<ProductCubit>();
@@ -170,7 +111,7 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
             blurRadius: 40,
             offset: Offset(0, 2),
             spreadRadius: 10,
-          )
+          ),
         ],
       ),
       child: Column(
@@ -184,38 +125,15 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                 children: [
                   Padding(
                     padding: Utils.symmetric(v: 6.0),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const CustomText(
+                        CustomText(
                           text: "Order Status",
                           fontSize: 22,
                           fontWeight: FontWeight.w700,
                           color: textColor,
                         ),
-                        // DropdownButton<String>(
-                        //   underline: const SizedBox.shrink(),
-                        //   value: selectedValue,
-                        //   icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                        //   elevation: 0,
-                        //   style: const TextStyle(
-                        //       color: Colors.black, fontSize: 14),
-                        //   onChanged: (String? newValue) {
-                        //     setState(() {
-                        //       selectedValue = newValue!;
-                        //     });
-                        //   },
-                        //   items: items
-                        //       .map<DropdownMenuItem<String>>((String value) {
-                        //     return DropdownMenuItem<String>(
-                        //       value: value,
-                        //       child: CustomText(
-                        //         text: value,
-                        //         color: Colors.black,
-                        //       ),
-                        //     );
-                        //   }).toList(),
-                        // ),
                       ],
                     ),
                   ),
@@ -224,37 +142,47 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                     spacing: Utils.vSize(8.0),
                     alignment: WrapAlignment.start,
                     children: [
-                      _buildSingleCard(
-                        KImages.totalOrder,
-                        '${widget.resDashboardModel.statistics?.orderStatistics?.total ?? 0}',
-                        'Total Order',
-                        orderTotalColor,
+                      BuildSingleCard(
+                        title: 'Total Order',
+                        count:
+                            '${widget.resDashboardModel.statistics?.orderStatistics?.total ?? 0}',
+                        icon: KImages.totalOrder,
+                        bgColor: orderTotalColor,
                       ),
-                      _buildSingleCard(
-                          KImages.activeOrder,
-                          '${widget.resDashboardModel.statistics?.orderStatistics?.active ?? 0}',
-                          'Active Order',
-                          orderActiveColor),
-                      _buildSingleCard(
-                          KImages.cancelOrder,
-                          '${widget.resDashboardModel.statistics?.orderStatistics?.cancelled ?? 0}',
-                          'Cancelled ',
-                          orderCancelledColor.withOpacity(0.2)),
-                      _buildSingleCard(
-                          KImages.completeOrder,
-                          '${widget.resDashboardModel.statistics?.orderStatistics?.completed ?? 0}',
-                          'Complete',
-                          orderCompleteColor),
-                      _buildSingleCard(
-                          KImages.cancelOrder,
-                          '${widget.resDashboardModel.statistics?.orderStatistics?.pending ?? 0}',
-                          'Pending',
-                          orderCancelledColor.withOpacity(0.2)),
+                      BuildSingleCard(
+                        title: 'Active Order',
+                        count:
+                            '${widget.resDashboardModel.statistics?.orderStatistics?.active ?? 0}',
+                        icon: KImages.activeOrder,
+                        bgColor: orderActiveColor,
+                      ),
+                      BuildSingleCard(
+                        title: 'Cancelled',
+                        count:
+                            '${widget.resDashboardModel.statistics?.orderStatistics?.cancelled ?? 0}',
+                        icon: KImages.cancelOrder,
+                        bgColor: orderCancelledColor.withOpacity(0.2),
+                      ),
+                      BuildSingleCard(
+                        title: 'Complete',
+                        count:
+                            '${widget.resDashboardModel.statistics?.orderStatistics?.completed ?? 0}',
+
+                        icon: KImages.completeOrder,
+                        bgColor: orderCompleteColor,
+                      ),
+                      BuildSingleCard(
+                        title: 'Pending',
+                        count:
+                            '${widget.resDashboardModel.statistics?.orderStatistics?.pending ?? 0}',
+                        icon: KImages.cancelOrder,
+                        bgColor: orderCancelledColor.withOpacity(0.2),
+                      ),
                     ],
                   ),
                   // Utils.verticalSpace(12.0),
                   pCubit.productModel == null
-                      ? CustomText(text: 'Data Not Found')
+                      ? const CustomText(text: 'Data Not Found')
                       : MyFood(productModel: pCubit.productModel!),
 
                   Padding(
@@ -269,13 +197,22 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                           fontWeight: FontWeight.w600,
                         ),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              RouteNames.restaurantMainScreen,
+                              (route) => false,
+                            );
+                            Future.delayed(Duration(milliseconds: 100), () {
+                              RestaurantMainController().changeTab(2);
+                            });
+                          },
                           child: const CustomText(
                             text: 'See All',
                             color: greyColor,
                             fontFamily: regular400,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -297,9 +234,12 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                               builder: (context) {
                                 return Dialog(
                                   insetPadding: EdgeInsets.symmetric(
-                                      horizontal: 16.w, vertical: 12.h),
+                                    horizontal: 16.w,
+                                    vertical: 12.h,
+                                  ),
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6.r)),
+                                    borderRadius: BorderRadius.circular(6.r),
+                                  ),
                                   child: OrderDetailsDialog(
                                     orderId: item.id.toString(),
                                   ),
@@ -309,190 +249,14 @@ class _DashboardDataLoadState extends State<DashboardDataLoad> {
                           },
                           child: Padding(
                             padding: EdgeInsets.only(bottom: 10.h),
-                            child: Container(
-                              height: 80.0,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: whiteColor,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Container(
-                                  //   width: 80.0,
-                                  //   height: 80.0,
-                                  //   decoration: BoxDecoration(
-                                  //     borderRadius: BorderRadius.circular(10.0),
-                                  //     shape: BoxShape.rectangle,
-                                  //   ),
-                                  //   child: ClipRRect(
-                                  //     borderRadius: BorderRadius.only(
-                                  //       topLeft: Radius.circular(4.r),
-                                  //       bottomLeft: Radius.circular(4.r),
-                                  //     ),
-                                  //     child: CustomImage(
-                                  //       path: RemoteUrls.imageUrl(recentOrders.grandTotal),
-                                  //       fit: BoxFit.cover,
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  Padding(
-                                    padding: Utils.symmetric(h: 4.0, v: 8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            const CustomText(
-                                              text: "OrderId# ",
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 13,
-                                              color: textColor,
-                                            ),
-                                            CustomText(
-                                              text: '${item.id}',
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 13,
-                                              color: textColor,
-                                            ),
-                                            Utils.horizontalSpace(8.0),
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(20.r),
-                                                color: getOrderStatusBgColor(
-                                                    item.orderStatus),
-                                              ),
-                                              child: Padding(
-                                                padding: Utils.symmetric(
-                                                    h: 8.0, v: 2.0),
-                                                child: CustomText(
-                                                    text: getOrderStatusText(
-                                                        item.orderStatus),
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w400,
-                                                    color: getOrderStatusColor(
-                                                        item.orderStatus)),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Utils.verticalSpace(8.0),
-                                        Row(
-                                          children: [
-                                            CustomText(
-                                              text: DateFormat('hh:mm a')
-                                                  .format(item.createdAt),
-                                              color: textColor,
-                                              fontSize: 12,
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 4),
-                                              child: Container(
-                                                height: 5,
-                                                width: 5,
-                                                decoration: const BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: smallContainerColor),
-                                              ),
-                                            ),
-                                            CustomText(
-                                              text: Utils.formatDate(
-                                                  item.createdAt),
-                                              color: textColor,
-                                              fontSize: 12,
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: Utils.only(right: 8.0),
-                                    child: CustomText(
-                                      text: Utils.formatPrice(
-                                          context, item.grandTotal),
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            child: RecentOrderCard(item: item),
                           ),
                         );
                       },
                     ),
-                  )
+                  ),
                 ],
               ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSingleCard(
-      String icon, String count, String title, Color bgColor) {
-    return Container(
-      padding: Utils.symmetric(v: 10.0, h: 8.0),
-      height: Utils.vSize(80.0),
-      width: Utils.hSize(162.0),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: whiteColor,
-        border: Border.all(color: borderColor),
-        borderRadius: Utils.borderRadius(r: 6.0.r),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF000000).withOpacity(0.05),
-            blurRadius: 60,
-            offset: const Offset(0, 0),
-            spreadRadius: 0,
-          )
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CustomText(
-                text: title,
-                fontSize: 13.0,
-                fontWeight: FontWeight.w400,
-                color: blackColor,
-              ),
-              CustomText(
-                text: count.padLeft(2, '0'),
-                fontSize: 18.0,
-                fontWeight: FontWeight.w700,
-                color: blackColor,
-              ),
-            ],
-          ),
-          Container(
-            height: Utils.vSize(45.0),
-            width: Utils.vSize(45.0),
-            margin: Utils.only(left: 8.0, right: 6.0),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6.0), color: bgColor),
-            child: CustomImage(
-              path: icon,
-              height: 20.h,
-              width: 20.w,
-              fit: BoxFit.cover,
             ),
           ),
         ],

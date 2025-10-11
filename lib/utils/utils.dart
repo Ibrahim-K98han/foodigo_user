@@ -104,6 +104,16 @@ class Utils {
     }
     return '\$${price.toStringAsFixed(0)}';
   }
+  static String formatRating(BuildContext context, var price) {
+    // final currency =
+    //     context.read<AppSettingCubit>().settingModel!.setting.currencyIcon;
+    if (price is double) return price.toStringAsFixed(0);
+    if (price is String) {
+      final p = double.tryParse(price) ?? 0.0;
+      return p.toStringAsFixed(1);
+    }
+    return '${price.toStringAsFixed(0)}';
+  }
 
   static Uri tokenWithCode(String url, String token, String langCode) {
     return Uri.parse('$url?')

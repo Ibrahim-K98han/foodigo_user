@@ -58,6 +58,7 @@ class RegisterOtpStateSuccess extends RegisterState {
   List<Object> get props => [message];
 }
 
+
 class RegisterOtpStateError extends RegisterState {
   final String message;
   final int statusCode;
@@ -67,6 +68,7 @@ class RegisterOtpStateError extends RegisterState {
   @override
   List<Object> get props => [message, statusCode];
 }
+
 
 class SignUpStateError extends RegisterState {
   final String errorMsg;
@@ -110,4 +112,24 @@ class SignUpEventResendVerificationSubmit extends RegisterState {
 
   @override
   List<Object> get props => [];
+}
+
+///Create New pass
+class CreateNewPassOtpStateError extends RegisterState {
+  final String message;
+  final int statusCode;
+
+  const CreateNewPassOtpStateError(this.message, this.statusCode);
+
+  @override
+  List<Object> get props => [message, statusCode];
+}
+
+class CreateNewPassOtpStateSuccess extends RegisterState {
+  final String message;
+
+  const CreateNewPassOtpStateSuccess(this.message);
+
+  @override
+  List<Object> get props => [message];
 }

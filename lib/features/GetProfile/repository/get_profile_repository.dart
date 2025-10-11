@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:foodigo/data/errors/exception.dart';
 import 'package:foodigo/data/errors/failure.dart';
+import 'package:foodigo/features/GetProfile/model/profile_state_model.dart';
 import 'package:foodigo/features/Login/model/user_response_model.dart';
 
 import '../remote/get_profile_remote_data_source.dart';
@@ -9,15 +10,16 @@ abstract class GetProfileRepository {
   Future<Either<Failure, User>> getProfileData(String token);
 
   Future<Either<Failure, User>> updateProfile(
-      String token, Map<String, dynamic> body);
+    ProfileStateModel body,
+    Uri uri,
+    String token,
+  );
 }
 
 class GetProfileRepositoryImpl implements GetProfileRepository {
   final GetProfileRemoteDataSource remoteDataSource;
 
-  const GetProfileRepositoryImpl({
-    required this.remoteDataSource,
-  });
+  const GetProfileRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<Either<Failure, User>> getProfileData(String token) async {
@@ -34,25 +36,21 @@ class GetProfileRepositoryImpl implements GetProfileRepository {
     }
   }
 
+  //update profile
   @override
   Future<Either<Failure, User>> updateProfile(
-      String token, Map<String, dynamic> body) async {
+    ProfileStateModel body,
+    Uri uri,
+    String token,
+  ) async {
     try {
-      final result = await remoteDataSource.updateProfile(token, body);
-
-      /// API response এর structure হবে যেমন:
-      /// {
-      ///   "success": true,
-      ///   "data": {
-      ///     "user": {...updated user object...}
-      ///   },
-      ///   "message": "Profile updated successfully"
-      /// }
-
-      final user = User.fromMap(result['data']['user']);
-      return Right(user);
+      final result = await remoteDataSource.updateProfile(body, uri, token);
+      final response = User.fromMap(result);
+      return Right(response);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
+    } catch (e) {
+      return Left(ServerFailure(e.toString(), 500));
     }
   }
 }

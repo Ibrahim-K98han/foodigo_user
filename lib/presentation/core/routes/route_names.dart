@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodigo/presentation/restaurant_screen/my_menu/edit_food_screen.dart';
+import 'package:foodigo/presentation/restaurant_screen/profile/components/add_addon.dart';
+import 'package:foodigo/presentation/restaurant_screen/profile/components/update_addon.dart';
 import 'package:foodigo/presentation/restaurant_screen/restaurant_profile/edit_restaurant_screen.dart';
 import 'package:foodigo/presentation/screen/all_category/all_category_screen.dart';
 import 'package:foodigo/presentation/screen/all_food_screen/all_food_screen.dart';
@@ -14,12 +16,16 @@ import 'package:foodigo/presentation/screen/my_cart/components/order_screen.dart
 import 'package:foodigo/presentation/screen/my_cart/components/strip_payment_screen.dart';
 import 'package:foodigo/presentation/screen/my_cart/track_order_screen.dart';
 import 'package:foodigo/presentation/screen/product_details/product_details_screen.dart';
+import 'package:foodigo/presentation/screen/profile/component/terms_and_condition_screen.dart';
 import 'package:foodigo/presentation/screen/profile/edit_profile_screen.dart';
 import 'package:foodigo/presentation/screen/profile/faq_screen.dart';
 import 'package:foodigo/presentation/screen/profile/language_screen.dart';
+import 'package:foodigo/presentation/screen/profile/offer_and_reward_screen.dart';
+import 'package:foodigo/presentation/screen/profile/privacy_policy.dart';
 import 'package:foodigo/presentation/screen/profile/profile_change_password_screen.dart';
 import 'package:foodigo/presentation/screen/profile/settings_screen.dart';
 import 'package:foodigo/presentation/screen/sms/sms_screen.dart';
+
 import '../../restaurant_screen/main_page/restaurant_main_screen.dart';
 import '../../restaurant_screen/my_menu/my_menu_screen.dart';
 import '../../restaurant_screen/profile/addon_manage_screen.dart';
@@ -86,24 +92,38 @@ class RouteNames {
   static const String walletScreen = '/walletScreen';
   static const String restaurantChangePasswordScreen =
       '/restaurantChangePasswordScreen';
+  static const String addAddonScreen = '/addAddonScreen';
+  static const String updateAddonScreen = '/updateAddonScreen';
+  static const String privacyPolicyScreen = '/privacyPolicyScreen';
+  static const String termsAndConditionScreen = '/termsAndConditonScreen';
+  static const String offerAndRewardScreen = '/offerAndRewardScreen';
+  static const String createNewPassOtpScreen = '/createNewPassOtpScreen';
 
   static Route<dynamic> generateRoutes(RouteSettings settings) {
     switch (settings.name) {
       case RouteNames.splashScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const SplashScreen());
+          settings: settings,
+          builder: (_) => const SplashScreen(),
+        );
 
       case RouteNames.onBoardingScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const OnboardingScreen());
+          settings: settings,
+          builder: (_) => const OnboardingScreen(),
+        );
 
       case RouteNames.authenticationScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const AuthenticationScreen());
+          settings: settings,
+          builder: (_) => const AuthenticationScreen(),
+        );
 
       case RouteNames.registrationScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const RegistrationScreen());
+          settings: settings,
+          builder: (_) => const RegistrationScreen(),
+        );
 
       // case RouteNames.verificationScreen:
       //   return MaterialPageRoute(
@@ -111,43 +131,56 @@ class RouteNames {
 
       case RouteNames.otpScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => OtpScreen());
+          settings: settings,
+          builder: (_) => OtpScreen(),
+        );
 
       case RouteNames.forgotPassScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const ForgotPasswordScreen());
+          settings: settings,
+          builder: (_) => const ForgotPasswordScreen(),
+        );
 
       case RouteNames.createNewPasswordScreen:
         return MaterialPageRoute(
-            settings: settings,
-            builder: (_) => const CreateNewPasswordScreen());
+          settings: settings,
+          builder: (_) => const CreateNewPasswordScreen(),
+        );
 
       case RouteNames.mainScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const MainScreen());
+          settings: settings,
+          builder: (_) => const MainScreen(),
+        );
       case RouteNames.restaurantMainScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const RestaurantMainScreen());
+          settings: settings,
+          builder: (_) => const RestaurantMainScreen(),
+        );
 
       case RouteNames.allFoodScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const AllFoodScreen());
+          settings: settings,
+          builder: (_) => const AllFoodScreen(),
+        );
 
       case RouteNames.allRestaurantScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const AllRestaurantScreen());
+          settings: settings,
+          builder: (_) => const AllRestaurantScreen(),
+        );
 
       case RouteNames.allCategoryScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const AllCategoryScreen());
+          settings: settings,
+          builder: (_) => const AllCategoryScreen(),
+        );
 
       case RouteNames.productDetailsScreen:
         final id = settings.arguments as int;
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => ProductDetailsScreen(
-            id: id,
-          ),
+          builder: (_) => ProductDetailsScreen(id: id),
         );
 
       case RouteNames.orderScreen:
@@ -158,104 +191,168 @@ class RouteNames {
 
       case RouteNames.addressScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const ChangeAddressScreen());
+          settings: settings,
+          builder: (_) => const ChangeAddressScreen(),
+        );
 
       case RouteNames.editAddressScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const EditAddressScreen());
+          settings: settings,
+          builder: (_) => const EditAddressScreen(),
+        );
 
       case RouteNames.restaurantProfileScreen:
         final slug = settings.arguments as String;
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => RestaurantProfileScreen(
-            slug: slug,
-          ),
+          builder: (_) => RestaurantProfileScreen(slug: slug),
         );
 
       case RouteNames.wishlistScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const WishlistScreen());
+          settings: settings,
+          builder: (_) => const WishlistScreen(),
+        );
 
       case RouteNames.paymentMethodScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => PaymentMethodScreen());
+          settings: settings,
+          builder: (_) => PaymentMethodScreen(),
+        );
 
       case RouteNames.trackOrderScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const TrackOrderScreen());
+          settings: settings,
+          builder: (_) => const TrackOrderScreen(),
+        );
 
       case RouteNames.smsScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const SmsScreen());
+          settings: settings,
+          builder: (_) => const SmsScreen(),
+        );
       case RouteNames.editProfileScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const EditProfileScreen());
+          settings: settings,
+          builder: (_) => const EditProfileScreen(),
+        );
       case RouteNames.settingScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const SettingsScreen());
+          settings: settings,
+          builder: (_) => const SettingsScreen(),
+        );
       case RouteNames.languageScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const LanguageScreen());
+          settings: settings,
+          builder: (_) => const LanguageScreen(),
+        );
       case RouteNames.faqScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const FaqScreen());
+          settings: settings,
+          builder: (_) => const FaqScreen(),
+        );
       case RouteNames.changePasswordScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const ChangePasswordScreen());
+          settings: settings,
+          builder: (_) => const ChangePasswordScreen(),
+        );
       case RouteNames.myOrderScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const MyOrderScreen());
+          settings: settings,
+          builder: (_) => const MyOrderScreen(),
+        );
       case RouteNames.forgotPasswordEmailPhoneScreen:
         return MaterialPageRoute(
-            settings: settings,
-            builder: (_) => const ForgotPasswordEmailPhoneScreen());
+          settings: settings,
+          builder: (_) => const ForgotPasswordEmailPhoneScreen(),
+        );
       case RouteNames.profilePasswordChangeScreen:
         return MaterialPageRoute(
-            settings: settings,
-            builder: (_) => const ProfileChangePasswordScreen());
+          settings: settings,
+          builder: (_) => const ProfileChangePasswordScreen(),
+        );
       case RouteNames.forgotOtpScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const ForgotOtpScreen());
+          settings: settings,
+          builder: (_) => const ForgotOtpScreen(),
+        );
 
       case RouteNames.bankTransferPaymentScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const BankPaymentScreen());
+          settings: settings,
+          builder: (_) => const BankPaymentScreen(),
+        );
       case RouteNames.stripTransferPaymentScreen:
         final url = settings.arguments as String;
         return MaterialPageRoute(
-            settings: settings, builder: (_) => StripPaymentScreen(url: url));
+          settings: settings,
+          builder: (_) => StripPaymentScreen(url: url),
+        );
       case RouteNames.editRestaurantProfileScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const EditRestaurantScreen());
+          settings: settings,
+          builder: (_) => const EditRestaurantScreen(),
+        );
       case RouteNames.editFoodScreen:
         final id = settings.arguments as String;
         return MaterialPageRoute(
-            settings: settings,
-            builder: (_) => EditFoodScreen(
-                  id: id,
-                ));
+          settings: settings,
+          builder: (_) => EditFoodScreen(id: id),
+        );
       case RouteNames.myMenuScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const MyMenuScreen());
+          settings: settings,
+          builder: (_) => const MyMenuScreen(),
+        );
       case RouteNames.addonMangeScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const AddonManageScreen());
+          settings: settings,
+          builder: (_) => const AddonManageScreen(),
+        );
       case RouteNames.walletScreen:
         return MaterialPageRoute(
-            settings: settings, builder: (_) => const WalletScreen());
+          settings: settings,
+          builder: (_) => const WalletScreen(),
+        );
       case RouteNames.restaurantChangePasswordScreen:
         return MaterialPageRoute(
-            settings: settings,
-            builder: (_) => const RestaurantChangePasswordScreen());
+          settings: settings,
+          builder: (_) => const RestaurantChangePasswordScreen(),
+        );
+      case RouteNames.updateAddonScreen:
+        final id = settings.arguments as String;
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => UpdateAddon(addonId: id),
+        );
+      case RouteNames.addAddonScreen:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const AddAddon(),
+        );
+      case RouteNames.privacyPolicyScreen:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const PrivacyPolicy(),
+        );
+      case RouteNames.termsAndConditionScreen:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const TermsAndConditionScreen(),
+        );
+      case RouteNames.offerAndRewardScreen:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const OfferAndRewardScreen(),
+        );
+ 
 
       default:
         return MaterialPageRoute(
-          builder: (_) => Scaffold(
-            body: Center(
-              child: Text('No Route Found ${settings.name}'),
-            ),
-          ),
+          builder:
+              (_) => Scaffold(
+                body: Center(child: Text('No Route Found ${settings.name}')),
+              ),
         );
     }
   }

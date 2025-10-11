@@ -66,13 +66,10 @@ class RestaurantLoginEventSubmit extends RestaurantLoginEvent {
 }
 
 class RestaurantLoginEventLogout extends RestaurantLoginEvent {
-  final String email;
-
-  const RestaurantLoginEventLogout(
-      {required this.email,});
+  const RestaurantLoginEventLogout();
 
   @override
-  List<Object> get props => [email];
+  List<Object> get props => [];
 }
 
 class RestaurantLoginEventRememberMe extends RestaurantLoginEvent {}

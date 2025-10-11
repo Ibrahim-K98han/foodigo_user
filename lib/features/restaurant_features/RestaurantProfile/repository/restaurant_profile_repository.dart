@@ -8,7 +8,7 @@ import '../remote/restaurant_profile_remote_data_source.dart';
 
 abstract class RestaurantProfileRepository {
   Future<Either<Failure, RestaurantProfileModel>> getRestaurantProfile(String token);
-  Future<Either<dynamic, RestaurantProfileModel>> updateRestaurantProfile(
+  Future<Either<Failure, RestaurantProfileModel>> updateRestaurantProfile(
       RestaurantProfileStateModel body, Uri uri, String token);
 }
 
@@ -32,11 +32,11 @@ class RestaurantProfileRepositoryImpl implements RestaurantProfileRepository {
 
   ///Update Restaurant Profile
   @override
-  Future<Either<dynamic, RestaurantProfileModel>> updateRestaurantProfile(RestaurantProfileStateModel body, Uri uri, String token) async{
+  Future<Either<Failure, RestaurantProfileModel>> updateRestaurantProfile(RestaurantProfileStateModel body, Uri uri, String token) async{
     try {
       final result =
           await remoteDataSource.updateRestaurantProfile(body, uri, token);
-      final response = RestaurantProfileModel.fromMap(result);
+      final response = RestaurantProfileModel.fromMap(result['data']['restaurant']);
       return Right(response);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));

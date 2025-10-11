@@ -24,7 +24,7 @@ class RestaurantProfileStateModel extends Equatable {
   final String maxProcessingTime;
   final String timeSlotSeparator;
   final String logo;
-  final String images;
+  final String coverImages;
   final bool isFeatured;
   final bool isPickupOrder;
   final bool isDeliveryOrder;
@@ -51,7 +51,7 @@ class RestaurantProfileStateModel extends Equatable {
     this.maxProcessingTime = '',
     this.timeSlotSeparator = '',
     this.logo = '',
-    this.images = '',
+    this.coverImages = '',
     this.isFeatured = false,
     this.isPickupOrder = false,
     this.isDeliveryOrder = false,
@@ -79,7 +79,7 @@ class RestaurantProfileStateModel extends Equatable {
     String? maxProcessingTime,
     String? timeSlotSeparator,
     String? logo,
-    String? images,
+    String? coverImages,
     bool? isFeatured,
     bool? isPickupOrder,
     bool? isDeliveryOrder,
@@ -106,7 +106,7 @@ class RestaurantProfileStateModel extends Equatable {
       maxProcessingTime: maxProcessingTime ?? this.maxProcessingTime,
       timeSlotSeparator: timeSlotSeparator ?? this.timeSlotSeparator,
       logo: logo ?? this.logo,
-      images: images ?? this.images,
+      coverImages: coverImages ?? this.coverImages,
       isFeatured: isFeatured ?? this.isFeatured,
       isPickupOrder: isPickupOrder ?? this.isPickupOrder,
       isDeliveryOrder: isDeliveryOrder ?? this.isDeliveryOrder,
@@ -137,7 +137,7 @@ class RestaurantProfileStateModel extends Equatable {
       'max_processing_time': maxProcessingTime,
       'time_slot_separate': timeSlotSeparator,
       'logo': logo,
-      'images': images,
+      'cover_image': coverImages,
       'is_featured': isFeatured,
       'is_pickup_order': isPickupOrder,
       'is_delivery_order': isDeliveryOrder,
@@ -168,7 +168,7 @@ class RestaurantProfileStateModel extends Equatable {
       maxProcessingTime: map['max_processing_time'] ?? '',
       timeSlotSeparator: map['time_slot_separate'] ?? '',
       logo: map['logo'] ?? '',
-      images: map['cover_image'] ?? '',
+      coverImages: map['cover_image'] ?? '',
       isFeatured: map['is_featured'] ?? '',
       isPickupOrder: map['is_pickup_order'] ?? '',
       isDeliveryOrder: map['is_delivery_order'] ?? '',
@@ -207,7 +207,7 @@ class RestaurantProfileStateModel extends Equatable {
       maxProcessingTime,
       timeSlotSeparator,
       logo,
-      images,
+      coverImages,
       isFeatured,
       isPickupOrder,
       isDeliveryOrder,

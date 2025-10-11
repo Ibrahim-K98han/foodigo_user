@@ -2,13 +2,109 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-
 import 'package:foodigo/features/HomeData/category_model.dart';
 import 'package:foodigo/features/HomeData/cuisines_model.dart';
 import 'package:foodigo/features/HomeData/feature_product_model.dart';
 import 'package:foodigo/features/HomeData/restaurant_model.dart';
 
 class HomeModel extends Equatable {
+  final HomePage? homePage;
+  final List<Categories>? categories;
+  final List<FeaturedProducts>? featuredProducts;
+  final List<Cuisines>? cuisines;
+  final List<Restaurants>? restaurants;
+  final List<FeaturedProducts>? newArrivalProducts;
+
+  const HomeModel({
+    this.homePage,
+    this.categories,
+    this.featuredProducts,
+    this.cuisines,
+    this.restaurants,
+    this.newArrivalProducts,
+  });
+
+  HomeModel copyWith({
+    HomePage? homePage,
+    List<Categories>? categories,
+    List<FeaturedProducts>? featuredProducts,
+    List<Cuisines>? cuisines,
+    List<Restaurants>? restaurants,
+    List<FeaturedProducts>? newArrivalProducts,
+  }) {
+    return HomeModel(
+      homePage: homePage ?? this.homePage,
+      categories: categories ?? this.categories,
+      featuredProducts: featuredProducts ?? this.featuredProducts,
+      cuisines: cuisines ?? this.cuisines,
+      restaurants: restaurants ?? this.restaurants,
+      newArrivalProducts: newArrivalProducts ?? this.newArrivalProducts,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'homepage': homePage?.toMap(),
+      'categories': categories?.map((x) => x.toMap()).toList(),
+      'featured_products': featuredProducts?.map((x) => x.toMap()).toList(),
+      'cuisines': cuisines?.map((x) => x.toMap()).toList(),
+      'restaurants': restaurants?.map((x) => x.toMap()).toList(),
+      'new_arrival_products':
+          newArrivalProducts?.map((x) => x.toMap()).toList(),
+    };
+  }
+
+  factory HomeModel.fromMap(Map<String, dynamic> map) {
+    return HomeModel(
+      homePage:
+          map['homepage'] != null
+              ? HomePage.fromMap(map['homepage'] as Map<String, dynamic>)
+              : null,
+      categories:
+          (map['categories'] as List<dynamic>?)
+              ?.map((x) => Categories.fromMap(x as Map<String, dynamic>))
+              .toList(),
+      featuredProducts:
+          (map['featured_products'] as List<dynamic>?)
+              ?.map((x) => FeaturedProducts.fromMap(x as Map<String, dynamic>))
+              .toList(),
+      cuisines:
+          (map['cuisines'] as List<dynamic>?)
+              ?.map((x) => Cuisines.fromMap(x as Map<String, dynamic>))
+              .toList(),
+      restaurants:
+          (map['restaurants'] as List<dynamic>?)
+              ?.map((x) => Restaurants.fromMap(x as Map<String, dynamic>))
+              .toList(),
+      newArrivalProducts:
+          (map['new_arrival_products'] as List<dynamic>?)
+              ?.map((x) => FeaturedProducts.fromMap(x as Map<String, dynamic>))
+              .toList(),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory HomeModel.fromJson(String source) =>
+      HomeModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  bool get stringify => true;
+
+  @override
+  List<Object?> get props {
+    return [
+      homePage,
+      categories,
+      featuredProducts,
+      cuisines,
+      restaurants,
+      newArrivalProducts,
+    ];
+  }
+}
+
+class HomePage extends Equatable {
   final int id;
   final String introBannerOne;
   final String introBannerTwo;
@@ -50,60 +146,50 @@ class HomeModel extends Equatable {
   final String blogBannerTwoLink;
   final String blogBannerTwoStatus;
 
-  final List<Categories>? categories;
-  final List<FeaturedProducts>? featuredProducts;
-  final List<Cuisines>? cuisines;
-  final List<Restaurants>? restaurants;
-  final List<FeaturedProducts>? newArrivalProducts;
+  const HomePage({
+    required this.id,
+    required this.introBannerOne,
+    required this.introBannerTwo,
+    required this.joinRestaurantImage,
+    required this.mobileAppImage,
+    required this.workingStepIcon1,
+    required this.workingStepIcon2,
+    required this.workingStepIcon3,
+    required this.workingStepIcon4,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.mobilePlaystore,
+    required this.mobileAppstore,
+    required this.footerImgOne,
+    required this.footerImgTwo,
+    required this.footerImgThree,
+    required this.footerImgFour,
+    required this.footerImgOneLink,
+    required this.footerImgTwoLink,
+    required this.footerImgThreeLink,
+    required this.footerImgFourLink,
+    required this.footerImgFive,
+    required this.footerImgFiveLink,
+    required this.footerImgSix,
+    required this.footerImgSixLink,
+    required this.promotionalBannerOne,
+    required this.promotionalBannerOneStatus,
+    required this.promotionalBannerOneUrl,
+    required this.promotionalBannerTwo,
+    required this.promotionalBannerTwoStatus,
+    required this.promotionalBannerTwoUrl,
+    required this.promotionalBannerRestaurant,
+    required this.promotionalBannerRestaurantStatus,
+    required this.promotionalBannerRestaurantUrl,
+    required this.blogBannerOne,
+    required this.blogBannerOneLink,
+    required this.blogBannerOneStatus,
+    required this.blogBannerTwo,
+    required this.blogBannerTwoLink,
+    required this.blogBannerTwoStatus,
+  });
 
-  const HomeModel(
-      {this.categories,
-      this.featuredProducts,
-      this.cuisines,
-      this.restaurants,
-      this.newArrivalProducts,
-      required this.id,
-      required this.introBannerOne,
-      required this.introBannerTwo,
-      required this.joinRestaurantImage,
-      required this.mobileAppImage,
-      required this.workingStepIcon1,
-      required this.workingStepIcon2,
-      required this.workingStepIcon3,
-      required this.workingStepIcon4,
-      required this.createdAt,
-      required this.updatedAt,
-      required this.mobilePlaystore,
-      required this.mobileAppstore,
-      required this.footerImgOne,
-      required this.footerImgTwo,
-      required this.footerImgThree,
-      required this.footerImgFour,
-      required this.footerImgOneLink,
-      required this.footerImgTwoLink,
-      required this.footerImgThreeLink,
-      required this.footerImgFourLink,
-      required this.footerImgFive,
-      required this.footerImgFiveLink,
-      required this.footerImgSix,
-      required this.footerImgSixLink,
-      required this.promotionalBannerOne,
-      required this.promotionalBannerOneStatus,
-      required this.promotionalBannerOneUrl,
-      required this.promotionalBannerTwo,
-      required this.promotionalBannerTwoStatus,
-      required this.promotionalBannerTwoUrl,
-      required this.promotionalBannerRestaurant,
-      required this.promotionalBannerRestaurantStatus,
-      required this.promotionalBannerRestaurantUrl,
-      required this.blogBannerOne,
-      required this.blogBannerOneLink,
-      required this.blogBannerOneStatus,
-      required this.blogBannerTwo,
-      required this.blogBannerTwoLink,
-      required this.blogBannerTwoStatus});
-
-  HomeModel copyWith({
+  HomePage copyWith({
     int? id,
     String? introBannerOne,
     String? introBannerTwo,
@@ -144,13 +230,8 @@ class HomeModel extends Equatable {
     String? blogBannerTwo,
     String? blogBannerTwoLink,
     String? blogBannerTwoStatus,
-    List<Categories>? categories,
-    List<FeaturedProducts>? featuredProducts,
-    List<Cuisines>? cuisines,
-    List<Restaurants>? restaurants,
-    List<FeaturedProducts>? newArrivalProducts,
   }) {
-    return HomeModel(
+    return HomePage(
       id: id ?? this.id,
       introBannerOne: introBannerOne ?? this.introBannerOne,
       introBannerTwo: introBannerTwo ?? this.introBannerTwo,
@@ -188,7 +269,8 @@ class HomeModel extends Equatable {
           promotionalBannerTwoUrl ?? this.promotionalBannerTwoUrl,
       promotionalBannerRestaurant:
           promotionalBannerRestaurant ?? this.promotionalBannerRestaurant,
-      promotionalBannerRestaurantStatus: promotionalBannerRestaurantStatus ??
+      promotionalBannerRestaurantStatus:
+          promotionalBannerRestaurantStatus ??
           this.promotionalBannerRestaurantStatus,
       promotionalBannerRestaurantUrl:
           promotionalBannerRestaurantUrl ?? this.promotionalBannerRestaurantUrl,
@@ -198,11 +280,6 @@ class HomeModel extends Equatable {
       blogBannerTwo: blogBannerTwo ?? this.blogBannerTwo,
       blogBannerTwoLink: blogBannerTwoLink ?? this.blogBannerTwoLink,
       blogBannerTwoStatus: blogBannerTwoStatus ?? this.blogBannerTwoStatus,
-      categories: categories ?? this.categories,
-      featuredProducts: featuredProducts ?? this.featuredProducts,
-      cuisines: cuisines ?? this.cuisines,
-      restaurants: restaurants ?? this.restaurants,
-      newArrivalProducts: newArrivalProducts ?? this.newArrivalProducts,
     );
   }
 
@@ -248,20 +325,14 @@ class HomeModel extends Equatable {
       'blog_banner_two': blogBannerTwo,
       'blog_banner_two_link': blogBannerTwoLink,
       'blog_banner_two_status': blogBannerTwoStatus,
-      'categories': categories!.map((x) => x.toMap()).toList(),
-      'featured_products': featuredProducts!.map((x) => x.toMap()).toList(),
-      'cuisines': cuisines!.map((x) => x.toMap()).toList(),
-      'restaurants': restaurants!.map((x) => x.toMap()).toList(),
-      'new_arrival_products':
-          newArrivalProducts!.map((x) => x.toMap()).toList(),
     };
   }
 
-  factory HomeModel.fromMap(Map<String, dynamic> map) {
-    return HomeModel(
+  factory HomePage.fromMap(Map<String, dynamic> map) {
+    return HomePage(
       id: map['id'] ?? 0,
       introBannerOne: map['intro_banner_one'] ?? '',
-      introBannerTwo: map['intro_banner_two'] ?? '',
+      introBannerTwo: map['intro_bnner_two'] ?? '',
       joinRestaurantImage: map['join_restaurant_image'] ?? '',
       mobileAppImage: map['mobile_app_image'] ?? '',
       workingStepIcon1: map['working_step_icon1'] ?? '',
@@ -286,7 +357,7 @@ class HomeModel extends Equatable {
       footerImgSixLink: map['footer_img_six_link'] ?? '',
       promotionalBannerOne: map['promotional_banner_one'] ?? '',
       promotionalBannerOneStatus: map['promotional_banner_one_status'] ?? '',
-      promotionalBannerOneUrl: map['promotional_banner_one_url'] ?? '',
+      promotionalBannerOneUrl: map['promotional_banner_one-url'] ?? '',
       promotionalBannerTwo: map['promotional_banner_two'] ?? '',
       promotionalBannerTwoStatus: map['promotional_banner_two_status'] ?? '',
       promotionalBannerTwoUrl: map['promotional_banner_two_url'] ?? '',
@@ -301,50 +372,13 @@ class HomeModel extends Equatable {
       blogBannerTwo: map['blog_banner_two'] ?? '',
       blogBannerTwoLink: map['blog_banner_two_link'] ?? '',
       blogBannerTwoStatus: map['blog_banner_two_status'] ?? '',
-      categories: map['categories']  != null
-          ? List<Categories>.from(
-              (map['categories'] as List<dynamic>).map<Categories?>(
-                (x) => Categories.fromMap(x as Map<String, dynamic>),
-              ),
-            )
-          : null,
-      featuredProducts: map['featured_products'] != null
-          ? List<FeaturedProducts>.from(
-              (map['featured_products'] as List<dynamic>)
-                  .map<FeaturedProducts?>(
-                (x) => FeaturedProducts.fromMap(x as Map<String, dynamic>),
-              ),
-            )
-          : null,
-      cuisines: map['cuisines'] != null
-          ? List<Cuisines>.from(
-              (map['cuisines'] as List<dynamic>).map<Cuisines?>(
-                (x) => Cuisines.fromMap(x as Map<String, dynamic>),
-              ),
-            )
-          : null,
-      restaurants: map['restaurants'] != null
-          ? List<Restaurants>.from(
-              (map['restaurants'] as List<dynamic>).map<Restaurants?>(
-                (x) => Restaurants.fromMap(x as Map<String, dynamic>),
-              ),
-            )
-          : null,
-      newArrivalProducts: map['new_arrival_products'] != null
-          ? List<FeaturedProducts>.from(
-              (map['new_arrival_products'] as List<dynamic>)
-                  .map<FeaturedProducts?>(
-                (x) => FeaturedProducts.fromMap(x as Map<String, dynamic>),
-              ),
-            )
-          : null,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory HomeModel.fromJson(String source) =>
-      HomeModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory HomePage.fromJson(String source) =>
+      HomePage.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool get stringify => true;
@@ -392,11 +426,6 @@ class HomeModel extends Equatable {
       blogBannerTwo,
       blogBannerTwoLink,
       blogBannerTwoStatus,
-      categories,
-      featuredProducts,
-      cuisines,
-      restaurants,
-      newArrivalProducts,
     ];
   }
 }

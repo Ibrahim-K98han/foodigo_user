@@ -1,11 +1,16 @@
 import 'package:equatable/equatable.dart';
 import 'package:foodigo/features/Login/model/user_response_model.dart';
 
-abstract class GetProfileState extends Equatable {}
+abstract class GetProfileState extends Equatable {
+  const GetProfileState();
+
+  @override
+  List<Object?> get props => [];
+}
 
 class GetProfileInitial extends GetProfileState {
+  const GetProfileInitial();
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 
@@ -49,12 +54,12 @@ class UpdateProfileLoading extends GetProfileState {
 }
 
 class UpdateProfileSuccess extends GetProfileState {
-  final User user;
+  final String message;
 
-  UpdateProfileSuccess(this.user);
+  UpdateProfileSuccess(this.message);
 
   @override
-  List<Object?> get props => [user];
+  List<Object?> get props => [message];
 }
 
 class UpdateProfileError extends GetProfileState {
@@ -65,4 +70,14 @@ class UpdateProfileError extends GetProfileState {
 
   @override
   List<Object?> get props => [message, statusCode];
+}
+
+
+class UpdateProfileLoaded extends GetProfileState {
+  final User user;
+
+  UpdateProfileLoaded(this.user);
+
+  @override
+  List<Object?> get props => [user];
 }

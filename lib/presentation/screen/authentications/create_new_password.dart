@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_cubit.dart';
 
 import '../../../utils/constraints.dart';
 import '../../../utils/k_images.dart';
@@ -10,18 +12,31 @@ import '../../../widget/custom_text_style.dart';
 import '../../../widget/primary_button.dart';
 import '../../core/routes/route_names.dart';
 
-class CreateNewPasswordScreen extends StatelessWidget {
+class CreateNewPasswordScreen extends StatefulWidget {
   const CreateNewPasswordScreen({super.key});
 
   @override
+  State<CreateNewPasswordScreen> createState() =>
+      _CreateNewPasswordScreenState();
+}
+
+class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
+  late ForgotPasswordCubit fpCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    fpCubit = context.read<ForgotPasswordCubit>();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final email = fpCubit.state.email;
+    final otp = fpCubit.state.code;
+    print('email====================$email');
+    print('otp====================$otp');
     return Scaffold(
-      appBar: AppBar(
-        title: const CustomImage(
-          path: KImages.logo,
-          height: 30,
-        ),
-      ),
+      appBar: AppBar(title: const CustomImage(path: KImages.logo, height: 30)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -54,10 +69,8 @@ class CreateNewPasswordScreen extends StatelessWidget {
                 ),
                 Utils.verticalSpace(16),
                 const Center(
-                    child: CustomImage(
-                  path: KImages.passwordImage,
-                  height: 160,
-                )),
+                  child: CustomImage(path: KImages.passwordImage, height: 160),
+                ),
                 Utils.verticalSpace(16),
                 CustomFormWidget(
                   label: 'Password',
@@ -100,47 +113,16 @@ class CreateNewPasswordScreen extends StatelessWidget {
                   ),
                 ),
                 PrimaryButton(
-                    text: "Set New Password",
-                    fontSize: 14,
-                    onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(context,
-                          RouteNames.authenticationScreen, (route) => false);
-                      // showDialog(
-                      //     context: context,
-                      //     barrierDismissible: false,
-                      //     builder: (context) {
-                      //       return FeedBackDialog(
-                      //         height: 250.0,
-                      //         image: KImages.checkIcon,
-                      //         message: "Success",
-                      //         child: Column(
-                      //           mainAxisSize: MainAxisSize.min,
-                      //           children: [
-                      //             const Text(
-                      //               'Your password is updated!',
-                      //               textAlign: TextAlign.center,
-                      //               style: TextStyle(
-                      //                 color: Color(0xFF535769),
-                      //                 fontSize: 14,
-                      //                 fontFamily: 'Work Sans',
-                      //                 fontWeight: FontWeight.w500,
-                      //                 height: 1.43,
-                      //               ),
-                      //             ),
-                      //             Utils.verticalSpace(24),
-                      //             PrimaryButton(
-                      //                 text: "Back To Login",
-                      //                 onPressed: () {
-                      //                   Navigator.pushNamedAndRemoveUntil(
-                      //                       context,
-                      //                       RouteNames.authenticationScreen,
-                      //                       (route) => false);
-                      //                 })
-                      //           ],
-                      //         ),
-                      //       );
-                      //     });
-                    }),
+                  text: "Set New Password",
+                  fontSize: 14,
+                  onPressed: () {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      RouteNames.authenticationScreen,
+                      (route) => false,
+                    );
+                  },
+                ),
                 Utils.verticalSpace(12),
               ],
             ),

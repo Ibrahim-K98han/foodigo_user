@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
-import 'package:foodigo/features/register/cubit/register_cubit.dart';
-import 'package:foodigo/features/register/cubit/register_state.dart';
-import 'package:foodigo/features/register/model/register_state_model.dart';
+import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_state.dart';
+import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_state_model.dart';
 import 'package:foodigo/utils/constraints.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
@@ -18,7 +16,6 @@ import '../../core/routes/route_names.dart';
 
 class ForgotOtpScreen extends StatefulWidget {
   const ForgotOtpScreen({super.key});
-
   @override
   State<ForgotOtpScreen> createState() => _ForgotOtpScreenState();
 }
@@ -39,18 +36,14 @@ class _ForgotOtpScreenState extends State<ForgotOtpScreen> {
     final email = fpCubit.state.email;
     print('=============$email');
     return Scaffold(
-      appBar: AppBar(
-        title: const CustomImage(
-          path: KImages.logo,
-          height: 30,
-        ),
-      ),
-      body: BlocListener<RegisterCubit, RegisterStateModel>(
+      appBar: AppBar(title: const CustomImage(path: KImages.logo, height: 30)),
+      body: BlocListener<ForgotPasswordCubit, ForgotPasswordStateModel>(
         listener: (context, state) {
-          final otp = state.registerState;
-          if (otp is RegisterOtpStateError) {
-            Utils.failureSnackBar(context, otp.message);
-          } else if (otp is RegisterOtpStateSuccess) {
+          final otp = state.passwordState;
+          if (otp is ForgotPssOtpStateError) {
+            Utils.successSnackBar(context, otp.message);
+            // Navigator.pushNamed(context, RouteNames.changePasswordScreen);
+          } else if (otp is ForgotPassOtpStateSuccess) {
             Utils.successSnackBar(context, otp.message);
             Navigator.pushNamed(context, RouteNames.changePasswordScreen);
           }
@@ -87,8 +80,8 @@ class _ForgotOtpScreenState extends State<ForgotOtpScreen> {
                     Center(
                       child: Pinput(
                         length: 6,
-                        separatorBuilder: (index) =>
-                            SizedBox(width: Utils.hSize(12.0)),
+                        separatorBuilder:
+                            (index) => SizedBox(width: Utils.hSize(12.0)),
                         defaultPinTheme: PinTheme(
                           height: Utils.vSize(60.0),
                           width: Utils.hSize(60.0),
@@ -104,16 +97,17 @@ class _ForgotOtpScreenState extends State<ForgotOtpScreen> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-                        onChanged: (String code) {
-                          fpCubit.otpChange(code);
+                        onChanged: (String otp) {
+                          fpCubit.otpChange(otp);
+                          print('============$otp');
                         },
-                        onCompleted: (String code) {
-                          fpCubit.verifyForgetOtp(email);
+                        onCompleted: (String otp) {
+                          print('Complete OTP $otp');
+                          fpCubit.verifyForgetOtp(email, otp);
                         },
                       ),
                     ),
-                    Utils.verticalSpace(24.0),
-                    _countDownTime(),
+
                     Utils.verticalSpace(24),
                     Center(
                       child: Row(
@@ -127,7 +121,9 @@ class _ForgotOtpScreenState extends State<ForgotOtpScreen> {
                           GestureDetector(
                             onTap: () {
                               Navigator.pushNamed(
-                                  context, RouteNames.authenticationScreen);
+                                context,
+                                RouteNames.authenticationScreen,
+                              );
                             },
                             child: const CustomText(
                               text: 'Sign In',
@@ -148,52 +144,5 @@ class _ForgotOtpScreenState extends State<ForgotOtpScreen> {
         ),
       ),
     );
-  }
-
-  Widget _countDownTime() {
-    if (finishTime) {
-      return Align(
-        alignment: Alignment.center,
-        child: TimerCountdown(
-          format: CountDownTimerFormat.secondsOnly,
-          enableDescriptions: false,
-          spacerWidth: 6.0,
-          timeTextStyle: GoogleFonts.poppins(
-            fontSize: 30.0,
-            color: primaryColor,
-            fontWeight: FontWeight.w600,
-          ),
-          colonsTextStyle: GoogleFonts.poppins(
-            fontSize: 30.0,
-            color: primaryColor,
-            fontWeight: FontWeight.w600,
-          ),
-          endTime: DateTime.now().add(
-            const Duration(seconds: 30),
-          ),
-          onEnd: () {
-            print('finish');
-            setState(() => finishTime = false);
-          },
-        ),
-      );
-    } else {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          const CustomText(
-              text: 'Don\'t get verification code', fontSize: 14.0),
-          GestureDetector(
-            onTap: () {},
-            child: const CustomText(
-              text: 'Resend Code',
-              fontSize: 14.0,
-              fontWeight: FontWeight.w500,
-              color: primaryColor,
-            ),
-          ),
-        ],
-      );
-    }
   }
 }

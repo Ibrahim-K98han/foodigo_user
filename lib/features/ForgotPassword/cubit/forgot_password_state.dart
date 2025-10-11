@@ -84,3 +84,24 @@ class VerifyingForgotPasswordLoading extends ForgotPasswordState {
   @override
   List<Object> get props => [];
 }
+
+class ForgotPssOtpStateError extends ForgotPasswordState {
+  final String message;
+  final int statusCode;
+
+  const ForgotPssOtpStateError(this.message, this.statusCode);
+
+  @override
+  List<Object> get props => [message, statusCode];
+}
+
+class ForgotPassOtpStateSuccess extends ForgotPasswordState {
+  final String message;
+
+  const ForgotPassOtpStateSuccess(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class  ForgotPassOtpStateLoading extends ForgotPasswordState {}

@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart' as featureProduct;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -47,21 +46,22 @@ class _MyCartScreenState extends State<MyCartScreen> {
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
             onSelected: (String value) {},
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              PopupMenuItem<String>(
-                value: 'Clear All',
-                child: GestureDetector(
-                  onTap: () {
-                    cartCubit.clearCart();
-                    Navigator.pop(context);
-                  },
-                  child: const CustomText(
-                    text: 'Clear All',
-                    color: Colors.red,
+            itemBuilder:
+                (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    value: 'Clear All',
+                    child: GestureDetector(
+                      onTap: () {
+                        cartCubit.clearCart();
+                        Navigator.pop(context);
+                      },
+                      child: const CustomText(
+                        text: 'Clear All',
+                        color: Colors.red,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ],
+                ],
           ),
         ],
       ),
@@ -69,9 +69,9 @@ class _MyCartScreenState extends State<MyCartScreen> {
         listener: (context, state) {
           if (state.cartState is CartError) {
             final error = state.cartState as CartError;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(error.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(error.message)));
           }
         },
         builder: (context, state) {
@@ -110,9 +110,7 @@ class _MyCartScreenState extends State<MyCartScreen> {
           }
 
           if (state.cartState is CartError) {
-            return const Center(
-              child: CustomImage(path: KImages.cartNotFound),
-            );
+            return const Center(child: CustomImage(path: KImages.cartNotFound));
           }
 
           return const SizedBox.shrink();
@@ -143,9 +141,7 @@ class _MyCartScreenState extends State<MyCartScreen> {
                   Navigator.pushNamed(
                     context,
                     RouteNames.addressScreen,
-                    arguments: {
-                      'isSelected': true,
-                    },
+                    arguments: {'isSelected': true},
                   );
                 },
               ),
@@ -174,17 +170,18 @@ class CartDataLoaded extends StatelessWidget {
 
     return ListView(
       padding: Utils.symmetric(),
-      children: items.map((cartItem) {
-        return Padding(
-          padding: Utils.only(bottom: 12.0),
-          child: CheckoutCart(
-            cartItem: cartItem,
-            onDelete: (id) {
-              context.read<CartCubit>().deleteProduct(id);
-            },
-          ),
-        );
-      }).toList(),
+      children:
+          items.map((cartItem) {
+            return Padding(
+              padding: Utils.only(bottom: 12.0),
+              child: CheckoutCart(
+                cartItem: cartItem,
+                onDelete: (id) {
+                  context.read<CartCubit>().deleteProduct(id);
+                },
+              ),
+            );
+          }).toList(),
     );
   }
 }
@@ -220,39 +217,41 @@ class CheckoutCart extends StatelessWidget {
       confirmDismiss: (direction) async {
         return await showDialog<bool>(
           context: context,
-          builder: (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            title: const CustomText(
-              text: 'Delete Item',
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-            content: const CustomText(
-              text: 'Are you sure you want to remove this item from the cart?',
-              fontSize: 14,
-            ),
-            actions: [
-              PrimaryButton(
-                minimumSize: Size(90.w, 40.h),
-                text: 'Cancel',
-                fontSize: 14.sp,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+          builder:
+              (ctx) => AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                title: const CustomText(
+                  text: 'Delete Item',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+                content: const CustomText(
+                  text:
+                      'Are you sure you want to remove this item from the cart?',
+                  fontSize: 14,
+                ),
+                actions: [
+                  PrimaryButton(
+                    minimumSize: Size(90.w, 40.h),
+                    text: 'Cancel',
+                    fontSize: 14.sp,
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  PrimaryButton(
+                    fontSize: 14.sp,
+                    minimumSize: Size(90.w, 40.h),
+                    text: 'Delete',
+                    onPressed: () {
+                      context.read<AddCartCubit>().clear();
+                      Navigator.pop(context, true);
+                    },
+                  ),
+                ],
               ),
-              PrimaryButton(
-                fontSize: 14.sp,
-                minimumSize: Size(90.w, 40.h),
-                text: 'Delete',
-                onPressed: () {
-                  context.read<AddCartCubit>().clear();
-                  Navigator.pop(context, true);
-                },
-              ),
-            ],
-          ),
         );
       },
       onDismissed: (direction) {
@@ -261,39 +260,40 @@ class CheckoutCart extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           showModalBottomSheet(
-              context: context,
-              showDragHandle: true,
-              backgroundColor: whiteColor,
-              constraints: BoxConstraints.loose(
-                Size(
-                  Utils.mediaQuery(context).width,
-                  Utils.mediaQuery(context).height * 0.9,
-                ),
+            context: context,
+            showDragHandle: true,
+            backgroundColor: whiteColor,
+            constraints: BoxConstraints.loose(
+              Size(
+                Utils.mediaQuery(context).width,
+                Utils.mediaQuery(context).height * 0.9,
               ),
-              isScrollControlled: true,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(Utils.radius(10.0)),
-                  topRight: Radius.circular(Utils.radius(10.0)),
-                ),
+            ),
+            isScrollControlled: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(Utils.radius(10.0)),
+                topRight: Radius.circular(Utils.radius(10.0)),
               ),
-              builder: (context) {
-                return DraggableScrollableSheet(
-                  initialChildSize: 0.85,
-                  minChildSize: 0.5,
-                  maxChildSize: 0.95,
-                  expand: false,
-                  builder: (context, scrollController) {
-                    return SingleChildScrollView(
-                      controller: scrollController,
-                      child: ProductDetailsScreen(
-                        id: cartItem.productId,
-                        inInCart: true,
-                      ),
-                    );
-                  },
-                );
-              });
+            ),
+            builder: (context) {
+              return DraggableScrollableSheet(
+                initialChildSize: 0.85,
+                minChildSize: 0.5,
+                maxChildSize: 0.95,
+                expand: false,
+                builder: (context, scrollController) {
+                  return SingleChildScrollView(
+                    controller: scrollController,
+                    child: ProductDetailsScreen(
+                      id: cartItem.productId,
+                      inInCart: true,
+                    ),
+                  );
+                },
+              );
+            },
+          );
         },
         child: Container(
           padding: Utils.symmetric(h: 8.0, v: 4.0),
@@ -322,9 +322,10 @@ class CheckoutCart extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
                   child: CustomImage(
-                    path: product != null
-                        ? RemoteUrls.imageUrl(product.image)
-                        : KImages.foodImage1,
+                    path:
+                        product != null
+                            ? RemoteUrls.imageUrl(product.image)
+                            : KImages.foodImage1,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -354,47 +355,63 @@ class CheckoutCart extends StatelessWidget {
                           Row(
                             children: [
                               GestureDetector(
-                                onTap: () => cartCubit
-                                    .decrementProduct(productId.toString()),
+                                onTap:
+                                    () => cartCubit.decrementProduct(
+                                      productId.toString(),
+                                    ),
                                 child: Container(
-                                  height: 25,
-                                  width: 25,
+                                  height: 24.h,
+                                  width: 24.w,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(4.0),
                                     color: primaryColor.withOpacity(0.2),
                                   ),
                                   child: const Center(
-                                    child:
-                                        Icon(Icons.remove, color: Colors.amber),
+                                    child: Icon(
+                                      Icons.remove,
+                                      color: Colors.amber,
+                                    ),
                                   ),
                                 ),
                               ),
-                              Utils.horizontalSpace(6.0),
-                              CustomText(
-                                text: cartItem.qty.toString(),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
+
+                              Padding(
+                                padding: Utils.symmetric(h: 10, v: 0),
+                                child: CustomText(
+                                  text: cartItem.qty.toString(),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                              Utils.horizontalSpace(8.0),
+
                               GestureDetector(
-                                onTap: () => cartCubit
-                                    .incrementProduct(productId.toString()),
+                                onTap:
+                                    () => cartCubit.incrementProduct(
+                                      productId.toString(),
+                                    ),
                                 child: Container(
-                                  height: 25,
-                                  width: 25,
+                                  height: 24.h,
+                                  width: 24.w,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(4.0),
                                     color: primaryColor,
                                   ),
                                   child: const Center(
-                                    child: Icon(Icons.add,
-                                        size: 18, color: blackColor),
+                                    child: Icon(
+                                      Icons.add,
+                                      size: 18,
+                                      color: blackColor,
+                                    ),
                                   ),
                                 ),
                               ),
                             ],
                           ),
                         ],
+                      ),
+                      CustomText(
+                        text: 'Addon Price (\$${cartItem.addonPrice})',
+                        fontSize: 14,
                       ),
                     ],
                   ),

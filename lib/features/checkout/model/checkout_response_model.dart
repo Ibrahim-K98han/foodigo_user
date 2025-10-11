@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 
 import '../../add_to_cart/model/add_cart_response_model.dart';
@@ -7,31 +8,26 @@ import '../../add_to_cart/model/add_cart_response_model.dart';
 class CheckoutResponseModel extends Equatable {
   final CheckoutData? checkoutData;
 
-  const CheckoutResponseModel({
-    this.checkoutData,
-  });
+  const CheckoutResponseModel({this.checkoutData});
 
   CheckoutResponseModel copyWith({
     bool? success,
     CheckoutData? data,
     String? message,
   }) {
-    return CheckoutResponseModel(
-      checkoutData: checkoutData ?? checkoutData,
-    );
+    return CheckoutResponseModel(checkoutData: checkoutData ?? checkoutData);
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'data': checkoutData?.toMap(),
-    };
+    return <String, dynamic>{'data': checkoutData?.toMap()};
   }
 
   factory CheckoutResponseModel.fromMap(Map<String, dynamic> map) {
     return CheckoutResponseModel(
-      checkoutData: map['data'] != null
-          ? CheckoutData.fromMap(map['data'] as Map<String, dynamic>)
-          : null,
+      checkoutData:
+          map['data'] != null
+              ? CheckoutData.fromMap(map['data'] as Map<String, dynamic>)
+              : null,
     );
   }
 
@@ -39,15 +35,14 @@ class CheckoutResponseModel extends Equatable {
 
   factory CheckoutResponseModel.fromJson(String source) =>
       CheckoutResponseModel.fromMap(
-          json.decode(source) as Map<String, dynamic>);
+        json.decode(source) as Map<String, dynamic>,
+      );
 
   @override
   bool get stringify => true;
 
   @override
-  List<Object?> get props => [
-        checkoutData,
-      ];
+  List<Object?> get props => [checkoutData];
 }
 
 class CheckoutData extends Equatable {
@@ -104,13 +99,79 @@ class CheckoutData extends Equatable {
 
   factory CheckoutData.fromMap(Map<String, dynamic> map) {
     return CheckoutData(
-      validation: Validation.fromMap(map['validation']),
-      orderSummary: OrderSummary.fromMap(map['order_summary']),
-      deliveryInfo: DeliveryInfo.fromMap(map['delivery_info']),
-      pricingBreakdown: PricingBreakdown.fromMap(map['pricing_breakdown']),
-      restaurantInfo: RestaurantInfo.fromMap(map['restaurant_info']),
-      addressInfo: AddressInfo.fromMap(map['address_info']),
-      nextSteps: NextSteps.fromMap(map['next_steps']),
+      validation:
+          map['validation'] != null
+              ? Validation.fromMap(map['validation'])
+              : const Validation(
+                addressValid: false,
+                deliveryAvailable: false,
+                paymentMethodValid: false,
+                cartValid: false,
+                distanceValid: false,
+                minimumOrderMet: false,
+              ),
+      orderSummary:
+          map['order_summary'] != null
+              ? OrderSummary.fromMap(map['order_summary'])
+              : const OrderSummary(
+                cartItemsCount: 0,
+                totalQuantity: 0,
+                orderType: '',
+                paymentMethod: '',
+              ),
+      deliveryInfo:
+          map['delivery_info'] != null
+              ? DeliveryInfo.fromMap(map['delivery_info'])
+              : const DeliveryInfo(
+                distanceKm: 0,
+                maxDeliveryDistance: '',
+                deliveryAvailable: false,
+                estimatedDeliveryTime: '',
+                deliveryInstructions: '',
+              ),
+      pricingBreakdown:
+          map['pricing_breakdown'] != null
+              ? PricingBreakdown.fromMap(map['pricing_breakdown'])
+              : const PricingBreakdown(
+                subtotal: 0,
+                deliveryFee: 0,
+                taxAmount: 0,
+                taxRate: '',
+                couponDiscount: 0,
+                totalAmount: 0,
+              ),
+      restaurantInfo:
+          map['restaurant_info'] != null
+              ? RestaurantInfo.fromMap(map['restaurant_info'])
+              : const RestaurantInfo(
+                id: 0,
+                name: '',
+                address: '',
+                phone: '',
+                deliveryFeeBase: 0,
+                minimumOrder: 0,
+                maxDeliveryDistance: '',
+              ),
+      addressInfo:
+          map['address_info'] != null
+              ? AddressInfo.fromMap(map['address_info'])
+              : const AddressInfo(
+                id: 0,
+                name: '',
+                address: '',
+                phone: '',
+                email: '',
+                deliveryType: '',
+                coordinates: Coordinates(lat: '', lon: ''),
+              ),
+      nextSteps:
+          map['next_steps'] != null
+              ? NextSteps.fromMap(map['next_steps'])
+              : const NextSteps(
+                canProceed: false,
+                message: '',
+                requiredActions: [],
+              ),
     );
   }
 
@@ -119,14 +180,14 @@ class CheckoutData extends Equatable {
 
   @override
   List<Object?> get props => [
-        validation,
-        orderSummary,
-        deliveryInfo,
-        pricingBreakdown,
-        restaurantInfo,
-        addressInfo,
-        nextSteps,
-      ];
+    validation,
+    orderSummary,
+    deliveryInfo,
+    pricingBreakdown,
+    restaurantInfo,
+    addressInfo,
+    nextSteps,
+  ];
 }
 
 class Validation extends Equatable {
@@ -170,13 +231,13 @@ class Validation extends Equatable {
 
   @override
   List<Object?> get props => [
-        addressValid,
-        deliveryAvailable,
-        paymentMethodValid,
-        cartValid,
-        distanceValid,
-        minimumOrderMet,
-      ];
+    addressValid,
+    deliveryAvailable,
+    paymentMethodValid,
+    cartValid,
+    distanceValid,
+    minimumOrderMet,
+  ];
 }
 
 class OrderSummary extends Equatable {
@@ -211,8 +272,12 @@ class OrderSummary extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [cartItemsCount, totalQuantity, orderType, paymentMethod];
+  List<Object?> get props => [
+    cartItemsCount,
+    totalQuantity,
+    orderType,
+    paymentMethod,
+  ];
 }
 
 class DeliveryInfo extends Equatable {
@@ -252,12 +317,12 @@ class DeliveryInfo extends Equatable {
 
   @override
   List<Object?> get props => [
-        distanceKm,
-        maxDeliveryDistance,
-        deliveryAvailable,
-        estimatedDeliveryTime,
-        deliveryInstructions,
-      ];
+    distanceKm,
+    maxDeliveryDistance,
+    deliveryAvailable,
+    estimatedDeliveryTime,
+    deliveryInstructions,
+  ];
 }
 
 class PricingBreakdown extends Equatable {
@@ -290,28 +355,39 @@ class PricingBreakdown extends Equatable {
 
   factory PricingBreakdown.fromMap(Map<String, dynamic> map) {
     return PricingBreakdown(
-      subtotal: map['subtotal'] != null
-          ? double.parse(map['subtotal'].toString())
-          : 0.0,
-      deliveryFee: map['delivery_fee'] != null
-          ? double.parse(map['delivery_fee'].toString())
-          : 0.0,
-      taxAmount: map['tax_amount'] != null
-          ? double.parse(map['tax_amount'].toString())
-          : 0.0,
+      subtotal:
+          map['subtotal'] != null
+              ? double.parse(map['subtotal'].toString())
+              : 0.0,
+      deliveryFee:
+          map['delivery_fee'] != null
+              ? double.parse(map['delivery_fee'].toString())
+              : 0.0,
+      taxAmount:
+          map['tax_amount'] != null
+              ? double.parse(map['tax_amount'].toString())
+              : 0.0,
       taxRate: map['tax_rate'] ?? '',
-      couponDiscount: map['coupon_discount'] != null
-          ? double.parse(map['coupon_discount'].toString())
-          : 0.0,
-      totalAmount: map['total_amount'] != null
-          ? double.parse(map['total_amount'].toString())
-          : 0.0,
+      couponDiscount:
+          map['coupon_discount'] != null
+              ? double.parse(map['coupon_discount'].toString())
+              : 0.0,
+      totalAmount:
+          map['total_amount'] != null
+              ? double.parse(map['total_amount'].toString())
+              : 0.0,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [subtotal, deliveryFee, taxAmount, taxRate, couponDiscount, totalAmount];
+  List<Object?> get props => [
+    subtotal,
+    deliveryFee,
+    taxAmount,
+    taxRate,
+    couponDiscount,
+    totalAmount,
+  ];
 }
 
 class RestaurantInfo extends Equatable {
@@ -359,14 +435,14 @@ class RestaurantInfo extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        address,
-        phone,
-        deliveryFeeBase,
-        minimumOrder,
-        maxDeliveryDistance
-      ];
+    id,
+    name,
+    address,
+    phone,
+    deliveryFeeBase,
+    minimumOrder,
+    maxDeliveryDistance,
+  ];
 }
 
 class AddressInfo extends Equatable {
@@ -413,31 +489,29 @@ class AddressInfo extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [id, name, address, phone, email, deliveryType, coordinates];
+  List<Object?> get props => [
+    id,
+    name,
+    address,
+    phone,
+    email,
+    deliveryType,
+    coordinates,
+  ];
 }
 
 class Coordinates extends Equatable {
   final String lat;
   final String lon;
 
-  const Coordinates({
-    required this.lat,
-    required this.lon,
-  });
+  const Coordinates({required this.lat, required this.lon});
 
   Map<String, dynamic> toMap() {
-    return {
-      'lat': lat,
-      'lon': lon,
-    };
+    return {'lat': lat, 'lon': lon};
   }
 
   factory Coordinates.fromMap(Map<String, dynamic> map) {
-    return Coordinates(
-      lat: map['lat'] ?? '',
-      lon: map['lon'] ?? '',
-    );
+    return Coordinates(lat: map['lat'] ?? '', lon: map['lon'] ?? '');
   }
 
   @override

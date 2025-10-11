@@ -7,8 +7,6 @@ import 'package:foodigo/features/restaurant_features/RestaurantProfile/model/res
 import 'package:foodigo/features/restaurant_features/RestaurantProfile/model/restaurant_profile_state_model.dart';
 import 'package:foodigo/widget/custom_appbar.dart';
 import 'package:foodigo/widget/loading_widget.dart';
-import 'package:foodigo/widget/page_refresh.dart';
-
 import '../../../utils/constraints.dart';
 import '../../../utils/utils.dart';
 import '../../../widget/custom_text_style.dart';
@@ -41,55 +39,51 @@ class _EditRestaurantScreenState extends State<EditRestaurantScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Restaurant'),
-      body: PageRefresh(
-        onRefresh: () async {
-          resProCubit.getRestaurantProfile();
+      body: BlocConsumer<RestaurantProfileCubit, RestaurantProfileStateModel>(
+        listener: (context, state) {
+          final profile = state.restaurantProfileState;
+          if (profile is UpdateRestaurantProfileLoaded) {
+            Utils.successSnackBar(context, profile.message);
+          }
+          // }else if(profile is UpdateRestaurantProfileLoaded){
+          //   Utils.successSnackBar(context, profile.message);
+          // }
         },
-        child:
-            BlocConsumer<RestaurantProfileCubit, RestaurantProfileStateModel>(
-          listener: (context, state) {
-            final profile = state.restaurantProfileState;
-            if (profile is RestaurantProfileError) {
-              if (profile.statusCode == 503) {
-                FetchErrorText(text: profile.message);
-              }
-            }
-          },
-          builder: (context, state) {
-            final profile = state.restaurantProfileState;
-            if (profile is RestaurantProfileLoading) {
-              return const LoadingWidget();
-            } else if (profile is RestaurantProfileError) {
-              if (profile.statusCode == 503 ||
-                  resProCubit.restaurantProfileModel != null) {
-                return ProfileDataLoad(
-                  restaurantProfileModel: resProCubit.restaurantProfileModel!,
-                );
-              } else {
-                return FetchErrorText(text: profile.message);
-              }
-            } else if (profile is RestaurantProfileLoaded) {
-              return ProfileDataLoad(
-                restaurantProfileModel: resProCubit.restaurantProfileModel!,
-              );
-            }
-            if (resProCubit.restaurantProfileModel != null) {
+        builder: (context, state) {
+          final profile = state.restaurantProfileState;
+          if (profile is UpdateRestaurantProfileLoading) {
+            return const LoadingWidget();
+          } else if (profile is UpdateRestaurantProfileError) {
+            if (profile.statusCode == 503 ||
+                resProCubit.restaurantProfileModel != null) {
               return ProfileDataLoad(
                 restaurantProfileModel: resProCubit.restaurantProfileModel!,
               );
             } else {
-              return const FetchErrorText(text: 'Something Went Wrong');
+              return FetchErrorText(text: profile.message);
             }
-          },
-        ),
+          } else if (profile is UpdateRestaurantProfileLoaded) {
+            return ProfileDataLoad(
+              restaurantProfileModel: resProCubit.restaurantProfileModel!,
+            );
+          }
+          if (resProCubit.restaurantProfileModel != null) {
+            return ProfileDataLoad(
+              restaurantProfileModel: resProCubit.restaurantProfileModel!,
+            );
+          } else {
+            return const FetchErrorText(text: 'Something Went Wrong');
+          }
+        },
       ),
       bottomNavigationBar: Padding(
         padding: Utils.symmetric(v: 20.0),
         child: PrimaryButton(
-            text: 'Update',
-            onPressed: () {
-              resProCubit.updateRestaurantProfile();
-            }),
+          text: 'Update',
+          onPressed: () {
+            resProCubit.updateRestaurantProfile();
+          },
+        ),
       ),
     );
   }
@@ -245,10 +239,7 @@ class _SwitchWidgetState extends State<SwitchWidget> {
             ),
             Row(
               children: [
-                const CustomText(
-                  text: '',
-                  fontWeight: FontWeight.w500,
-                ),
+                const CustomText(text: '', fontWeight: FontWeight.w500),
                 Utils.horizontalSpace(8),
                 GestureDetector(
                   onTap: _toggle,

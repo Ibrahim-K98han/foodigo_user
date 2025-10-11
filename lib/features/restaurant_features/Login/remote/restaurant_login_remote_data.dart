@@ -1,5 +1,3 @@
-import 'package:foodigo/features/restaurant_features/Login/model/restaurant_login_response_model.dart';
-
 import '../../../../data/network_parser.dart';
 import '../../../../data/remote_url.dart';
 import '../model/restaurant_login_state_model.dart';
@@ -8,7 +6,7 @@ import 'package:http/http.dart' as http;
 abstract class RestaurantLoginRemoteData {
   Future restaurantLogin(RestaurantLoginStateModel body);
 
-  Future restaurantLogout(Uri uri);
+  Future restaurantLogout(Uri uri, String token);
 }
 
 class RestaurantLoginRemoteDataImpl implements RestaurantLoginRemoteData {
@@ -44,10 +42,8 @@ class RestaurantLoginRemoteDataImpl implements RestaurantLoginRemoteData {
   }
 
   @override
-  Future restaurantLogout(Uri uri) async {
-    final uri = Uri.parse(RemoteUrls.restaurantLogin);
-    print("restaurant Logout url : $uri");
-    final clientMethod = client.post(uri, headers: postDeleteHeader);
+  Future restaurantLogout(Uri uri, String token) async {
+    final clientMethod = client.post(uri, headers: authHeader(token));
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
     return responseJsonBody;

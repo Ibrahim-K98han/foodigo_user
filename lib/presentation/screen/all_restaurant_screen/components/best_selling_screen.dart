@@ -25,33 +25,30 @@ class BestSellingProduct extends StatelessWidget {
             blurRadius: 40,
             offset: Offset(0, 2),
             spreadRadius: 10,
-          )
+          ),
         ],
       ),
-      child: products.isEmpty
-          ? const CustomImage(path: KImages.notFound)
-          : ListView.builder(
-              itemCount: products.length,
-              shrinkWrap: true,
-              padding: Utils.all(),
-              itemBuilder: (context, int index) {
-                final product = products[index];
-                return Padding(
-                  padding: Utils.symmetric(h: 16.0, v: 6.0),
-                  child: ProductCard(
-                    product: product,
-                  ),
-                );
-              }),
+      child:
+          products.isEmpty
+              ? const CustomImage(path: KImages.notFound)
+              : ListView.builder(
+                itemCount: products.length,
+                shrinkWrap: true,
+                padding: Utils.all(),
+                itemBuilder: (context, int index) {
+                  final product = products[index];
+                  return Padding(
+                    padding: Utils.symmetric(h: 16.0, v: 6.0),
+                    child: ProductCard(product: product),
+                  );
+                },
+              ),
     );
   }
 }
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({
-    super.key,
-    required this.product,
-  });
+  const ProductCard({super.key, required this.product});
 
   final Products product;
 
@@ -61,7 +58,9 @@ class ProductCard extends StatelessWidget {
       padding: Utils.symmetric(h: 0.0, v: 0.0),
       height: 100.0,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6.0.r), color: whiteColor),
+        borderRadius: BorderRadius.circular(6.0.r),
+        color: whiteColor,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -75,11 +74,12 @@ class ProductCard extends StatelessWidget {
                   shape: BoxShape.rectangle,
                 ),
                 child: ClipRRect(
-                    borderRadius: BorderRadius.circular(3.0.r),
-                    child: CustomImage(
-                      path: RemoteUrls.imageUrl(product.image),
-                      fit: BoxFit.cover,
-                    )),
+                  borderRadius: BorderRadius.circular(3.0.r),
+                  child: CustomImage(
+                    path: RemoteUrls.imageUrl(product.image),
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
               Positioned(
                 top: 4.h,
@@ -92,10 +92,11 @@ class ProductCard extends StatelessWidget {
                   child: Padding(
                     padding: Utils.all(value: 4.0),
                     child: const Center(
-                        child: CustomImage(path: KImages.loveIcon)),
+                      child: CustomImage(path: KImages.loveIcon),
+                    ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
           Flexible(
@@ -141,20 +142,21 @@ class ProductCard extends StatelessWidget {
                                 topRight: Radius.circular(Utils.radius(10.0)),
                               ),
                             ),
-                            builder: (context) => DraggableScrollableSheet(
-                              initialChildSize: 0.85,
-                              minChildSize: 0.5,
-                              maxChildSize: 0.95,
-                              expand: false,
-                              builder: (context, scrollController) {
-                                return SingleChildScrollView(
-                                  controller: scrollController,
-                                  child: ProductDetailsScreen(
-                                    id: product.id,
-                                  ),
-                                );
-                              },
-                            ),
+                            builder:
+                                (context) => DraggableScrollableSheet(
+                                  initialChildSize: 0.85,
+                                  minChildSize: 0.5,
+                                  maxChildSize: 0.95,
+                                  expand: false,
+                                  builder: (context, scrollController) {
+                                    return SingleChildScrollView(
+                                      controller: scrollController,
+                                      child: ProductDetailsScreen(
+                                        id: product.id,
+                                      ),
+                                    );
+                                  },
+                                ),
                           );
                         },
                         child: Padding(
@@ -167,9 +169,7 @@ class ProductCard extends StatelessWidget {
                             child: Padding(
                               padding: Utils.symmetric(h: 10.0.h, v: 6.0.w),
                               child: const Center(
-                                child: CustomText(
-                                  text: 'Add to Cart',
-                                ),
+                                child: CustomText(text: 'Add to Cart'),
                               ),
                             ),
                           ),
