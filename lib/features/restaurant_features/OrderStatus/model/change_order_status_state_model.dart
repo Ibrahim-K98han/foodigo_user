@@ -5,29 +5,29 @@ import 'package:equatable/equatable.dart';
 import 'package:foodigo/features/restaurant_features/OrderStatus/cubit/order_status_state.dart';
 
 class ChangeOrderStatusStateModel extends Equatable {
-  final String ordertatus;
+  final String orderStatus;
   final OrderStatusState orderStatusState;
   const ChangeOrderStatusStateModel({
-    this.ordertatus = '',
+    this.orderStatus = '',
     this.orderStatusState = const OrderStatusInitial(),
   });
 
   ChangeOrderStatusStateModel copyWith({
-    String? ordertatus,
+    String? orderStatus,
     OrderStatusState? orderStatusState,
   }) {
     return ChangeOrderStatusStateModel(
-      ordertatus: ordertatus ?? this.ordertatus,
+      orderStatus: orderStatus ?? this.orderStatus,
       orderStatusState: orderStatusState ?? this.orderStatusState,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{'order_satus': ordertatus};
+    return <String, dynamic>{'order_status': orderStatus};
   }
 
   factory ChangeOrderStatusStateModel.fromMap(Map<String, dynamic> map) {
-    return ChangeOrderStatusStateModel(ordertatus: map['order_status'] ?? '');
+    return ChangeOrderStatusStateModel(orderStatus: map['order_status'] ?? '');
   }
 
   String toJson() => json.encode(toMap());
@@ -41,5 +41,5 @@ class ChangeOrderStatusStateModel extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props => [ordertatus, orderStatusState];
+  List<Object> get props => [orderStatus, orderStatusState];
 }
