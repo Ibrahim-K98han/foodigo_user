@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
+import '../../../HomeData/feature_product_model.dart';
+
 class ResDashboardModel extends Equatable {
   final RestaurantDisplay? restaurantDisplay;
   final Statistics? statistics;
@@ -1200,7 +1202,8 @@ class Item extends Equatable {
   final String orderId;
   final String productId;
   final Map<String, String> size;
-  final Map<String, String> addons;
+  // final Map<String, String> addons;
+  final List<AddonDetails>? detailsAddons;
   final String qty;
   final String total;
   final DateTime createdAt;
@@ -1212,7 +1215,8 @@ class Item extends Equatable {
     required this.orderId,
     required this.productId,
     required this.size,
-    required this.addons,
+    // required this.addons,
+    this.detailsAddons,
     required this.qty,
     required this.total,
     required this.createdAt,
@@ -1225,7 +1229,8 @@ class Item extends Equatable {
     String? orderId,
     String? productId,
     Map<String, String>? size,
-    Map<String, String>? addons,
+    // Map<String, String>? addons,
+    List<AddonDetails>? detailsAddons,
     String? qty,
     String? total,
     DateTime? createdAt,
@@ -1237,7 +1242,8 @@ class Item extends Equatable {
       orderId: orderId ?? this.orderId,
       productId: productId ?? this.productId,
       size: size ?? this.size,
-      addons: addons ?? this.addons,
+      // addons: addons ?? this.addons,
+      detailsAddons: detailsAddons ?? this.detailsAddons,
       qty: qty ?? this.qty,
       total: total ?? this.total,
       createdAt: createdAt ?? this.createdAt,
@@ -1252,7 +1258,8 @@ class Item extends Equatable {
       'order_id': orderId,
       'product_id': productId,
       'size': jsonEncode(size),
-      'addons': jsonEncode(addons),
+      // 'addons': jsonEncode(addons),
+      'addon_details': detailsAddons?.map((x) => x.toMap()).toList(),
       'qty': qty,
       'total': total,
       'created_at': createdAt.toIso8601String(),
@@ -1286,7 +1293,14 @@ class Item extends Equatable {
       orderId: map['order_id']?.toString() ?? '',
       productId: map['product_id']?.toString() ?? '',
       size: decodeStringMap(map['size']),
-      addons: decodeStringMap(map['addons']),
+      detailsAddons:
+          map['addon_details'] != null
+              ? List<AddonDetails>.from(
+                (map['addon_details'] as List).map(
+                  (x) => AddonDetails.fromMap(x as Map<String, dynamic>),
+                ),
+              )
+              : null,
       qty: map['qty']?.toString() ?? '',
       total: map['total']?.toString() ?? '',
       createdAt: DateTime.tryParse(map['created_at'] ?? '') ?? DateTime.now(),
@@ -1309,7 +1323,7 @@ class Item extends Equatable {
     orderId,
     productId,
     size,
-    addons,
+    detailsAddons,
     qty,
     total,
     createdAt,
@@ -1317,6 +1331,62 @@ class Item extends Equatable {
     product,
   ];
 }
+
+class AddonDetails extends Equatable {
+  final int id;
+  final String name;
+  final String price;
+  final int quantity;
+  const AddonDetails({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.quantity,
+  });
+
+  AddonDetails copyWith({
+    int? id,
+    String? name,
+    String? price,
+    int? quantity,
+  }) {
+    return AddonDetails(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      price: price ?? this.price,
+      quantity: quantity ?? this.quantity,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'name': name,
+      'price': price,
+      'quantity': quantity,
+    };
+  }
+
+  factory AddonDetails.fromMap(Map<String, dynamic> map) {
+    return AddonDetails(
+      id: map['id'] ??0,
+      name: map['name'] ?? '',
+      price: map['price'] ?? '',
+      quantity: map['quantity'] ?? 0,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory AddonDetails.fromJson(String source) => AddonDetails.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  bool get stringify => true;
+
+  @override
+  List<Object> get props => [id, name, price, quantity];
+}
+
 
 class Product extends Equatable {
   final int id;
@@ -1334,6 +1404,7 @@ class Product extends Equatable {
   final String name;
   final String shortDescription;
   final Map<String, String> size;
+
   const Product({
     required this.id,
     required this.slug,
@@ -1437,6 +1508,7 @@ class Product extends Equatable {
         }
         return <String>[];
       }(),
+
       createdAt:
           map['created_at'] != null
               ? DateTime.tryParse(map['created_at']) ?? DateTime.now()

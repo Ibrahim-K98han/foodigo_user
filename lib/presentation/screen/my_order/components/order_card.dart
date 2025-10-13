@@ -13,6 +13,7 @@ import '../../../../features/Order/cubit/order_state.dart';
 import '../../../../utils/constraints.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widget/custom_text_style.dart';
+import '../../../restaurant_screen/my_order/components/order_details_screen.dart';
 
 class OrderCard extends StatelessWidget {
   OrderCard({super.key, required this.orderModel});
@@ -274,26 +275,12 @@ class _ShowOrderDetailsDialogState extends State<ShowOrderDetailsDialog> {
                           String sizeName = "";
                           dynamic sizePrice;
 
-                          // ✅ safely decode addon
-                          Map<String, dynamic> addonMap = {};
-                          String addonName = "";
-                          dynamic addonPrice;
-
                           try {
                             final decoded = jsonDecode(item.size);
                             if (decoded is Map<String, dynamic>) {
                               sizeMap = decoded;
                               sizeName = sizeMap.keys.first;
                               sizePrice = sizeMap.values.first;
-                            }
-                          } catch (_) {}
-
-                          try {
-                            final decoded = jsonDecode(item.addons);
-                            if (decoded is Map<String, dynamic>) {
-                              addonMap = decoded;
-                              addonName = addonMap.keys.first;
-                              addonPrice = addonMap.values.first;
                             }
                           } catch (_) {}
 
@@ -338,13 +325,10 @@ class _ShowOrderDetailsDialogState extends State<ShowOrderDetailsDialog> {
                                         CustomText(
                                           text: "Quantity: ${item.qty}",
                                         ),
-
-                                        if (addonName.isNotEmpty ||
-                                            addonPrice != null)
-                                          CustomText(
-                                            text:
-                                                "Addon: $addonName${addonPrice != null ? ' (\$$addonPrice)' : ''}",
-                                          ),
+                                        CustomText(
+                                          text:
+                                              'Addons: ${(item.detailsAddons != null && item.detailsAddons!.isNotEmpty) ? Utils.formatPrice(context, item.detailsAddons![index].price ?? 0) : Utils.formatPrice(context, 0)}',
+                                        ),
 
                                         CustomText(
                                           text:

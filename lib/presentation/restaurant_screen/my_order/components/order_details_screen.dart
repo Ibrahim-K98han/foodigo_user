@@ -115,6 +115,7 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
                   itemBuilder: (context, index) {
                     final item = order.items![index];
 
+
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -130,11 +131,12 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
                               .map((e) => e.key)
                               .join(", "),
                         ),
+
                         Info(
-                          title: "Extra addons",
-                          subTitle: item.addons.entries
-                              .map((e) => e.key)
-                              .join(", "),
+                          title: "Addons",
+                          subTitle: item.detailsAddons
+                              ?.map((addon) => '${addon.name} (\$${addon.price})')
+                              .join(", ") ?? "None",
                         ),
                         Info(
                           title: "Price",

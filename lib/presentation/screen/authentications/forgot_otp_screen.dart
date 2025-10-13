@@ -16,6 +16,7 @@ import '../../core/routes/route_names.dart';
 
 class ForgotOtpScreen extends StatefulWidget {
   const ForgotOtpScreen({super.key});
+
   @override
   State<ForgotOtpScreen> createState() => _ForgotOtpScreenState();
 }
@@ -40,10 +41,10 @@ class _ForgotOtpScreenState extends State<ForgotOtpScreen> {
       body: BlocListener<ForgotPasswordCubit, ForgotPasswordStateModel>(
         listener: (context, state) {
           final otp = state.passwordState;
-          if (otp is ForgotPssOtpStateError) {
-            Utils.successSnackBar(context, otp.message);
-            // Navigator.pushNamed(context, RouteNames.changePasswordScreen);
-          } else if (otp is ForgotPassOtpStateSuccess) {
+          print("Current state: ${otp.runtimeType}");
+          if (otp is ForgotPssOtpVerifyStateError) {
+            Utils.errorSnackBar(context, otp.message);
+          } else if (otp is ForgotPassOtpVerifyStateSuccess) {
             Utils.successSnackBar(context, otp.message);
             Navigator.pushNamed(context, RouteNames.changePasswordScreen);
           }
@@ -98,13 +99,20 @@ class _ForgotOtpScreenState extends State<ForgotOtpScreen> {
                           ),
                         ),
                         onChanged: (String otp) {
-                          fpCubit.otpChange(otp);
-                          print('============$otp');
+                          fpCubit.forgotOtpChange(otp);
                         },
                         onCompleted: (String otp) {
-                          print('Complete OTP $otp');
-                          fpCubit.verifyForgetOtp(email, otp);
+                          print("call");
+                          if (otp.length == 6) {
+                            fpCubit.verifyForgetPassOtp(email, otp);
+                          } else {
+                            Utils.errorSnackBar(context, "enter 6 digit");
+                          }
                         },
+                        // onCompleted: (String code) {
+                        //   print('Complete OTP $code');
+                        //   fpCubit.verifyForgetPassOtp(email, code);
+                        // },
                       ),
                     ),
 

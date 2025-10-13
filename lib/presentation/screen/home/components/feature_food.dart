@@ -275,11 +275,16 @@ class _FeatureFoodCartState extends State<FeatureFoodCart> {
                           color: blackColor.withOpacity(0.4),
                         ),
                         Utils.horizontalSpace(6.0),
-                        CustomText(
-                          text: widget.restaurants.address,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 12.sp,
-                          color: Colors.black.withOpacity(0.4),
+                        SizedBox(
+                          width: 140.w,
+                          child: CustomText(
+                            text: widget.restaurants.address,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 12.sp,
+                            overflow: TextOverflow.ellipsis,
+                            maxLine: 1,
+                            color: Colors.black.withOpacity(0.4),
+                          ),
                         ),
                       ],
                     ),

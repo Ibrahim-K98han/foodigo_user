@@ -30,8 +30,6 @@ class _CategoryInfoWidgetState extends State<CategoryInfoWidget> {
   void initState() {
     super.initState();
     stCubit = context.read<StoreProductCubit>();
-
-    // Initialize selected category from the cubit’s state (for edit/update)
     selectedCategoryValue = stCubit.state.categoryId;
   }
 
@@ -62,7 +60,7 @@ class _CategoryInfoWidgetState extends State<CategoryInfoWidget> {
                     setState(() {
                       selectedCategoryValue = value!;
                     });
-                    stCubit.category(value!); // update cubit state too
+                    stCubit.category(value!);
                   },
                   items:
                       categories?.map<DropdownMenuItem<String>>((cat) {
@@ -143,7 +141,6 @@ class _CategoryInfoWidgetState extends State<CategoryInfoWidget> {
               return const SizedBox();
             },
           ),
-
           Utils.verticalSpace(12),
         ],
       ),

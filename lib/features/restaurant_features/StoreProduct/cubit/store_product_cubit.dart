@@ -1,257 +1,3 @@
-// import 'dart:convert';
-
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:foodigo/data/remote_url.dart';
-// import 'package:foodigo/features/restaurant_features/Login/bloc/restaurant_login_bloc.dart';
-// import 'package:foodigo/features/restaurant_features/StoreProduct/cubit/store_product_state.dart';
-// import 'package:foodigo/features/restaurant_features/StoreProduct/model/edit_product_model.dart';
-// import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_response_model.dart';
-// import 'package:foodigo/features/restaurant_features/StoreProduct/model/store_product_state_model.dart';
-// import 'package:foodigo/features/restaurant_features/StoreProduct/repository/store_product_repository.dart';
-// import 'package:foodigo/utils/utils.dart';
-
-// class StoreProductCubit extends Cubit<StoreProductStateModel> {
-//   final StoreProductRepository _repository;
-//   final RestaurantLoginBloc _loginBloc;
-
-//   StoreProductCubit({
-//     required StoreProductRepository repository,
-//     required RestaurantLoginBloc loginBloc,
-//   }) : _repository = repository,
-//        _loginBloc = loginBloc,
-//        super(const StoreProductStateModel());
-
-//   StoreProductResponseModel? storeProductResponseModel;
-//   ProductData? products;
-
-//   /// ----------------- Form Updaters -----------------
-//   void productName(String name) => emit(state.copyWith(name: name));
-
-//   void productSlug(String slug) => emit(state.copyWith(slug: slug));
-
-//   void category(String category) => emit(state.copyWith(categoryId: category));
-
-//   void addon(List<String> addon) => emit(state.copyWith(addonItems: addon));
-
-//   void image(String image) => emit(state.copyWith(image: image));
-
-//   void productPrice(String price) => emit(state.copyWith(productPrice: price));
-
-//   void offerPrice(String offerPrice) =>
-//       emit(state.copyWith(offerPrice: offerPrice));
-
-//   void translateId(String translateId) =>
-//       emit(state.copyWith(translateId: translateId));
-
-//   void size(List<String> sizes) => emit(state.copyWith(size: sizes));
-//     void sizePrice(List<String> prices) => emit(state.copyWith(price: prices));
-
-//   void specification(List<String> specification) =>
-//       emit(state.copyWith(specification: specification));
-
-//   void description(String text) {
-//     emit(state.copyWith(shortDescription: text));
-//   }
-
-// /// ----------------- Store Product API -----------------
-// Future<void> storeProduct() async {
-//   emit(state.copyWith(storeProductState: const StoreProductLoading()));
-//   final uri = Utils.tokenWithCode(
-//     RemoteUrls.storeProduct,
-//     _loginBloc.userInformation!.token,
-//     _loginBloc.state.languageCode,
-//   );
-//   print('Store Product URI: $uri');
-//   try {
-//     final result = await _repository.storeProduct(
-//       state,
-//       uri,
-//       _loginBloc.userInformation!.token,
-//     );
-//     result.fold(
-//       (failure) {
-//         emit(
-//           state.copyWith(
-//             storeProductState: StoreProductError(
-//               failure.message,
-//               failure.statusCode,
-//             ),
-//           ),
-//         );
-//       },
-//       (success) {
-//         storeProductResponseModel = success;
-//         emit(state.copyWith(storeProductState: StoreProductLoaded(success)));
-//         clear();
-//       },
-//     );
-//   } catch (e) {
-//     emit(
-//       state.copyWith(storeProductState: StoreProductError(e.toString(), 500)),
-//     );
-//   }
-// }
-
-// /// ----------------- Update Store Product -----------------
-// Future<void> updateProduct(String productId) async {
-//   emit(state.copyWith(storeProductState: const StoreProductLoading()));
-//   final uri = Utils.tokenWithCode(
-//     RemoteUrls.updateStoreProduct(productId),
-//     _loginBloc.userInformation!.token,
-//     _loginBloc.state.languageCode,
-//   );
-//   print('Update product url: $uri');
-//   try {
-//     final result = await _repository.updateStoreProduct(
-//       state,
-//       uri,
-//       _loginBloc.userInformation!.token,
-//     );
-//     print('API called successfully');
-//     result.fold(
-//       (failure) {
-//         emit(
-//           state.copyWith(
-//             storeProductState: StoreProductError(
-//               failure.message,
-//               failure.statusCode,
-//             ),
-//           ),
-//         );
-//       },
-//       (success) {
-//         final errors = StoreProductSuccess(success.toString());
-//         emit(state.copyWith(storeProductState: errors));
-//       },
-//     );
-//   } catch (e) {
-//     emit(
-//       state.copyWith(storeProductState: EditProductError(e.toString(), 500)),
-//     );
-//   }
-// }
-
-//   /// ----------------- Get Product By ID -----------------
-//   Future<void> getEditProduct(String id) async {
-//     emit(state.copyWith(storeProductState: EditProductLoading()));
-//     final url = Utils.tokenWithCode(
-//       RemoteUrls.editProduct(id),
-//       _loginBloc.userInformation!.token,
-//       _loginBloc.state.languageCode,
-//     );
-//     print('Get Product $url');
-
-//     final result = await _repository.getEditProduct(
-//       url,
-//       _loginBloc.userInformation!.token,
-//     );
-//     result.fold(
-//       (failure) {
-//         final errorState = EditProductError(
-//           failure.message,
-//           failure.statusCode,
-//         );
-//         emit(state.copyWith(storeProductState: errorState));
-//       },
-//       (success) {
-//         products = success;
-//         if (products != null) {
-//           emit(
-//             state.copyWith(
-//               name: products!.product!.name,
-//               slug: products!.product!.slug,
-//               categoryId: products!.product!.categoryId.toString(),
-//               image: products!.product!.image,
-//               productPrice: products!.product!.price.toString(),
-//               offerPrice: products!.product!.offerPrice.toString(),
-//               size: _parseSize(products!.productTranslate!.size),
-//               price: _parseSizePrice(products!.product!.price),
-//               specification: _parseSpecification(
-//                 products!.productTranslate!.specification,
-//               ),
-//               shortDescription: products!.productTranslate!.shortDescription,
-//             ),
-//           );
-//         }
-//         final successState = EditProductLoaded(success);
-//         emit(state.copyWith(storeProductState: successState));
-//       },
-//     );
-//   }
-
-//   /// ----------------- Delete Store Product -----------------
-//   Future<void> deleteStoreProduct(String productId) async {
-//     emit(state.copyWith(storeProductState: DeleteStoreProductLoading()));
-//     final result = await _repository.deleteStoreProduct(
-//       _loginBloc.userInformation!.token,
-//       productId,
-//     );
-//     result.fold(
-//       (l) => emit(
-//         state.copyWith(
-//           storeProductState: DeleteStoreProError(l.message, l.statusCode),
-//         ),
-//       ),
-//       (success) =>
-//           emit(state.copyWith(storeProductState: CartDeleteSuccess(success))),
-//     );
-//   }
-
-//   List<String> _parseSize(dynamic raw) {
-//     if (raw == null) return [];
-//     try {
-//       if (raw is String) {
-//         return List<String>.from(jsonDecode(raw));
-//       } else if (raw is List) {
-//         return raw.map((e) => e.toString()).toList();
-//       }
-//     } catch (_) {}
-//     return [];
-//   }
-
-//   List<String> _parseSizePrice(dynamic raw) {
-//     if (raw == null) return [];
-//     try {
-//       if (raw is String) {
-//         return List<String>.from(jsonDecode(raw));
-//       } else if (raw is List) {
-//         return raw.map((e) => e.toString()).toList();
-//       }
-//     } catch (_) {}
-//     return [];
-//   }
-
-//   List<String> _parseSpecification(dynamic raw) {
-//     if (raw == null) return [];
-//     try {
-//       if (raw is String) {
-//         return List<String>.from(jsonDecode(raw));
-//       } else if (raw is List) {
-//         return raw.map((e) => e.toString()).toList();
-//       }
-//     } catch (_) {}
-//     return [];
-//   }
-
-//   /// ----------------- Reset Form State -----------------
-//   void clear() {
-//     emit(
-//       const StoreProductStateModel(
-//         name: '',
-//         slug: '',
-//         categoryId: '',
-//         image: '',
-//         productPrice: '',
-//         offerPrice: '',
-//         size: [],
-//         price: [],
-//         shortDescription: '',
-//         storeProductState: StoreProductInitial(),
-//       ),
-//     );
-//   }
-// }
-
 import 'dart:convert';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -412,6 +158,7 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
     }
   }
 
+
   /// 🔥 Helper: Convert size & price arrays to object format
   /// Input: size: ["small","medium"], price: ["30","40"]
   /// Output: {"small":"30","medium":"40"}
@@ -481,14 +228,15 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
               name: products!.productTranslate!.name,
               slug: products!.product!.slug,
               categoryId: products!.product!.categoryId.toString(),
+              // addonItems: _parseAddonItems(products!.product!.addonItems),
+              addonItems:
+                  products!.product!.addons?.map((a) => a.id.toString()).toList() ?? [],
               image: products!.product!.image,
               productPrice: products!.product!.price.toString(),
               offerPrice: products!.product!.offerPrice.toString(),
               size: parsedSizes,
               price: parsedPrices,
               translateId: products!.productTranslate!.id.toString(),
-              // If you want to get price for a specific size, e.g., "Medium":
-              // price: _extractPricesFromSizeField(products!.product!.size, sizeName: "Medium"),
               specification: _parseSpecification(
                 products!.productTranslate!.specification,
               ),
@@ -518,6 +266,45 @@ class StoreProductCubit extends Cubit<StoreProductStateModel> {
       (success) =>
           emit(state.copyWith(storeProductState: CartDeleteSuccess(success))),
     );
+  }
+
+  List<String> _parseAddonItems(dynamic addonItems) {
+    print(
+      '🔍 _parseAddonItems - Input: $addonItems (Type: ${addonItems.runtimeType})',
+    );
+
+    if (addonItems == null) return [];
+
+    try {
+      // যদি এটা List হয়
+      if (addonItems is List) {
+        // যদি List এর মধ্যে objects থাকে (যেমন: [{id: 1, name: "Extra Cheese"}, ...])
+        if (addonItems.isNotEmpty && addonItems.first is Map) {
+          final result =
+              addonItems
+                  .map((addon) => addon['id']?.toString() ?? '')
+                  .where((id) => id.isNotEmpty)
+                  .toList();
+          print('✅ Parsed addon IDs from list of objects: $result');
+          return result;
+        }
+        // যদি শুধু IDs এর list থাকে (যেমন: [1, 2, 3])
+        else {
+          final result = addonItems.map((id) => id.toString()).toList();
+          print('✅ Parsed addon IDs from simple list: $result');
+          return result;
+        }
+      }
+      // যদি এটা String হয় (JSON format এ)
+      else if (addonItems is String) {
+        final decoded = jsonDecode(addonItems);
+        return _parseAddonItems(decoded); // Recursively parse করি
+      }
+    } catch (e) {
+      print('❌ Error in _parseAddonItems: $e');
+    }
+
+    return [];
   }
 
   /// ✅ Parse size from JSON object like {"small":"30","medium":"40","large":"50"}
