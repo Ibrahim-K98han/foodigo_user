@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 class ProductData extends Equatable {
   final User? user;
   final List<Categories>? categories;
-  final List<Addons>? addons;
+  final List<FeatureAddons>? addons;
   final ProductUpdate? product;
   final List<int>? selectedIds;
   final ProductTranslate? productTranslate;
@@ -23,7 +23,7 @@ class ProductData extends Equatable {
   ProductData copyWith({
     User? user,
     List<Categories>? categories,
-    List<Addons>? addons,
+    List<FeatureAddons>? addons,
     ProductUpdate? product,
     List<int>? selectedIds,
     ProductTranslate? productTranslate,
@@ -62,11 +62,11 @@ class ProductData extends Equatable {
             )
           : null,
       addons: map['addons'] != null
-          ? List<Addons>.from(
-              (map['addons'] as List).map(
-                (x) => Addons.fromMap(x as Map<String, dynamic>),
-              ),
-            )
+          ? List<FeatureAddons>.from(
+        (map['addons'] as List).map(
+              (x) => FeatureAddons.fromMap(x as Map<String, dynamic>),
+        ),
+      )
           : null,
       product: map['product'] != null
           ? ProductUpdate.fromMap(map['product'] as Map<String, dynamic>)
@@ -547,6 +547,58 @@ class Addons extends Equatable {
   }
 }
 
+
+class FeatureAddons extends Equatable {
+  final int id;
+  final String name;
+  final String price;
+
+  const FeatureAddons({
+    required this.id,
+    required this.name,
+    required this.price,
+  });
+
+  FeatureAddons copyWith({
+    int? id,
+    String? name,
+    String? price,
+  }) {
+    return FeatureAddons(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      price: price ?? this.price,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'name': name,
+      'price': price,
+    };
+  }
+
+  factory FeatureAddons.fromMap(Map<String, dynamic> map) {
+    return FeatureAddons(
+      id: map['id'] is int ? map['id'] as int : int.tryParse(map['id'].toString()) ?? 0,
+      name: map['name']?.toString() ?? '',
+      price: map['price']?.toString() ?? '',
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory FeatureAddons.fromJson(String source) =>
+      FeatureAddons.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  bool get stringify => true;
+
+  @override
+  List<Object> get props => [id, name, price];
+}
+
 class ProductUpdate extends Equatable {
   final int id;
   final String slug;
@@ -557,6 +609,7 @@ class ProductUpdate extends Equatable {
   final String offerPrice;
   final String status;
   final String addonItems;
+  final List<FeatureAddons>? addons;
   final String createdAt;
   final String updatedAt;
   final String isFeatured;
@@ -574,6 +627,7 @@ class ProductUpdate extends Equatable {
     required this.offerPrice,
     required this.status,
     required this.addonItems,
+    this.addons,
     required this.createdAt,
     required this.updatedAt,
     required this.isFeatured,
@@ -592,6 +646,7 @@ class ProductUpdate extends Equatable {
     String? offerPrice,
     String? status,
     String? addonItems,
+    List<FeatureAddons>? addons,
     String? createdAt,
     String? updatedAt,
     String? isFeatured,
@@ -609,6 +664,7 @@ class ProductUpdate extends Equatable {
       offerPrice: offerPrice ?? this.offerPrice,
       status: status ?? this.status,
       addonItems: addonItems ?? this.addonItems,
+      addons: addons ?? this.addons,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isFeatured: isFeatured ?? this.isFeatured,
@@ -629,6 +685,7 @@ class ProductUpdate extends Equatable {
       'offer_price': offerPrice,
       'status': status,
       'addon_items': addonItems,
+      'addons': addons?.map((x) => x.toMap()).toList(),
       'created_at': createdAt,
       'updated_at': updatedAt,
       'is_featured': isFeatured,
@@ -649,6 +706,13 @@ class ProductUpdate extends Equatable {
       offerPrice: map['offer_price'] ?? '',
       status: map['status'] ?? '',
       addonItems: map['addon_items'] ?? '',
+      addons: map['addons'] != null
+          ? List<FeatureAddons>.from(
+        (map['addons'] as List).map(
+              (x) => FeatureAddons.fromMap(x as Map<String, dynamic>),
+        ),
+      )
+          : null,
       createdAt: map['created_at'] ?? '',
       updatedAt: map['updated_at'] ?? '',
       isFeatured: map['is_featured'] ?? '',
@@ -678,6 +742,7 @@ class ProductUpdate extends Equatable {
       offerPrice,
       status,
       addonItems,
+      addons!,
       createdAt,
       updatedAt,
       isFeatured,

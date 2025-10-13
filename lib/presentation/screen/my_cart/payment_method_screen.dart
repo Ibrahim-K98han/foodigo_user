@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodigo/features/Order/cubit/order_cubit.dart';
 import 'package:foodigo/features/checkout/cubit/checkout_cubit.dart';
 import 'package:foodigo/presentation/core/routes/route_names.dart';
-
 import '../../../data/remote_url.dart';
 import '../../../features/PaymentMethod/cubit/payment_method_cubit.dart';
 import '../../../features/PaymentMethod/cubit/payment_method_state.dart';
@@ -56,21 +55,20 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             if (state.statusCode == 503 && pmCubit.paymentMethodModel != null) {
               return PaymentInfoLoadedWidget(
                 payment: pmCubit.paymentMethodModel,
-                checkoutResponseModel: widget.checkoutResponseModel, // no !
+                checkoutResponseModel: widget.checkoutResponseModel,
               );
             }
             return FetchErrorText(text: state.message);
           } else if (state is PaymentLoaded) {
             return PaymentInfoLoadedWidget(
               payment: pmCubit.paymentMethodModel,
-              checkoutResponseModel: widget.checkoutResponseModel, // no !
+              checkoutResponseModel: widget.checkoutResponseModel,
             );
           }
-
           if (pmCubit.paymentMethodModel != null) {
             return PaymentInfoLoadedWidget(
               payment: pmCubit.paymentMethodModel,
-              checkoutResponseModel: widget.checkoutResponseModel, // no !
+              checkoutResponseModel: widget.checkoutResponseModel,
             );
           }
 
@@ -82,8 +80,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 }
 
 class PaymentInfoLoadedWidget extends StatelessWidget {
-  PaymentInfoLoadedWidget(
-      {super.key, required this.payment, required this.checkoutResponseModel});
+  PaymentInfoLoadedWidget({
+    super.key,
+    required this.payment,
+    required this.checkoutResponseModel,
+  });
 
   PaymentMethodModel? payment;
 
@@ -104,48 +105,49 @@ class PaymentInfoLoadedWidget extends StatelessWidget {
       {
         'name': 'stripe',
         'status': methods.stripeStatus.trim(),
-        'icon': methods.stripeImage
+        'icon': methods.stripeImage,
       },
       {
         'name': 'paypal',
         'status': methods.paypalStatus.trim(),
-        'icon': methods.paypalImage
+        'icon': methods.paypalImage,
       },
       {
         'name': 'razorpay',
         'status': methods.razorpayStatus.trim(),
-        'icon': methods.razorpayImage
+        'icon': methods.razorpayImage,
       },
       {
         'name': 'flutterwave',
         'status': methods.flutterwaveStatus.trim(),
-        'icon': methods.flutterwaveLogo
+        'icon': methods.flutterwaveLogo,
       },
       {
         'name': 'mollie',
         'status': methods.mollieStatus.trim(),
-        'icon': methods.mollieImage
+        'icon': methods.mollieImage,
       },
       {
         'name': 'paystack',
         'status': methods.paystackStatus.trim(),
-        'icon': methods.paystackImage
+        'icon': methods.paystackImage,
       },
       {
         'name': 'instamojo',
         'status': methods.instamojoStatus.trim(),
-        'icon': methods.instamojoImage
+        'icon': methods.instamojoImage,
       },
       {
         'name': 'bank',
         'status': methods.bankStatus.trim(),
-        'icon': methods.bankImage
+        'icon': methods.bankImage,
       },
     ];
 
-    final enabledMethods = methodsList
-        .where((e) => (e['status']?.toString().trim() ?? '') == '1')
-        .toList();
+    final enabledMethods =
+        methodsList
+            .where((e) => (e['status']?.toString().trim() ?? '') == '1')
+            .toList();
 
     if (enabledMethods.isEmpty) {
       return const FetchErrorText(text: 'No enabled payment methods');
@@ -192,16 +194,21 @@ class PaymentInfoLoadedWidget extends StatelessWidget {
                       );
                       break;
                     case 'stripe':
-                      final url =
-                          chCubit.webPaymentInfo(RemoteUrls.payWithStripe);
+                      final url = chCubit.webPaymentInfo(
+                        RemoteUrls.payWithStripe,
+                      );
                       print('Strip Payment $url');
                       Navigator.pushNamed(
-                          context, RouteNames.stripTransferPaymentScreen,
-                          arguments: url.toString());
+                        context,
+                        RouteNames.stripTransferPaymentScreen,
+                        arguments: url.toString(),
+                      );
 
                     default:
                       Utils.errorSnackBar(
-                          context, "Payment method not supported yet!");
+                        context,
+                        "Payment method not supported yet!",
+                      );
                   }
                 },
                 icon: RemoteUrls.imageUrl(method['icon']!),

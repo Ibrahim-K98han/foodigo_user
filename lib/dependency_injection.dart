@@ -99,6 +99,9 @@ import 'features/AllFood/cubit/all_food_cubit.dart';
 import 'features/AllRestaurant/cubit/all_restaurant_cubit.dart';
 import 'features/AllRestaurant/remote/all_restaurant_remote_data_source.dart';
 import 'features/AllRestaurant/repository/all_restaurant_repository.dart';
+import 'features/ForgotPasswordVerify/cubit/forgot_password_verify_cubit.dart';
+import 'features/ForgotPasswordVerify/remote/forgot_password_verify_remote_data_source.dart';
+import 'features/ForgotPasswordVerify/repository/forgot_password_verify_repository.dart';
 import 'features/HomeData/cubit/home_data_cubit.dart';
 import 'features/HomeData/remote/home_data_remote_data_source.dart';
 import 'features/HomeData/repository/home_data_repository.dart';
@@ -411,6 +414,18 @@ class DInjector {
           (context) =>
               OrderStatusRepositoryImpl(remoteDataSource: context.read()),
     ),
+
+    RepositoryProvider<ForgotPasswordVerifyRemoteDataSource>(
+      create:
+          (context) =>
+              ForgotPasswordVerifyRemoteDataSourceImpl(client: context.read()),
+    ),
+    RepositoryProvider<ForgotPasswordVerifyRepository>(
+      create:
+          (context) => ForgotPasswordVerifyRepositoryImpl(
+            remoteDataSource: context.read(),
+          ),
+    ),
   ];
 
   static final blocProvider = <BlocProvider>[
@@ -616,6 +631,12 @@ class DInjector {
           (context) => OrderStatusCubit(
             repository: context.read(),
             loginBloc: context.read(),
+          ),
+    ),
+    BlocProvider<ForgotPasswordVerifyCubit>(
+      create:
+          (context) => ForgotPasswordVerifyCubit(
+            forgotPasswordRepository: context.read(),
           ),
     ),
   ];

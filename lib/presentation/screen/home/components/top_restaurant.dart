@@ -181,7 +181,7 @@ class TopRestaurantCart extends StatelessWidget {
                           ),
                           Utils.horizontalSpace(2.0),
                           SizedBox(
-                            width: 150.w,
+                            width: 130.w,
                             child: CustomText(
                               text: restaurants.address,
                               fontWeight: FontWeight.w400,
@@ -194,14 +194,14 @@ class TopRestaurantCart extends StatelessWidget {
                         ],
                       ),
                       Utils.horizontalSpace(4.0),
-                      Container(
-                        height: 5,
-                        width: 5,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF98C3B),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
+                      // Container(
+                      //   height: 5,
+                      //   width: 5,
+                      //   decoration: const BoxDecoration(
+                      //     color: Color(0xFFF98C3B),
+                      //     shape: BoxShape.circle,
+                      //   ),
+                      // ),
                       Utils.horizontalSpace(4.0),
                       Row(
                         children: [

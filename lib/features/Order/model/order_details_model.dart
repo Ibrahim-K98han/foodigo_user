@@ -249,7 +249,7 @@ class Items extends Equatable {
   final String orderId;
   final String productId;
   final String size;
-  final String addons;
+  final List<AddonDetails>? detailsAddons;
   final String qty;
   final String total;
   final String createdAt;
@@ -261,7 +261,7 @@ class Items extends Equatable {
     required this.orderId,
     required this.productId,
     required this.size,
-    required this.addons,
+    this.detailsAddons,
     required this.qty,
     required this.total,
     required this.createdAt,
@@ -274,7 +274,6 @@ class Items extends Equatable {
     String? orderId,
     String? productId,
     String? size,
-    String? addons,
     String? qty,
     String? total,
     String? createdAt,
@@ -286,8 +285,7 @@ class Items extends Equatable {
       orderId: orderId ?? this.orderId,
       productId: productId ?? this.productId,
       size: size ?? this.size,
-      addons: addons ?? this.addons,
-      qty: qty ?? this.qty,
+    qty: qty ?? this.qty,
       total: total ?? this.total,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -301,7 +299,7 @@ class Items extends Equatable {
       'order_id': orderId,
       'product_id': productId,
       'size': size,
-      'addons': addons,
+      'addon_details': detailsAddons?.map((x) => x.toMap()).toList(),
       'qty': qty,
       'total': total,
       'created_at': createdAt,
@@ -316,7 +314,14 @@ class Items extends Equatable {
       orderId: map['order_id'] ?? '',
       productId: map['product_id'] ?? '',
       size: map['size'] ?? '',
-      addons: map['addons'] ?? '',
+      detailsAddons:
+      map['addon_details'] != null
+          ? List<AddonDetails>.from(
+        (map['addon_details'] as List).map(
+              (x) => AddonDetails.fromMap(x as Map<String, dynamic>),
+        ),
+      )
+          : null,
       qty: map['qty'] ?? '',
       total: map['total'] ?? '',
       createdAt: map['created_at'] ?? '',
@@ -342,7 +347,7 @@ class Items extends Equatable {
       orderId,
       productId,
       size,
-      addons,
+      detailsAddons!,
       qty,
       total,
       createdAt,
@@ -350,4 +355,59 @@ class Items extends Equatable {
       products!,
     ];
   }
+}
+
+class AddonDetails extends Equatable {
+  final int id;
+  final String name;
+  final String price;
+  final int quantity;
+  const AddonDetails({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.quantity,
+  });
+
+  AddonDetails copyWith({
+    int? id,
+    String? name,
+    String? price,
+    int? quantity,
+  }) {
+    return AddonDetails(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      price: price ?? this.price,
+      quantity: quantity ?? this.quantity,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'name': name,
+      'price': price,
+      'quantity': quantity,
+    };
+  }
+
+  factory AddonDetails.fromMap(Map<String, dynamic> map) {
+    return AddonDetails(
+      id: map['id'] ??0,
+      name: map['name'] ?? '',
+      price: map['price'] ?? '',
+      quantity: map['quantity'] ?? 0,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory AddonDetails.fromJson(String source) => AddonDetails.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  bool get stringify => true;
+
+  @override
+  List<Object> get props => [id, name, price, quantity];
 }

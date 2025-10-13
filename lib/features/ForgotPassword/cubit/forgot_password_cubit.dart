@@ -20,9 +20,50 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordStateModel> {
     emit(state.copyWith(email: text));
   }
 
-  void otpChange(String text) {
-    print('state otp:$text');
-    emit(state.copyWith(otp: text));
+  void newPass(String text) {
+    emit(
+      state.copyWith(
+        newPass: text,
+        passwordState: const ForgotPasswordStateInitial(),
+      ),
+    );
+  }
+
+  void conPass(String text) {
+    emit(
+      state.copyWith(
+        conPass: text,
+        passwordState: const ForgotPasswordStateInitial(),
+      ),
+    );
+  }
+
+  void showNewPassword() {
+    emit(
+      state.copyWith(
+        showNewPass: !state.showNewPass,
+        passwordState: const ForgotPasswordStateInitial(),
+      ),
+    );
+  }
+
+  void showConPassword() {
+    emit(
+      state.copyWith(
+        showConPass: !state.showConPass,
+        passwordState: const ForgotPasswordStateInitial(),
+      ),
+    );
+  }
+
+  void forgotOtpChange(String text) {
+    print('state cubit otp:$text');
+    emit(
+      state.copyWith(
+        otp: text,
+        passwordState: const ForgotPasswordStateInitial(),
+      ),
+    );
   }
 
   Future<void> forgotPasswordCode() async {
@@ -75,35 +116,39 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordStateModel> {
     );
   }
 
-  // Future<void> verifyForgetNewPassOtp(String email) async {
-  //   emit(state.copyWith(passwordState: ForgotPasswordOtpStateLoading()));
-  //   final result = await _repository.verifyRegOtp(state, email);
-  //   result.fold(
-  //     (failure) {
-  //       final errors = ForgotPasswordStateError(
-  //         failure.message,
-  //         failure.statusCode,
-  //       );
-  //       emit(state.copyWith(passwordState: errors));
-  //     },
-  //     (success) {
-  //       final userLoaded = ForgotPasswordStateSuccess(success);
-  //       emit(state.copyWith(passwordState: userLoaded));
-  //     },
-  //   );
-  // }
+  Future<void> verifyForgetPassOtp(String email, String otp) async {
+    print("Cubit Forgot Pass OTP: $otp");
+    emit(state.copyWith(passwordState: ForgotPassOtpVerifyStateLoading()));
+    final result = await _repository.verifyForgotPassOtp(state);
+    result.fold(
+      (failure) {
+        final errors = ForgotPssOtpVerifyStateError(
+          failure.message,
+          failure.statusCode,
+        );
+        emit(state.copyWith(passwordState: errors));
+      },
+      (success) {
+        final userLoaded = ForgotPassOtpVerifyStateSuccess(success);
+        emit(state.copyWith(passwordState: userLoaded));
+      },
+    );
+  }
+
 
   Future<void> updatePassword(String email, String otp) async {
-    emit(state.copyWith(passwordState: const ForgotPasswordStateLoading()));
+    emit(
+      state.copyWith(passwordState: const ForgotPasswordResetStateLoading()),
+    );
     debugPrint('update-password-languageCode ${state.languageCode}');
-    final result = await _repository.resetPassword(state, email, otp);
+    final result = await _repository.resetPassword(state);
     result.fold(
       (failure) {
         if (failure is InvalidAuthData) {
-          final errors = ForgotPasswordFormValidateError(failure.errors);
+          final errors = ForgotPasswordResetFormValidateError(failure.errors);
           emit(state.copyWith(passwordState: errors));
         } else {
-          final errors = ForgotPasswordStateError(
+          final errors = ForgotPasswordResetStateError(
             failure.message,
             failure.statusCode,
           );
@@ -111,8 +156,22 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordStateModel> {
         }
       },
       (data) {
-        emit(state.copyWith(passwordState: PasswordStateUpdated(data)));
-      },
+        emit(state.copyWith(passwordState: PasswordResetStateUpdated(data)));
+
+        },
+    );
+  }
+
+  void clear() {
+    emit(
+      state.copyWith(
+        newPass: '',
+        conPass: '',
+        showNewPass: true,
+        showConPass: true,
+        passwordState: const ForgotPasswordStateInitial(),
+      ),
     );
   }
 }
+

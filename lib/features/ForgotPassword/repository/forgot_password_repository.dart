@@ -10,13 +10,15 @@ abstract class ForgotPasswordRepository {
 
   Future<Either<dynamic, String>> resetPassword(
     ForgotPasswordStateModel body,
-    String email,
-    String otp,
   );
 
   Future<Either<dynamic, String>> verifyForgotOtp(
     ForgotPasswordStateModel body,
     String email,
+  );
+
+  Future<Either<dynamic, String>> verifyForgotPassOtp(
+    ForgotPasswordStateModel body,
   );
 }
 
@@ -42,11 +44,9 @@ class ForgotPasswordRepositoryImpl implements ForgotPasswordRepository {
   @override
   Future<Either<dynamic, String>> resetPassword(
     ForgotPasswordStateModel body,
-    String email,
-    String otp,
   ) async {
     try {
-      final result = await remoteDataSource.resetPassword(body, email, otp);
+      final result = await remoteDataSource.resetPassword(body);
       return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
@@ -63,6 +63,20 @@ class ForgotPasswordRepositoryImpl implements ForgotPasswordRepository {
     try {
       final result = await remoteDataSource.forgotOtpVerify(body, email);
       return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    } on InvalidAuthData catch (e) {
+      return Left(InvalidAuthData(e.errors));
+    }
+  }
+
+  @override
+  Future<Either<dynamic, String>> verifyForgotPassOtp(
+    ForgotPasswordStateModel body
+  ) async {
+    try {
+      final result = await remoteDataSource.forgotPassOtpVerify(body);
+      return Right(result['message']);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
     } on InvalidAuthData catch (e) {

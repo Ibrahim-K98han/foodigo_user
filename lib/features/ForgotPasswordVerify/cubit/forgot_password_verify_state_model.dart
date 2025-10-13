@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:foodigo/features/ForgotPassword/cubit/forgot_password_state.dart';
 
-class ForgotPasswordStateModel extends Equatable {
+import 'forgot_password_verify_state.dart';
+
+class ForgotPasswordVerifyStateModel extends Equatable {
   final String newPass;
   final String conPass;
   final bool showNewPass;
@@ -16,9 +18,9 @@ class ForgotPasswordStateModel extends Equatable {
   final String confirmPassword;
   final bool showPassword;
   final bool showConfirmPassword;
-  final ForgotPasswordState passwordState;
+  final ForgotPasswordVerifyState passwordState;
 
-  const ForgotPasswordStateModel({
+  const ForgotPasswordVerifyStateModel({
     this.newPass = '',
     this.conPass = '',
     this.showNewPass = true,
@@ -31,10 +33,10 @@ class ForgotPasswordStateModel extends Equatable {
     this.confirmPassword = '',
     this.showPassword = true,
     this.showConfirmPassword = true,
-    this.passwordState = const ForgotPasswordStateInitial(),
+    this.passwordState = const ForgotPasswordVerifyStateInitial(),
   });
 
-  ForgotPasswordStateModel copyWith({
+  ForgotPasswordVerifyStateModel copyWith({
     String? newPass,
     String? conPass,
     bool? showNewPass,
@@ -47,9 +49,9 @@ class ForgotPasswordStateModel extends Equatable {
     String? confirmPassword,
     bool? showPassword,
     bool? showConfirmPassword,
-    ForgotPasswordState? passwordState,
+    ForgotPasswordVerifyState? passwordState,
   }) {
-    return ForgotPasswordStateModel(
+    return ForgotPasswordVerifyStateModel(
       newPass: newPass ?? this.newPass,
       conPass: conPass ?? this.conPass,
       showNewPass: showNewPass ?? this.showNewPass,
@@ -69,10 +71,9 @@ class ForgotPasswordStateModel extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'email': email,
-      'password': newPass,
-      'password_confirmation': conPass,
       'otp': otp,
       'token': code,
+      'password': password,
       'c_password': confirmPassword,
       'lang_code': languageCode,
       // 'showPassword': showPassword,
@@ -80,8 +81,8 @@ class ForgotPasswordStateModel extends Equatable {
     };
   }
 
-  static ForgotPasswordStateModel init() {
-    return const ForgotPasswordStateModel(
+  static ForgotPasswordVerifyStateModel init() {
+    return const ForgotPasswordVerifyStateModel(
       newPass: '',
       conPass: '',
       showNewPass: true,
@@ -94,12 +95,12 @@ class ForgotPasswordStateModel extends Equatable {
       confirmPassword: '',
       showPassword: true,
       showConfirmPassword: true,
-      passwordState: ForgotPasswordStateInitial(),
+      passwordState: ForgotPasswordVerifyStateInitial(),
     );
   }
 
-  ForgotPasswordStateModel clear() {
-    return const ForgotPasswordStateModel(
+  ForgotPasswordVerifyStateModel clear() {
+    return const ForgotPasswordVerifyStateModel(
       newPass: '',
       conPass: '',
       showNewPass: true,
@@ -111,12 +112,12 @@ class ForgotPasswordStateModel extends Equatable {
       confirmPassword: '',
       showPassword: true,
       showConfirmPassword: true,
-      passwordState: ForgotPasswordStateInitial(),
+      passwordState: ForgotPasswordVerifyStateInitial(),
     );
   }
 
-  factory ForgotPasswordStateModel.fromMap(Map<String, dynamic> map) {
-    return ForgotPasswordStateModel(
+  factory ForgotPasswordVerifyStateModel.fromMap(Map<String, dynamic> map) {
+    return ForgotPasswordVerifyStateModel(
       conPass: map['password'] ?? '',
       newPass: map['password_confirmation'] ?? '',
       showNewPass: map['show_password'] ?? false,
@@ -133,8 +134,8 @@ class ForgotPasswordStateModel extends Equatable {
 
   String toJson() => json.encode(toMap());
 
-  factory ForgotPasswordStateModel.fromJson(String source) =>
-      ForgotPasswordStateModel.fromMap(json.decode(source));
+  factory ForgotPasswordVerifyStateModel.fromJson(String source) =>
+      ForgotPasswordVerifyStateModel.fromMap(json.decode(source));
 
   @override
   String toString() {

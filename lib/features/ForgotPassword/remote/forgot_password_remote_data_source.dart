@@ -9,11 +9,10 @@ abstract class ForgotPasswordRemoteDataSource {
 
   Future<String> resetPassword(
     ForgotPasswordStateModel body,
-    String email,
-    String otp,
   );
 
   Future forgotOtpVerify(ForgotPasswordStateModel body, String email);
+  Future forgotPassOtpVerify(ForgotPasswordStateModel body);
 }
 
 class ForgotPasswordRemoteDataSourceImpl
@@ -50,8 +49,6 @@ class ForgotPasswordRemoteDataSourceImpl
   @override
   Future<String> resetPassword(
     ForgotPasswordStateModel body,
-    String email,
-    String otp,
   ) async {
     final uri = Uri.parse(RemoteUrls.resetPassword);
     print('update-password-url $uri');
@@ -85,7 +82,19 @@ class ForgotPasswordRemoteDataSourceImpl
       () => clientMethod,
     );
 
-    print("[RemoteDataSourceImpl] ${responseJsonBody}");
+    print("[RemoteDataSourceImpl] $responseJsonBody");
     return responseJsonBody['message'];
+  }
+
+  @override
+  Future forgotPassOtpVerify(ForgotPasswordStateModel body) async{
+    final uri = Uri.parse(RemoteUrls.forgotPassOtpVerify).replace(queryParameters: {'lang_code':body.languageCode});
+    print('forgot pass verify otp: $uri');
+    final clientMethod =
+    client.post(uri, body: body.toMap(), headers: postDeleteHeader);
+    final responseJsonBody =
+    await NetworkParser.callClientWithCatchException(() => clientMethod);
+    return responseJsonBody;
+
   }
 }

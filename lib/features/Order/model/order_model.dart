@@ -180,13 +180,16 @@ class OrderModel extends Equatable {
       orderRequest: map['order_request'],
       orderReqDate: map['order_req_date'],
       orderReqAcceptDate: map['order_req_accept_date'],
-      restaurant: map['restaurant'] != null
-          ? Restaurant.fromMap(map['restaurant'] as Map<String, dynamic>)
-          : null,
-      items: map['items'] != null
-          ? List<OrderItem>.from(
-          (map['items'] as List).map((x) => OrderItem.fromMap(x)))
-          : null,
+      restaurant:
+          map['restaurant'] != null
+              ? Restaurant.fromMap(map['restaurant'] as Map<String, dynamic>)
+              : null,
+      items:
+          map['items'] != null
+              ? List<OrderItem>.from(
+                (map['items'] as List).map((x) => OrderItem.fromMap(x)),
+              )
+              : null,
     );
   }
 
@@ -274,7 +277,6 @@ class OrderItem extends Equatable {
   final String orderId;
   final String productId;
   final String size;
-  final String addons;
   final String qty;
   final String total;
   final String createdAt;
@@ -285,7 +287,7 @@ class OrderItem extends Equatable {
     required this.orderId,
     required this.productId,
     required this.size,
-    required this.addons,
+
     required this.qty,
     required this.total,
     required this.createdAt,
@@ -298,7 +300,6 @@ class OrderItem extends Equatable {
       'order_id': orderId,
       'product_id': productId,
       'size': size,
-      'addons': addons,
       'qty': qty,
       'total': total,
       'created_at': createdAt,
@@ -312,7 +313,6 @@ class OrderItem extends Equatable {
       orderId: map['order_id'] ?? '',
       productId: map['product_id'] ?? '',
       size: map['size'] ?? '',
-      addons: map['addons'] ?? '',
       qty: map['qty'] ?? '',
       total: map['total'] ?? '',
       createdAt: map['created_at'] ?? '',
@@ -321,6 +321,14 @@ class OrderItem extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [id, orderId, productId, size, addons, qty, total, createdAt, updatedAt];
+  List<Object?> get props => [
+    id,
+    orderId,
+    productId,
+    size,
+    qty,
+    total,
+    createdAt,
+    updatedAt,
+  ];
 }
